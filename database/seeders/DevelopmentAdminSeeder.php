@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 
 final class DevelopmentAdminSeeder extends Seeder
 {
-    private const string LEGACY_EMAIL = 'admin@impact.test';
+    private const LEGACY_EMAIL = 'admin@impact.test';
 
     public function run(): void
     {
