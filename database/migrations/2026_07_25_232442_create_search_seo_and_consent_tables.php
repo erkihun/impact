@@ -53,7 +53,7 @@ return new class extends Migration
 
         Schema::create('redirects', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->string('source_path', 1024)->unique();
+            $table->string('source_path', 768)->unique();
             $table->string('destination_url', 1024);
             $table->unsignedSmallInteger('status_code')->default(301);
             $table->boolean('enabled')->default(true);

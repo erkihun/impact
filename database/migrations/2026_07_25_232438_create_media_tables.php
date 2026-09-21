@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('original_name');
             $table->string('disk', 40);
-            $table->string('path', 1024)->unique();
+            $table->string('path', 768)->unique();
             $table->string('mime_type', 120);
             $table->unsignedBigInteger('size_bytes');
             $table->char('sha256', 64)->index();
@@ -39,7 +39,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('media_asset_id')->constrained()->cascadeOnDelete();
             $table->string('variant', 60);
-            $table->string('path', 1024)->unique();
+            $table->string('path', 768)->unique();
             $table->unsignedInteger('width')->nullable();
             $table->unsignedInteger('height')->nullable();
             $table->unsignedBigInteger('size_bytes');
