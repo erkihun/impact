@@ -9,7 +9,6 @@ use App\Enums\Settings\SettingEffect;
 use App\Models\Setting;
 use App\Support\SettingCatalog;
 use BackedEnum;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -39,7 +38,7 @@ final readonly class EffectiveSettings
 
                 return collect(SettingCatalog::DEFAULT_VALUES)
                     ->map(function (mixed $default, string $key) use ($stored): mixed {
-                        $value = $stored->get($key)?->value ?? $default;
+                        $value = $stored->get($key)->value ?? $default;
 
                         try {
                             return $this->normalize($key, $value);
@@ -139,9 +138,7 @@ final readonly class EffectiveSettings
                 ], true),
             ),
             requiresDeployment: in_array(SettingEffect::RequiresDeployment, $effects, true),
-            updatedAt: $record?->updated_at instanceof CarbonImmutable
-                ? $record->updated_at
-                : ($record?->updated_at?->toImmutable()),
+            updatedAt: $record?->updated_at?->toImmutable(),
             isValid: $isValid,
             warning: $warning,
         );
