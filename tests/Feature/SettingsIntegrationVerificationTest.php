@@ -42,12 +42,13 @@ it('resolves explicit precedence and rejects invalid stored booleans', function 
         ->and($settings->resolve('site.name', 'am')->source)->toBe('Locale-scoped setting');
 
     Setting::query()->where('key', 'search.enabled')->where('scope', 'global')
-        ->update(['value' => 'not-a-boolean']);
+        ->update(['value' => json_encode('not-a-boolean')]);
     EffectiveSettings::flushCaches();
 
     $resolved = app(EffectiveSettings::class)->resolve('search.enabled');
     expect($resolved->isValid)->toBeFalse()
         ->and($resolved->value)->toBeTrue()
+        ->and($resolved->warning)->toContain('invalid boolean')
         ->and(app(SettingsVerificationService::class)->verify()['summary']['error_count'])->toBeGreaterThan(0);
 });
 

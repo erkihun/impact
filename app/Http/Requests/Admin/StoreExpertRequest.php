@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ContentWorkflowState;
-use App\Support\Settings\MediaSettings;
 use App\Support\Settings\EffectiveSettings;
+use App\Support\Settings\MediaSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;

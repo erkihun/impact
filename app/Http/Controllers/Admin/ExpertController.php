@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreExpertRequest;
-use App\Http\Requests\Admin\UpdateExpertRequest;
 use App\Enums\ContentWorkflowState;
 use App\Enums\MediaStatus;
 use App\Enums\MediaVisibility;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreExpertRequest;
+use App\Http\Requests\Admin\UpdateExpertRequest;
 use App\Models\Expert;
 use App\Models\ExpertVersion;
 use App\Models\MediaAsset;
@@ -112,8 +112,7 @@ final class ExpertController extends Controller
     public function update(
         UpdateExpertRequest $request,
         Expert $expert,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $validated = $request->validated();
         $profileMediaId = $this->profileMediaIdFromRequest($request, $validated);
 
@@ -259,7 +258,7 @@ final class ExpertController extends Controller
         array $validated,
     ): ?string {
         $photo = $request->file('profile_photo');
-        if (!$photo instanceof UploadedFile) {
+        if (! $photo instanceof UploadedFile) {
             return $validated['profile_media_id'] ?? null;
         }
 
