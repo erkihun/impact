@@ -259,7 +259,7 @@ final class ExpertController extends Controller
         array $validated,
     ): ?string {
         $photo = $request->file('profile_photo');
-        if (! $photo instanceof UploadedFile) {
+        if (!$photo instanceof UploadedFile) {
             return $validated['profile_media_id'] ?? null;
         }
 
