@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vacancy;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicContent;
+use Inertia\Response;
 
 final class VacancyController extends Controller
 {
-    public function index(): View
+    public function index(): Response
     {
-        return view('public.collection', [
+        return PublicContent::collection([
             'eyebrow' => __('Build your career'),
             'title' => __('Careers and opportunities'),
             'items' => Vacancy::query()->where('locale', app()->getLocale())
@@ -22,11 +23,11 @@ final class VacancyController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(string $locale, string $slug): Response
     {
-        return view('public.vacancy', [
-            'vacancy' => Vacancy::query()->where(compact('locale', 'slug'))
+        return PublicContent::vacancy(
+            Vacancy::query()->where(compact('locale', 'slug'))
                 ->where('status', 'published')->firstOrFail(),
-        ]);
+        );
     }
 }

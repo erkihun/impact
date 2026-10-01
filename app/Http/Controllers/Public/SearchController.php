@@ -9,7 +9,9 @@ use App\Data\Search\RecordSearchQueryData;
 use App\Http\Controllers\Controller;
 use App\Models\SearchDocument;
 use App\Support\Settings\SearchSettings;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicPage;
+use Illuminate\Support\Str;
+use Inertia\Response;
 use Illuminate\Http\Request;
 
 final class SearchController extends Controller
@@ -18,7 +20,7 @@ final class SearchController extends Controller
         Request $request,
         RecordSearchQueryAction $recordSearch,
         SearchSettings $settings,
-    ): View {
+    ): Response {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:200'],
             'type' => ['nullable', 'string', 'max:80'],
@@ -46,10 +48,50 @@ final class SearchController extends Controller
             resultCount: $results->total(),
         ));
 
-        return view('public.search', [
+        $locale = app()->getLocale();
+
+        return PublicPage::render('Public/Search', 'search', [
+            'meta' => ['title' => __('Search — Impact Consulting'), 'description' => null, 'robots' => 'noindex,follow'],
+            'breadcrumbs' => PublicPage::breadcrumbs([__('Search') => null]),
+            'header' => [
+                'eyebrow' => __('Knowledge discovery'),
+                'title' => __('Search'),
+                'summary' => __('Find published services, sector experience, experts, evidence, insights, events and opportunities.'),
+            ],
             'query' => $query,
-            'results' => $results,
-            'usesV2Presentation' => $settings->usesV2Presentation(),
+            'action' => route('search', ['locale' => $locale]),
+            'total' => $results->total(),
+            'results' => collect($results->items())->values()->map(fn (SearchDocument $result, int $index): array => [
+                'number' => str_pad((string) ($results->firstItem() + $index), 2, '0', STR_PAD_LEFT),
+                'type' => Str::headline(str_replace('_', ' ', (string) $result->searchable_type)),
+                'title' => $result->title,
+                'summary' => $result->summary,
+                'href' => $result->url,
+            ])->all(),
+            'pagination' => [
+                'previous' => $results->onFirstPage() ? null : $results->previousPageUrl(),
+                'next' => $results->hasMorePages() ? $results->nextPageUrl() : null,
+            ],
+            'copy' => [
+                'label' => __('Search the website'),
+                'placeholder' => __('Search insights, services and more'),
+                'submit' => __('Search'),
+                'resultsHeading' => __('Search results'),
+                'count' => trans_choice(':count result|:count results', $results->total(), ['count' => $results->total()]),
+                'resultsFor' => filled($query) ? __('Results for “:query”', ['query' => $query]) : null,
+                'emptyTitle' => filled($query) ? __('No results matched “:query”.', ['query' => $query]) : __('Start with a topic, service or name.'),
+                'emptyDescription' => __('Try fewer words or use one of the trusted routes below to continue.'),
+                'clear' => __('Clear search'),
+                'exploreServices' => __('Explore services'),
+                'browseInsights' => __('Browse insights'),
+                'previous' => __('Previous'),
+                'next' => __('Next'),
+                'pagination' => __('Pagination'),
+            ],
+            'links' => [
+                'services' => route('services.index', ['locale' => $locale]),
+                'insights' => route('insights.index', ['locale' => $locale]),
+            ],
         ]);
     }
 }

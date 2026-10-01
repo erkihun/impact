@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExpertVersion;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicContent;
+use Inertia\Response;
 
 final class ExpertController extends Controller
 {
-    public function index(): View
+    public function index(): Response
     {
-        return view('public.collection', [
+        return PublicContent::collection([
             'eyebrow' => __('Our people'),
             'title' => __('Experts'),
             'items' => ExpertVersion::query()->where('locale', app()->getLocale())
@@ -25,9 +26,9 @@ final class ExpertController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(string $locale, string $slug): Response
     {
-        return view('public.detail', [
+        return PublicContent::detail([
             'item' => ExpertVersion::query()->where(compact('locale', 'slug'))
                 ->with('expert.profileMedia')
                 ->publiclyVisible()->firstOrFail(),

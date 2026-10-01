@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicContent;
+use Inertia\Response;
 
 final class EventController extends Controller
 {
-    public function index(): View
+    public function index(): Response
     {
-        return view('public.collection', [
+        return PublicContent::collection([
             'eyebrow' => __('Connect and learn'),
             'title' => __('Events and webinars'),
             'items' => Event::query()->where('locale', app()->getLocale())
@@ -23,11 +24,11 @@ final class EventController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(string $locale, string $slug): Response
     {
-        return view('public.event', [
-            'event' => Event::query()->where(compact('locale', 'slug'))
+        return PublicContent::event(
+            Event::query()->where(compact('locale', 'slug'))
                 ->whereNotIn('status', ['draft', 'cancelled'])->firstOrFail(),
-        ]);
+        );
     }
 }

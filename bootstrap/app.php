@@ -14,6 +14,7 @@ use App\Http\Middleware\EnsureOperationalSettingEnabled;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureRecentMfa;
 use App\Http\Middleware\EnsureSessionIsCurrent;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -44,6 +45,10 @@ return Application::configure(basePath: dirname(__DIR__))
             AddSecurityHeaders::class,
             AssignCorrelationId::class,
             SetLocale::class,
+        ]);
+
+        $middleware->web(append: [
+            HandleInertiaRequests::class,
         ]);
 
         $middleware->alias([

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\File;
 
 it('renders the public editorial shell with accessible desktop and mobile navigation', function (): void {
-    $this->get('/en')
+    $this->get('/en/about')
         ->assertOk()
         ->assertSee('href="#main-content"', false)
         ->assertSee('aria-label="Primary navigation"', false)
@@ -16,7 +16,7 @@ it('renders the public editorial shell with accessible desktop and mobile naviga
 });
 
 it('renders one decorative icon system across public navigation, submenus, and footer links', function (): void {
-    $response = $this->get('/en')
+    $response = $this->get('/en/about')
         ->assertOk()
         ->assertSee('nav-menu-icon', false)
         ->assertSee('mega-link-icon', false)
@@ -77,7 +77,7 @@ it('publishes the legal, cookie and accessibility pages in both locales', functi
 ]);
 
 it('keeps privacy, cookie and accessibility routes reachable from the footer', function (): void {
-    $this->get('/en')
+    $this->get('/en/about')
         ->assertOk()
         ->assertSee('Privacy notice')
         ->assertSee('Cookie notice')
@@ -94,7 +94,7 @@ it('offers an accessibility barrier-reporting route', function (): void {
 });
 
 it('presents equivalent accept, reject and manage consent choices before optional storage', function (): void {
-    $this->get('/en')
+    $this->get('/en/about')
         ->assertOk()
         ->assertSee('consentManager', false)
         ->assertSee('Accept optional')

@@ -16,7 +16,9 @@ use App\Http\Controllers\Public\ExpertController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\IndustryController;
 use App\Http\Controllers\Public\InsightController;
+use App\Http\Controllers\Public\LegalPageController;
 use App\Http\Controllers\Public\NewsletterSubscriptionController;
+use App\Http\Controllers\Public\PublicPageController;
 use App\Http\Controllers\Public\RedirectController;
 use App\Http\Controllers\Public\SearchController;
 use App\Http\Controllers\Public\ServiceController;
@@ -48,7 +50,7 @@ Route::prefix('{locale}')
     ->where(['locale' => 'en|am'])
     ->group(function (): void {
         Route::get('/', HomeController::class)->name('localized-home');
-        Route::view('/about', 'public.about')->name('about.show');
+        Route::get('/about', [PublicPageController::class, 'about'])->name('about.show');
         Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
         Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show');
         Route::get('/industries', [IndustryController::class, 'index'])->name('industries.index');
@@ -72,19 +74,19 @@ Route::prefix('{locale}')
         Route::get('/search', SearchController::class)
             ->middleware(['setting.enabled:search.enabled', 'throttle:search'])
             ->name('search');
-        Route::view('/consultation', 'public.consultation')
+        Route::get('/consultation', [PublicPageController::class, 'consultation'])
             ->middleware('setting.enabled:engagement.consultation_form_enabled')
             ->name('consultation.create');
-        Route::view('/request-for-proposal', 'public.rfp')
+        Route::get('/request-for-proposal', [PublicPageController::class, 'rfp'])
             ->middleware('setting.enabled:engagement.rfp_form_enabled')
             ->name('rfp.create');
-        Route::view('/contact', 'public.contact')
+        Route::get('/contact', [PublicPageController::class, 'contact'])
             ->middleware('setting.enabled:engagement.contact_form_enabled')
             ->name('contact.create');
-        Route::view('/privacy', 'public.legal.privacy')->name('legal.privacy');
-        Route::view('/terms', 'public.legal.terms')->name('legal.terms');
-        Route::view('/cookies', 'public.legal.cookies')->name('legal.cookies');
-        Route::view('/accessibility', 'public.legal.accessibility')->name('legal.accessibility');
+        Route::get('/privacy', LegalPageController::class)->name('legal.privacy');
+        Route::get('/terms', LegalPageController::class)->name('legal.terms');
+        Route::get('/cookies', LegalPageController::class)->name('legal.cookies');
+        Route::get('/accessibility', LegalPageController::class)->name('legal.accessibility');
 
         Route::middleware('throttle:public-forms')->group(function (): void {
             Route::post('/consultation-requests', [EngagementSubmissionController::class, 'store'])

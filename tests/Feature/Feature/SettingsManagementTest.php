@@ -13,6 +13,7 @@ use Database\Seeders\RoleSeeder;
 use Database\Seeders\SettingSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     $this->seed([PermissionSeeder::class, RoleSeeder::class, SettingSeeder::class]);
@@ -127,15 +128,17 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
     $this->get('/en')
         ->assertOk()
         ->assertSee('Managed English hero statement.')
-        ->assertSee('data-slide-count="3"', false)
-        ->assertSee('data-autoplay="false"', false)
-        ->assertSee('data-interval="9000"', false)
-        ->assertSee($storedImage, false);
+        ->assertSee($storedImage, false)
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Public/Home')
+            ->has('heroSlider.slides', 3)
+            ->where('heroSlider.autoplay', false)
+            ->where('heroSlider.interval_ms', 9000));
 
     $this->get('/am')
         ->assertOk()
         ->assertSee('በአስተዳዳሪ የተቀናበረ የአማርኛ ዋና መልዕክት።')
-        ->assertSee('x-data="homepageHeroSlider"', false);
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Public/Home'));
 });
 
 it('rejects invalid homepage hero rotation settings', function (): void {

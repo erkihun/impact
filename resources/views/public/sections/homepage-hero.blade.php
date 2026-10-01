@@ -43,7 +43,7 @@
                 >
             @else
                 <img
-                    src="{{ asset('images/impact-intelligence-hero-v1.webp') }}"
+                    src="{{ asset('images/impact-hero-clean.svg') }}"
                     width="1536"
                     height="1024"
                     alt=""

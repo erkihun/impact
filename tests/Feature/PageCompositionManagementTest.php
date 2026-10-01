@@ -15,6 +15,7 @@ use Database\Seeders\RoleSeeder;
 use Database\Seeders\SettingSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     $this->seed([PermissionSeeder::class, RoleSeeder::class]);
@@ -131,8 +132,9 @@ it('renders managed public headers in both locales and the three-panel editor wo
     $this->get('/en')
         ->assertOk()
         ->assertSee('Evidence for the decisions that shape institutions.')
-        ->assertSee('x-data="homepageHeroSlider"', escape: false)
-        ->assertSee('data-slide-count="3"', escape: false);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Public/Home')
+            ->has('heroSlider.slides', 3));
     $this->get('/am')
         ->assertOk()
         ->assertSee('ለተቋማት የወደፊት አቅጣጫ በሚወስኑ ውሳኔዎች ላይ የተመሠረተ ማስረጃ።');

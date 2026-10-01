@@ -92,7 +92,6 @@ class AppServiceProvider extends ServiceProvider
         View::composer(
             [
                 'layouts.public',
-                'public.home',
                 'public.about',
                 'public.collection',
                 'public.detail',

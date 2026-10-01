@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\CaseStudyVersion;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicContent;
+use Inertia\Response;
 
 final class CaseStudyController extends Controller
 {
-    public function index(): View
+    public function index(): Response
     {
-        return view('public.collection', [
+        return PublicContent::collection([
             'eyebrow' => __('Evidence'),
             'title' => __('Case studies'),
             'items' => CaseStudyVersion::query()->where('locale', app()->getLocale())
@@ -24,9 +25,9 @@ final class CaseStudyController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(string $locale, string $slug): Response
     {
-        return view('public.detail', [
+        return PublicContent::detail([
             'item' => CaseStudyVersion::query()->where(compact('locale', 'slug'))
                 ->publiclyVisible()->firstOrFail(),
             'titleField' => 'title',

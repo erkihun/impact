@@ -38,7 +38,7 @@ final class SettingsConsumptionRegistry
             ],
             'homepage' => [
                 'consumer' => HomepageHeroSettings::class,
-                'file' => 'resources/views/public/sections/homepage-slider.blade.php',
+                'file' => 'resources/js/Components/Public/HeroSlider.jsx',
                 'behavior' => 'Controls localized hero slide content, ordering, images, approved actions, and rotation.',
             ],
             'localization' => [

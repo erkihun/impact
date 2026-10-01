@@ -1,6 +1,7 @@
 import './bootstrap';
 
 import Alpine from '@alpinejs/csp';
+import { initPublicMotion } from './public-motion';
 
 window.Alpine = Alpine;
 
@@ -772,6 +773,8 @@ Alpine.data('consentManager', () => ({
 Alpine.start();
 
 document.addEventListener('DOMContentLoaded', () => {
+    initPublicMotion();
+
     const errorSummary = document.querySelector('[data-error-summary]');
 
     if (errorSummary instanceof HTMLElement) {

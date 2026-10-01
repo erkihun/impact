@@ -3,25 +3,29 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
+use Inertia\Testing\AssertableInertia as Assert;
 
 it('renders the impact intelligence homepage with its signature visual language', function (): void {
     $this->get('/en')
         ->assertOk()
         ->assertSee('Impact Intelligence')
         ->assertSee('Evidence for the decisions that shape institutions.')
-        ->assertSee('impact-intelligence-hero-v1.webp')
-        ->assertSee('insight-marker', false)
-        ->assertSee('home-signature-hero-section', false)
-        ->assertSee('home-signature-image', false)
-        ->assertSee('x-data="homepageHeroSlider"', false)
-        ->assertSee('data-slide-count="3"', false)
-        ->assertSee('home-hero-slider-stage', false)
-        ->assertSee('x-ref="stage"', false)
-        ->assertSee('data-home-hero-slide', false)
-        ->assertSee('x-transition:enter="home-hero-transition-enter"', false)
-        ->assertSee('home-hero-slider-controls', false)
+        ->assertSee('impact-hero-clean.svg')
         ->assertDontSee('home-modern-hero-section', false)
-        ->assertSee('Engagement pathway');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Home')
+            ->has('heroSlider.slides', 3)
+            ->where('heroSlider.slides.0.heading', 'Evidence for the decisions that shape institutions.')
+            ->where('copy.engagementEyebrow', 'Engagement pathway'));
+
+    expect(File::get(resource_path('js/Components/Public/HeroSlider.jsx')))
+        ->toContain('home-signature-hero-section')
+        ->toContain('home-signature-image')
+        ->toContain('home-hero-slider-stage')
+        ->toContain('home-hero-slider-controls')
+        ->toContain('insight-marker')
+        ->toContain('AnimatePresence')
+        ->toContain('useReducedMotion');
 });
 
 it('renders trustworthy two-column consultation and proposal intake', function (string $url, string $contextHeading): void {
@@ -48,7 +52,7 @@ it('defines reusable impact intelligence components and restrained motion', func
     }
 
     $css = File::get(resource_path('css/app.css'));
-    $homepage = File::get(resource_path('views/public/home.blade.php'));
+    $homepage = File::get(resource_path('js/Pages/Public/Home.jsx'));
 
     expect($css)
         ->toContain('.impact-line')
@@ -70,15 +74,15 @@ it('defines reusable impact intelligence components and restrained motion', func
         ->toContain('.editorial-number')
         ->toContain('@media (prefers-reduced-motion: reduce)')
         ->and($homepage)
-        ->toContain("__('Current publication record')")
-        ->toContain('home-proof-ledger')
-        ->toContain("__('Advisory architecture')")
-        ->toContain('home-capability-register')
+        ->toContain('copy.ledgerTitle')
+        ->toContain('m-stats')
+        ->toContain('copy.servicesEyebrow')
+        ->toContain('m-tile')
         ->not->toContain('home-modern-');
 });
 
 it('ships the optimized project-bound hero asset', function (): void {
-    $asset = public_path('images/impact-intelligence-hero-v1.webp');
+    $asset = public_path('images/impact-hero-clean.svg');
 
     expect(File::exists($asset))->toBeTrue()
         ->and(File::size($asset))->toBeLessThan(250_000);
@@ -86,7 +90,7 @@ it('ships the optimized project-bound hero asset', function (): void {
 
 it('uses a compact public editorial typography scale', function (): void {
     $css = File::get(resource_path('css/app.css'));
-    $homepage = File::get(resource_path('views/public/home.blade.php'));
+    $homepage = File::get(resource_path('js/Pages/Public/Home.jsx'));
 
     expect($css)
         ->toContain('text-3xl font-black leading-[1.1]')

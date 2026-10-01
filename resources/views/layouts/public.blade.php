@@ -45,17 +45,18 @@
     <link rel="alternate" hreflang="x-default" href="{{ route('localized-home', ['locale' => $publicExperience['localization']['default']]) }}">
     <title>@hasSection('title')@yield('title') - {{ $publicExperience['seo']['title_suffix'] }}@else{{ $publicExperience['seo']['default_title'] }}@endif</title>
     @stack('structured_data')
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/public-glass.css', 'resources/js/app.js'])
     <style>:root{ {{ $publicExperience['presentation']['css_variables'] }} }</style>
 </head>
 <body
-    class="{{ implode(' ', $publicExperience['presentation']['body_classes']) }}"
+    class="public-glass {{ implode(' ', $publicExperience['presentation']['body_classes']) }}"
     data-default-theme="{{ $publicExperience['presentation']['default_theme'] }}"
     data-user-theme-enabled="{{ $publicExperience['presentation']['allow_user_theme'] ? 'true' : 'false' }}"
     data-date-format="{{ $publicExperience['localization']['date_format'] }}"
     data-time-format="{{ $publicExperience['localization']['time_format'] }}"
     data-first-day-of-week="{{ $publicExperience['localization']['first_day_of_week'] }}"
 >
+    <div class="glass-ambient" aria-hidden="true"></div>
     <a href="#main-content" class="skip-link">{{ __('Skip to content') }}</a>
 
     @if ($publicExperience['maintenance']['banner_enabled'])
@@ -74,27 +75,17 @@
         x-data="publicNavigation"
         x-on:keydown.escape.window="handleEscape"
     >
-        <div class="bg-brand-950 text-white">
-            <div class="content-container flex min-h-10 items-center justify-between gap-4 py-2 text-xs">
-                <p class="hidden text-slate-200 sm:block">{{ __('Strategy, evidence and implementation for lasting change') }}</p>
-                @if ($consultationEnabled)
-                <a href="{{ route('consultation.create', ['locale' => $currentLocale]) }}" class="ms-auto inline-flex min-h-9 items-center font-bold text-action-100 hover:text-white">
-                    {{ __('Request a consultation') }} <span aria-hidden="true">→</span>
-                </a>
-                @endif
-            </div>
-        </div>
-
-        <div class="public-header-bar content-container flex min-h-20 items-center justify-between gap-5">
-            <a href="{{ route('localized-home', ['locale' => $currentLocale]) }}" class="flex min-h-11 items-center gap-3 rounded-lg" aria-label="{{ __(':name home', ['name' => $publicBrandFull]) }}">
+        <div class="content-container">
+        <div class="glass-nav-bar">
+            <a href="{{ route('localized-home', ['locale' => $currentLocale]) }}" class="glass-brand" aria-label="{{ __(':name home', ['name' => $publicBrandFull]) }}">
                 @if ($identity['logo'])
-                    <img class="h-11 w-auto max-w-48 object-contain" src="{{ $identity['logo'] }}" alt="{{ $identity['logo_alt'] }}">
+                    <img class="h-10 w-auto max-w-44 object-contain" src="{{ $identity['logo'] }}" alt="{{ $identity['logo_alt'] }}">
                 @else
-                    <span class="brand-mark" aria-hidden="true">{{ mb_substr((string) $identity['abbreviation'], 0, 1) ?: 'I' }}</span>
+                    <span class="glass-brand-mark" aria-hidden="true">{{ mb_substr((string) $identity['abbreviation'], 0, 1) ?: 'I' }}</span>
                 @endif
                 <span>
-                    <span class="block text-lg font-extrabold leading-none text-brand-900">{{ $publicBrandName }}</span>
-                    <span class="mt-1 block text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted">Consulting</span>
+                    <span class="glass-display block text-lg font-bold leading-none text-white">{{ $publicBrandName }}</span>
+                    <span class="mt-1 block text-[0.6rem] font-bold uppercase tracking-[0.2em] text-slate-400">{{ __('Consulting') }}</span>
                 </span>
             </a>
 
@@ -133,24 +124,24 @@
                             <div class="grid gap-2 sm:grid-cols-2">
                                 <a class="mega-link" href="{{ route('about.show', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="about" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Who we are') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Purpose, values and the way we work') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Who we are') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Purpose, values and the way we work') }}</span></span>
                                 </a>
                                 <a class="mega-link" href="{{ route('experts.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="experts" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Our experts') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Experience, credentials and selected work') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Our experts') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Experience, credentials and selected work') }}</span></span>
                                 </a>
                                 <a class="mega-link" href="{{ route('careers.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="careers" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Careers') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Current opportunities and application routes') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Careers') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Current opportunities and application routes') }}</span></span>
                                 </a>
                                 @if ($contactEnabled)
                                     <a class="mega-link" href="{{ route('contact.create', ['locale' => $currentLocale]) }}">
                                         <span class="mega-link-icon"><x-ui.icon name="contact" /></span>
-                                        <span><strong class="block text-brand-900">{{ __('Contact') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find the right route for your request') }}</span></span>
+                                        <span><strong class="block text-white">{{ __('Contact') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find the right route for your request') }}</span></span>
                                     </a>
                                 @endif
                             </div>
-                            <div class="rounded-xl bg-brand-950 p-5 text-white">
+                            <div class="glass-promo">
                                 <p class="text-sm font-bold">{{ __('Have a specific assignment?') }}</p>
                                 <p class="mt-2 text-sm leading-6 text-slate-300">{{ __('Share a structured brief through our secure proposal route.') }}</p>
                                 @if ($rfpEnabled)<a class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href="{{ route('rfp.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="rfp" class="size-4" />{{ __('Submit an RFP') }} →</a>@endif
@@ -184,14 +175,14 @@
                             <div class="grid gap-2 sm:grid-cols-2">
                                 <a class="mega-link" href="{{ route('services.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="services" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Explore all services') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse current published capabilities') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Explore all services') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse current published capabilities') }}</span></span>
                                 </a>
                                 <a class="mega-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="case-studies" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Evidence and outcomes') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('See related work and measurable results') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Evidence and outcomes') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('See related work and measurable results') }}</span></span>
                                 </a>
                             </div>
-                            <div class="rounded-xl bg-action-50 p-5">
+                            <div class="glass-promo">
                                 <p class="text-sm font-bold text-brand-900">{{ __('Not sure which service fits?') }}</p>
                                 <p class="mt-2 text-sm leading-6 text-muted">{{ __('Describe the outcome you need and we will route your request.') }}</p>
                                 @if ($consultationEnabled)<a class="text-link mt-3 gap-2" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="consultation" class="size-4" />{{ __('Request a consultation') }} →</a>@endif
@@ -225,11 +216,11 @@
                             <div class="grid gap-2 sm:grid-cols-2">
                                 <a class="mega-link" href="{{ route('industries.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="industries" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Browse industries') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find advice grounded in your operating context') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Browse industries') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find advice grounded in your operating context') }}</span></span>
                                 </a>
                                 <a class="mega-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="case-studies" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Related case studies') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Review authorized examples and outcomes') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Related case studies') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Review authorized examples and outcomes') }}</span></span>
                                 </a>
                             </div>
                         </div>
@@ -270,11 +261,11 @@
                             <div class="grid gap-2 sm:grid-cols-2">
                                 <a class="mega-link" href="{{ route('insights.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="insights" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Articles and reports') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse published knowledge content') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Articles and reports') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse published knowledge content') }}</span></span>
                                 </a>
                                 <a class="mega-link" href="{{ route('events.index', ['locale' => $currentLocale]) }}">
                                     <span class="mega-link-icon"><x-ui.icon name="events" /></span>
-                                    <span><strong class="block text-brand-900">{{ __('Events') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Upcoming learning and registration opportunities') }}</span></span>
+                                    <span><strong class="block text-white">{{ __('Events') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Upcoming learning and registration opportunities') }}</span></span>
                                 </a>
                             </div>
                         </div>
@@ -289,25 +280,25 @@
                     </a>
                 @endif
                 @if ($alternateLocale && $alternateUrl)
-                    <a href="{{ $alternateUrl }}" class="inline-flex min-h-11 items-center rounded-lg border border-slate-300 px-3 text-xs font-bold uppercase hover:border-action-500 hover:text-action-700" hreflang="{{ $alternateLocale }}" lang="{{ $alternateLocale }}">
+                    <a href="{{ $alternateUrl }}" class="glass-lang" hreflang="{{ $alternateLocale }}" lang="{{ $alternateLocale }}" aria-label="{{ strtoupper($alternateLocale) }} – {{ $alternateLocale === 'am' ? 'አማርኛ' : 'English' }}">
                         {{ $alternateLocale }}
                     </a>
                 @endif
                 @if ($consultationEnabled)
-                    <a class="button-primary ms-1 hidden 2xl:inline-flex" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}">
-                        <x-ui.icon name="consultation" class="size-4" />
+                    <a class="button-primary ms-1 hidden xl:inline-flex" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}">
                         {{ __('Consultation') }}
                     </a>
                 @endif
-                <button class="icon-button 2xl:hidden" type="button" x-on:click="openMobile" aria-controls="mobile-navigation" x-bind:aria-expanded="mobileOpen" aria-label="{{ __('Open menu') }}">
+                <button class="icon-button xl:hidden" type="button" x-on:click="openMobile" aria-controls="mobile-navigation" x-bind:aria-expanded="mobileOpen" aria-label="{{ __('Open menu') }}">
                     <svg aria-hidden="true" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
                 </button>
             </div>
         </div>
+        </div>
 
         <div
             id="mobile-navigation"
-            class="mobile-sheet 2xl:hidden"
+            class="mobile-sheet xl:hidden"
             x-cloak
             x-show="mobileOpen"
             x-transition.opacity
@@ -318,7 +309,7 @@
             aria-labelledby="mobile-navigation-title"
         >
             <div class="content-container flex min-h-20 items-center justify-between border-b border-slate-200">
-                <p id="mobile-navigation-title" class="font-bold text-brand-900">{{ __('Navigation') }}</p>
+                <p id="mobile-navigation-title" class="glass-kicker">{{ __('Navigation') }}</p>
                 <button class="icon-button" type="button" x-ref="mobileClose" x-on:click="closeMobile" aria-label="{{ __('Close menu') }}">
                     <svg aria-hidden="true" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg>
                 </button>
@@ -367,10 +358,12 @@
         @yield('content')
     </main>
 
-    <footer class="public-footer border-t border-white/10 text-slate-200">
-        <div class="content-container grid gap-12 py-16 lg:grid-cols-[1.2fr_.8fr_.8fr_1.2fr]">
+    <footer class="public-footer text-slate-200">
+        <div class="content-container pt-10">
+        <div class="glass-footer">
+        <div class="grid gap-12 py-12 lg:grid-cols-[1.2fr_.8fr_.8fr_1.2fr]">
             <div>
-                <p class="text-2xl font-extrabold text-white">{{ $identity['legal_name'] }}</p>
+                <p class="glass-display text-2xl font-semibold text-white">{{ $identity['legal_name'] }}</p>
                 <p class="mt-4 max-w-sm text-sm leading-7 text-slate-300">{{ $publicBrandTagline }}</p>
                 <address class="mt-4 grid gap-1 text-sm not-italic text-slate-300">
                     @if ($identity['address'])<span>{{ $identity['address'] }}</span>@endif
@@ -407,18 +400,18 @@
                     <input type="hidden" name="policy_version" value="{{ $publicExperience['privacy']['policy_version'] }}">
                     <label class="text-sm font-bold text-white" for="newsletter-email">{{ __('Email address') }}</label>
                     <div class="flex flex-col gap-2 sm:flex-row">
-                        <input id="newsletter-email" name="email" type="email" required autocomplete="email" class="form-input min-w-0 flex-1 border-slate-600 bg-brand-800 text-sm text-white placeholder:text-slate-400 focus:border-action-300 focus:ring-action-300">
-                        <button class="min-h-11 rounded-lg bg-gold-500 px-5 text-sm font-bold text-brand-950 hover:bg-gold-400">{{ __('Join') }}</button>
+                        <input id="newsletter-email" name="email" type="email" required autocomplete="email" class="form-input min-w-0 flex-1 text-sm">
+                        <button class="button-primary">{{ __('Join') }}</button>
                     </div>
                     <label class="flex items-start gap-3 text-xs leading-5 text-slate-300" for="newsletter-consent">
-                        <input id="newsletter-consent" name="marketing_consent" type="checkbox" value="1" required class="mt-0.5 rounded border-slate-500 bg-brand-800 text-gold-500">
+                        <input id="newsletter-consent" name="marketing_consent" type="checkbox" value="1" required class="mt-0.5 rounded">
                         <span>{{ __('I agree to receive the newsletter. Double opt-in applies and I can unsubscribe at any time.') }}</span>
                     </label>
                 </form>
             </div>
         </div>
         <div class="border-t border-white/10">
-            <div class="content-container flex flex-col justify-between gap-4 py-6 text-xs text-slate-400 lg:flex-row lg:items-center">
+            <div class="flex flex-col justify-between gap-4 py-6 text-xs text-slate-400 lg:flex-row lg:items-center">
                 <p>© {{ $identity['copyright_start_year'] }}-{{ now()->year }} {{ $copyrightOwner }}</p>
                 <nav aria-label="{{ __('Legal and privacy') }}" class="flex flex-wrap items-center gap-x-5 gap-y-1">
                     @foreach ($managedNavigation['footer_legal'] as $item)
@@ -429,6 +422,8 @@
                     @endif
                 </nav>
             </div>
+        </div>
+        </div>
         </div>
     </footer>
 

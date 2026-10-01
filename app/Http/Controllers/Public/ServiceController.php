@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceVersion;
-use Illuminate\Contracts\View\View;
+use App\Support\Inertia\PublicContent;
+use Inertia\Response;
 
 final class ServiceController extends Controller
 {
-    public function index(): View
+    public function index(): Response
     {
-        return view('public.collection', [
+        return PublicContent::collection([
             'eyebrow' => __('What we do'),
             'title' => __('Consulting services'),
             'items' => ServiceVersion::query()
@@ -26,13 +27,13 @@ final class ServiceController extends Controller
         ]);
     }
 
-    public function show(string $locale, string $slug): View
+    public function show(string $locale, string $slug): Response
     {
         $version = ServiceVersion::query()
             ->where(compact('locale', 'slug'))
             ->publiclyVisible()
             ->firstOrFail();
 
-        return view('public.detail', ['item' => $version, 'titleField' => 'name']);
+        return PublicContent::detail(['item' => $version, 'titleField' => 'name']);
     }
 }

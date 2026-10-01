@@ -1,1 +1,6 @@
-<header class="max-w-4xl">@if ($section->content['eyebrow'] ?? null)<p class="eyebrow">{{ $section->content['eyebrow'] }}</p>@endif<h1 class="heading-1 mt-4">{{ $section->content['heading'] }}</h1><p class="mt-5 leading-8 text-muted">{{ $section->content['summary'] }}</p>@if ($section->content['privacy_guidance'] ?? null)<p class="mt-5 border-s-4 border-gold-400 ps-4 text-sm text-muted">{{ $section->content['privacy_guidance'] }}</p>@endif</header>
+<header class="m-page-header">
+    @if ($section->content['eyebrow'] ?? null)<p class="eyebrow">{{ $section->content['eyebrow'] }}</p>@endif
+    <h1>{{ $section->content['heading'] }}</h1>
+    <p class="m-lead">{{ $section->content['summary'] }}</p>
+    @if ($section->content['privacy_guidance'] ?? null)<p class="m-meta mx-auto max-w-xl">{{ $section->content['privacy_guidance'] }}</p>@endif
+</header>

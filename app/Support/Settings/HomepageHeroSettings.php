@@ -8,7 +8,7 @@ final readonly class HomepageHeroSettings
 {
     private const SLIDE_COUNT = 3;
 
-    private const DEFAULT_IMAGE = '/images/impact-intelligence-hero-v1.webp';
+    private const DEFAULT_IMAGE = '/images/impact-hero-clean.svg';
 
     public function __construct(private EffectiveSettings $settings) {}
 
