@@ -1,0 +1,2 @@
+import { useWorkspace, Status } from './UI';
+export default function Files({files=[]}){const {t}=useWorkspace();return <ul className="grid gap-4">{files.map(file=><li key={file.id} className="border-t border-edge pt-4"><p>{file.media_asset?.original_name??file.classification}</p><Status value={file.media_asset?.scan_status}/>{file.download_url?<a className="text-link mt-3" href={file.download_url}>{t('Download')}</a>:<p className="form-help">{t('The file remains unavailable to staff until security processing is complete.')}</p>}</li>)}</ul>;}

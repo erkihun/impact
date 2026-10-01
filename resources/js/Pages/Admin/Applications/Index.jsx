@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
+import { Action, Editor, Field, Filters, Panel, Pagination, Status, Table, date, field, label, options, rows, useWorkspace } from '../../../Components/Workspace/UI';
+export default function Index({applications}){const {t}=useWorkspace();return <WorkspaceLayout title="Applications"><Filters fields={[field('status','Status','select',{options:['','received','screening','shortlisted','interview','offered','hired','rejected','withdrawn','anonymized']})]}/><Table data={applications} columns={[{label:'Applicant',render:a=><Link className="text-link" href={`/admin/applications/${a.id}`}>{a.applicant_name}</Link>},{label:'Email',key:'email'},{label:'Vacancy',render:a=>a.vacancy?.title},{label:'Status',render:a=><Status value={a.status}/>},{label:'Submitted',render:a=>date(a.submitted_at)}]}/><Pagination data={applications}/></WorkspaceLayout>;}

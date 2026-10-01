@@ -12,7 +12,8 @@ use App\Models\UserInvitation;
 use App\Support\CorrelationContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 
 final class AcceptInvitationController extends Controller
 {
@@ -25,7 +26,7 @@ final class AcceptInvitationController extends Controller
 
         abort_if($invitation === null || ! $invitation->isUsable(), 404);
 
-        return view('auth.accept-invitation', compact('invitation', 'token'));
+        return WorkspacePage::render('auth.accept-invitation', compact('invitation', 'token'));
     }
 
     public function store(

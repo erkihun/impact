@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import AuthLayout from '../../Layouts/AuthLayout';
+import { Editor, Action, field, useWorkspace } from '../../Components/Workspace/UI';
+export default function MfaRecovery({codes}){const {t}=useWorkspace();return <AuthLayout title="Save your recovery codes"><p className="mb-5">{t('Store these recovery codes in a safe place. Each code can only be used once.')}</p><ul className="grid grid-cols-2 gap-3 font-mono text-sm">{codes.map(code=><li className="bg-quiet p-2" key={code}>{code}</li>)}</ul><Link className="button-primary mt-6" href="/admin">{t('Continue to administration')}</Link></AuthLayout>;}

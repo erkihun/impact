@@ -30,7 +30,8 @@ use App\Models\PageSection;
 use App\Services\PageComposer;
 use App\Support\CorrelationContext;
 use App\Support\PageSectionRegistry;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -42,7 +43,7 @@ final class PageComposerController extends Controller
     {
         Gate::authorize('viewAny', PageComposition::class);
 
-        return view('admin.page-compositions.index', [
+        return WorkspacePage::render('admin.page-compositions.index', [
             'compositions' => PageComposition::query()
                 ->withCount('sections')
                 ->orderBy('page_key')
@@ -63,9 +64,10 @@ final class PageComposerController extends Controller
             'sections.currentVersion.actions',
         ]);
 
-        return view('admin.page-compositions.edit', [
+        return WorkspacePage::render('admin.page-compositions.edit', [
             'composition' => $composition,
             'registry' => $registry->all(),
+            'archivedSections' => $composition->sections()->onlyTrashed()->get(),
             'previewUrl' => URL::temporarySignedRoute(
                 'admin.page-compositions.preview',
                 now('UTC')->addMinutes(30),
@@ -86,9 +88,10 @@ final class PageComposerController extends Controller
     {
         Gate::authorize('preview', $composition);
 
-        return view('public.composed-page', [
-            'composition' => $composer->preview($composition),
-        ])->with('robots', 'noindex,nofollow,noarchive');
+        return \Inertia\Inertia::render('Public/ComposedPage', [
+            'composition' => \App\Support\Inertia\CompositionPresenter::present($composer->preview($composition)),
+            'meta' => ['title' => __('Secure preview'), 'robots' => 'noindex,nofollow,noarchive'],
+        ]);
     }
 
     public function createDraft(

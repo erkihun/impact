@@ -12,21 +12,22 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 
 final class RoleController extends Controller
 {
     public function index(): View
     {
-        return view('admin.roles.index', [
+        return WorkspacePage::render('admin.roles.index', [
             'roles' => Role::query()->withCount('users')->with('permissions:id,code')->orderBy('name')->get(),
         ]);
     }
 
     public function edit(Role $role): View
     {
-        return view('admin.roles.edit', [
+        return WorkspacePage::render('admin.roles.edit', [
             'managedRole' => $role->load('permissions'),
             'permissions' => Permission::query()->orderBy('code')->get()->groupBy(
                 fn (Permission $permission): string => str($permission->code)->before('.')->toString(),

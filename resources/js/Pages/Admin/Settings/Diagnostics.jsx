@@ -1,0 +1,5 @@
+import { Link } from '@inertiajs/react';
+import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
+import { Action, Editor, Field, Filters, Panel, Pagination, Status, Table, date, field, label, options, rows, useWorkspace } from '../../../Components/Workspace/UI';
+import SettingsNav from '../../../Components/Workspace/SettingsNav';
+export default function Diagnostics({report,navigationGroups}){const {t}=useWorkspace();return <WorkspaceLayout title="Settings diagnostics"><SettingsNav groups={navigationGroups}/><Action href="/admin/settings/diagnostics/run">{t('Run verification')}</Action><div className="grid gap-4 sm:grid-cols-3">{Object.entries(report.summary).map(([k,v])=><Panel key={k} title={t(label(k))}>{String(v)}</Panel>)}</div><Panel title={t('Issues')}><pre className="overflow-auto whitespace-pre-wrap text-sm">{JSON.stringify(report.issues,null,2)}</pre></Panel><Panel title={t('Consumption matrix')}><Table data={report.settings} columns={[{label:'Setting',key:'key'},{label:'Source',key:'source'},{label:'Consumer',key:'consumer'},{label:'Status',key:'status'}]}/></Panel></WorkspaceLayout>;}

@@ -12,6 +12,7 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function (): void {
     $this->seed([PermissionSeeder::class, RoleSeeder::class]);
@@ -21,15 +22,22 @@ beforeEach(function (): void {
 it('renders localized public RFP and contact intake pages', function (): void {
     $this->get('/en/request-for-proposal')
         ->assertOk()
-        ->assertSee('enctype="multipart/form-data"', false)
-        ->assertSee('name="type" value="rfp"', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Engagement')
+            ->where('form.multipart', true)
+            ->where('form.hidden.type', 'rfp')
+            ->where('form.action', route('rfp-requests.store', ['locale' => 'en'])));
     $this->get('/am/request-for-proposal')
         ->assertOk()
         ->assertSee('የፕሮጀክት መግለጫዎን በደህንነት ያጋሩ።');
     $this->get('/en/contact')
         ->assertOk()
-        ->assertSee('value="partnership"', false)
-        ->assertSee('value="media"', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Engagement')
+            ->where('form.steps.0.fields', fn ($fields): bool => collect($fields)
+                ->contains(fn ($field): bool => $field['name'] === 'type'
+                    && collect($field['options'])->pluck('value')->contains('partnership')
+                    && collect($field['options'])->pluck('value')->contains('media'))));
 });
 
 it('quarantines an RFP attachment under a random object key and appends initial history', function (): void {

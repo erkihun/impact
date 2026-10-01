@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
+import { Action, Editor, Field, Filters, Panel, Pagination, Status, Table, date, field, label, options, rows, useWorkspace } from '../../../Components/Workspace/UI';
+export default function Index({roles}){const {t}=useWorkspace();return <WorkspaceLayout title="Roles and permissions"><div className="grid gap-5 lg:grid-cols-2">{roles.map(role=><Panel key={role.id} title={role.name}><p>{role.users_count} {t('Users')}</p><ul className="my-5 grid gap-2">{role.permissions.map(p=><li key={p.id}>{p.description??label(p.code)}</li>)}</ul><Link className="text-link" href={`/admin/roles/${role.id}/edit`}>{t('Manage role')}</Link></Panel>)}</div></WorkspaceLayout>;}

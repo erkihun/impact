@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import AuthLayout from '../../Layouts/AuthLayout';
+import { Editor, Action, field, useWorkspace } from '../../Components/Workspace/UI';
+export default function AcceptInvitation({invitation,token}){return <AuthLayout title="Accept invitation"><p className="mb-5">{invitation.user?.email}</p><Editor action={`/invitations/${encodeURIComponent(token)}`} initial={{name:invitation.user?.name??'',password:'',password_confirmation:''}} fields={[field('name','Name','text',{required:true,autoComplete:'name'}),field('password','Password','password',{required:true,autoComplete:'new-password'}),field('password_confirmation','Confirm Password','password',{required:true,autoComplete:'new-password'})]} submit="Accept invitation" /></AuthLayout>;}

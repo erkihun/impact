@@ -7,7 +7,7 @@ use App\Models\Redirect;
 it('renders canonical and locale alternate metadata and noindexes search', function (): void {
     $this->get('/en')
         ->assertOk()
-        ->assertSee('<link rel="canonical" href="http://localhost/en">', false)
+        ->assertSee('<link rel="canonical" href="http://localhost/en" data-inertia="canonical">', false)
         ->assertSee('hreflang="am"', false);
 
     $this->get('/en/search')

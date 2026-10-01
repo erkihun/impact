@@ -8,11 +8,11 @@ use App\Actions\Search\RecordSearchQueryAction;
 use App\Data\Search\RecordSearchQueryData;
 use App\Http\Controllers\Controller;
 use App\Models\SearchDocument;
-use App\Support\Settings\SearchSettings;
 use App\Support\Inertia\PublicPage;
+use App\Support\Settings\SearchSettings;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Response;
-use Illuminate\Http\Request;
 
 final class SearchController extends Controller
 {

@@ -14,14 +14,15 @@ use App\Http\Requests\Admin\UploadMediaRequest;
 use App\Models\MediaAsset;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 
 final class MediaController extends Controller
 {
     public function index(): View
     {
-        return view('admin.media.index', [
+        return WorkspacePage::render('admin.media.index', [
             'assets' => MediaAsset::query()
                 ->with('variants')
                 ->whereDoesntHave('applicationFiles')

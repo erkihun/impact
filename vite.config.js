@@ -10,6 +10,7 @@ export default defineConfig({
     },
     plugins: [
         laravel({
+            ssr: 'resources/js/ssr.jsx',
             input: [
                 'resources/css/app.css',
                 'resources/css/public-glass.css',

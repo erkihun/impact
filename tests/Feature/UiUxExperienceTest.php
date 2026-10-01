@@ -3,41 +3,49 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
+use Inertia\Testing\AssertableInertia as Assert;
 
 it('renders the public editorial shell with accessible desktop and mobile navigation', function (): void {
     $this->get('/en/about')
         ->assertOk()
-        ->assertSee('href="#main-content"', false)
-        ->assertSee('aria-label="Primary navigation"', false)
-        ->assertSee('aria-controls="mega-services"', false)
-        ->assertSee('aria-modal="true"', false)
-        ->assertSee('Request a consultation')
-        ->assertSee('lang="am"', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/About')
+            ->where('ui.skip', 'Skip to content')
+            ->where('ui.primaryNavigation', 'Primary navigation')
+            ->where('ui.requestConsultation', 'Request a consultation')
+            ->where('site.locale.alternate', 'am')
+            ->where('site.locale.alternateUrl', route('about.show', ['locale' => 'am']))
+            ->has('navigation.mobile', 10));
 });
 
-it('renders one decorative icon system across public navigation, submenus, and footer links', function (): void {
-    $response = $this->get('/en/about')
+it('provides active navigation state and decorative submenu icons', function (): void {
+    $this->get('/en/about')
         ->assertOk()
-        ->assertSee('nav-menu-icon', false)
-        ->assertSee('mega-link-icon', false)
-        ->assertSee('mobile-menu-icon', false)
-        ->assertSee('footer-menu-icon', false)
-        ->assertSee('footer-legal-icon', false)
-        ->assertSee('data-nav-item="home"', false)
-        ->assertSee('aria-current="page"', false)
-        ->assertSee('aria-hidden="true"', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/About')
+            ->where('navigation.primary.0.active', false)
+            ->where('navigation.primary.1.active', true)
+            ->where('navigation.primary.1.links.0.icon', 'about')
+            ->where('navigation.primary.2.links.0.icon', 'services'));
 
-    expect(substr_count($response->getContent(), 'data-nav-item="home"'))->toBe(2);
-    expect(File::exists(resource_path('views/components/ui/icon.blade.php')))->toBeTrue();
+    expect(File::get(resource_path('js/Components/Public/SiteHeader.jsx')))
+        ->toContain('mega-link-icon', 'data-nav-item={item.id}')
+        ->and(File::get(resource_path('js/Components/Icon.jsx')))
+        ->toContain('aria-hidden="true"');
 });
 
 it('renders the consultation and proposal task flows in the required sequence', function (): void {
     foreach (['/en/consultation', '/en/request-for-proposal'] as $url) {
         $this->get($url)
             ->assertOk()
-            ->assertSeeInOrder(['Need', 'Organization', 'Project', 'Review'])
-            ->assertSee('multiStepForm(4, 1)', false)
-            ->assertSee('data-prevent-duplicate', false);
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Public/Engagement')
+                ->has('form.steps', 4)
+                ->where('form.steps.0.label', 'Need')
+                ->where('form.steps.1.label', 'Organization')
+                ->where('form.steps.2.label', 'Project')
+                ->where('form.steps.3.label', 'Review')
+                ->where('form.hidden.policy_version', config('impact.privacy.policy_version')));
     }
 
     $this->get('/en/request-for-proposal')
@@ -83,7 +91,11 @@ it('keeps privacy, cookie and accessibility routes reachable from the footer', f
         ->assertSee('Cookie notice')
         ->assertSee('Terms of use')
         ->assertSee('Accessibility statement')
-        ->assertSee('data-open-consent-preferences', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('navigation.footer.footer_legal.0.href', route('legal.privacy', ['locale' => 'en']))
+            ->where('navigation.footer.footer_legal.1.href', route('legal.cookies', ['locale' => 'en']))
+            ->where('navigation.footer.footer_legal.3.href', route('legal.accessibility', ['locale' => 'en']))
+            ->where('ui.privacyChoices', 'Privacy choices'));
 });
 
 it('offers an accessibility barrier-reporting route', function (): void {
@@ -96,11 +108,11 @@ it('offers an accessibility barrier-reporting route', function (): void {
 it('presents equivalent accept, reject and manage consent choices before optional storage', function (): void {
     $this->get('/en/about')
         ->assertOk()
-        ->assertSee('consentManager', false)
-        ->assertSee('Accept optional')
-        ->assertSee('Reject optional')
-        ->assertSee('Manage choices')
-        ->assertSee('aria-modal="true"', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('ui.acceptOptional', 'Accept optional')
+            ->where('ui.rejectOptional', 'Reject optional')
+            ->where('ui.manageChoices', 'Manage choices')
+            ->where('site.privacy.policy_version', config('impact.privacy.policy_version')));
 });
 
 it('records a consent decision only for the current policy version', function (): void {

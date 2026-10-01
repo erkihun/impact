@@ -66,7 +66,7 @@ export default function FormField({ field, value, error, onChange, requiredLabel
     }
 
     return (
-        <div className={`${field.wide ? 'sm:col-span-2' : ''} ${className}`}>
+        <div className={`min-w-0 ${field.wide ? 'sm:col-span-2' : ''} ${className}`}>
             <label className="form-label" htmlFor={id}>
                 {field.label}
                 {field.required && <> <span className="form-required">({requiredLabel})</span></>}

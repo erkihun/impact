@@ -1,6 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { MotionConfig } from 'framer-motion';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 
 const pages = import.meta.glob('./Pages/**/*.jsx');
 
@@ -17,11 +17,16 @@ createInertiaApp({
     setup({ el, App, props }) {
         // reducedMotion="user" honours the visitor's OS-level motion preference
         // for every Framer Motion animation in the app.
-        createRoot(el).render(
+        const application = (
             <MotionConfig reducedMotion="user">
                 <App {...props} />
             </MotionConfig>,
         );
+        if (el.hasChildNodes()) {
+            hydrateRoot(el, application);
+        } else {
+            createRoot(el).render(application);
+        }
     },
     progress: {
         color: '#F28C28',

@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import AuthLayout from '../../Layouts/AuthLayout';
+import { Editor, Action, field, useWorkspace } from '../../Components/Workspace/UI';
+export default function ResetPassword({token,email}){return <AuthLayout title="Reset Password"><Editor action="/reset-password" initial={{token,email,password:'',password_confirmation:''}} fields={[field('email','Email','email',{required:true,autoComplete:'email'}),field('password','Password','password',{required:true,autoComplete:'new-password'}),field('password_confirmation','Confirm Password','password',{required:true,autoComplete:'new-password'})]} submit="Reset Password" /></AuthLayout>;}

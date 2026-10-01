@@ -10,7 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Support\CorrelationContext;
 use App\Support\SettingCatalog;
 use App\Support\Settings\SettingsVerificationService;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -37,7 +38,7 @@ final class SettingsDiagnosticsController extends Controller
             metadata: ['error_count' => $report['summary']['error_count']],
         ));
 
-        return view('admin.settings.diagnostics', [
+        return WorkspacePage::render('admin.settings.diagnostics', [
             'navigationGroups' => SettingCatalog::navigationGroups(),
             'report' => $report,
         ]);

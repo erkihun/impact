@@ -31,10 +31,13 @@ it('renders the impact intelligence homepage with its signature visual language'
 it('renders trustworthy two-column consultation and proposal intake', function (string $url, string $contextHeading): void {
     $this->get($url)
         ->assertOk()
-        ->assertSee('lg:grid-cols-[minmax(0,1fr)_20rem]', false)
-        ->assertSee('form-context-panel', false)
-        ->assertSee($contextHeading)
-        ->assertSee('data-prevent-duplicate', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Engagement')
+            ->where('context.title', $contextHeading)
+            ->has('form.steps', 4));
+
+    expect(File::get(resource_path('js/Pages/Public/Engagement.jsx')))
+        ->toContain('lg:grid-cols-[minmax(0,1fr)_20rem]', 'form-context-panel', 'disabled={form.processing}');
 })->with([
     ['/en/consultation', 'The clearest requests start with the decision.'],
     ['/en/request-for-proposal', 'A useful brief makes the evaluation criteria visible.'],

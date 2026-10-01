@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
+import { Action, Editor, Field, Panel, Pagination, Status, Table, field, label, options, useWorkspace } from '../../../Components/Workspace/UI';
+export default function Index({compositions}){const {t}=useWorkspace();return <WorkspaceLayout title="Page compositions"><Table data={compositions} columns={[{label:'Page',render:c=><Link className="text-link" href={`/admin/page-compositions/${c.id}`}>{label(c.page_key)}</Link>},{label:'Locale',key:'locale'},{label:'Version',key:'version_no'},{label:'State',render:c=><Status value={c.state}/>},{label:'Sections',key:'sections_count'}]}/><Pagination data={compositions}/></WorkspaceLayout>;}

@@ -12,7 +12,8 @@ use App\Http\Requests\Admin\UpdateSubmissionRequest;
 use App\Models\EngagementSubmission;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -30,7 +31,7 @@ final class EngagementSubmissionController extends Controller
             ->paginate(30)
             ->withQueryString();
 
-        return view('admin.engagement.index', compact('submissions'));
+        return WorkspacePage::render('admin.engagement.index', compact('submissions'));
     }
 
     public function show(
@@ -40,7 +41,7 @@ final class EngagementSubmissionController extends Controller
         Gate::authorize('view', $submission);
         $submission->load(['history', 'assignee', 'service', 'files.mediaAsset']);
 
-        return view('admin.engagement.show', [
+        return WorkspacePage::render('admin.engagement.show', [
             'submission' => $submission,
             'assignees' => User::query()->where('status', 'active')->orderBy('name')->get(),
             'statuses' => $action->allowedDestinations(SubmissionStatus::from(

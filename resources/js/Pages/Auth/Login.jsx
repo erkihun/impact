@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import AuthLayout from '../../Layouts/AuthLayout';
+import { Editor, Action, field, useWorkspace } from '../../Components/Workspace/UI';
+export default function Login(){const {t}=useWorkspace();return <AuthLayout title="Sign in to the editorial workspace"><Editor action="/login" initial={{email:'',password:'',remember:false}} fields={[field('email','Email','email',{required:true,autoComplete:'username',id:'email'}),field('password','Password','password',{required:true,autoComplete:'current-password',id:'password'}),field('remember','Remember me','checkbox')]} submit="Log in"><Link className="text-link" href="/forgot-password">{t('Forgot your password?')}</Link></Editor></AuthLayout>;}

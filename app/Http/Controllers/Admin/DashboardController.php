@@ -10,7 +10,8 @@ use App\Models\EngagementSubmission;
 use App\Models\PublicationSchedule;
 use App\Models\User;
 use App\Support\Settings\EffectiveSettings;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\Request;
 
 final class DashboardController extends Controller
@@ -65,7 +66,7 @@ final class DashboardController extends Controller
                 ->get();
         }
 
-        return view('admin.dashboard', [
+        return WorkspacePage::render('admin.dashboard', [
             'metrics' => $metrics,
             'awaitingReview' => $awaitingReview,
             'recentWork' => $recentWork,

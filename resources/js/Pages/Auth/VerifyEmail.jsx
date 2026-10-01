@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import AuthLayout from '../../Layouts/AuthLayout';
+import { Editor, Action, field, useWorkspace } from '../../Components/Workspace/UI';
+export default function VerifyEmail(){const {t}=useWorkspace();return <AuthLayout title="Verify your email"><p className="mb-5">{t('Before getting started, could you verify your email address by clicking on the link we just emailed to you?')}</p><div className="grid gap-4"><Action href="/email/verification-notification">{t('Resend Verification Email')}</Action><Action href="/logout">{t('Log out')}</Action></div></AuthLayout>;}

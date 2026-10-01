@@ -45,7 +45,9 @@ export function PageIntro({ composition, header, children }) {
 }
 
 export default function PublicLayout({ title, description, breadcrumbs, children }) {
-    const { site, flash, ui } = usePage().props;
+    const { site, flash, ui, meta = {} } = usePage().props;
+    const pageTitle = title ? `${title} - ${site.seo.titleSuffix}` : site.seo.defaultTitle;
+    const pageDescription = description ?? site.seo.defaultDescription;
 
     // Client-side visits keep the document language in step with the page.
     useEffect(() => {
@@ -55,8 +57,18 @@ export default function PublicLayout({ title, description, breadcrumbs, children
     return (
         <>
             <Head>
-                <title>{title ? `${title} - ${site.seo.titleSuffix}` : site.seo.defaultTitle}</title>
-                <meta head-key="description" name="description" content={description ?? site.seo.defaultDescription} />
+                <title>{pageTitle}</title>
+                <meta head-key="description" name="description" content={pageDescription} />
+                <meta head-key="robots" name="robots" content={meta.robots ?? site.seo.robots} />
+                <meta head-key="og:title" property="og:title" content={pageTitle} />
+                <meta head-key="og:description" property="og:description" content={pageDescription} />
+                <meta head-key="og:url" property="og:url" content={site.seo.canonicalUrl} />
+                <link head-key="canonical" rel="canonical" href={site.seo.canonicalUrl} />
+                <link head-key="alternate-current" rel="alternate" hrefLang={site.locale.current} href={site.seo.canonicalUrl} />
+                {site.locale.alternate && site.locale.alternateUrl && (
+                    <link head-key="alternate-other" rel="alternate" hrefLang={site.locale.alternate} href={site.locale.alternateUrl} />
+                )}
+                <link head-key="alternate-default" rel="alternate" hrefLang="x-default" href={site.seo.defaultLocaleUrl} />
             </Head>
             <a href="#main-content" className="skip-link">{ui.skip}</a>
 

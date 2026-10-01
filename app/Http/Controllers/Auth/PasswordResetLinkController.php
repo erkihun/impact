@@ -9,7 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 
 class PasswordResetLinkController extends Controller
 {
@@ -18,7 +19,7 @@ class PasswordResetLinkController extends Controller
      */
     public function create(): View
     {
-        return view('auth.forgot-password');
+        return WorkspacePage::render('auth.forgot-password');
     }
 
     /**

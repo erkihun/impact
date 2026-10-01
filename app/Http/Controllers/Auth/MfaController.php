@@ -13,7 +13,8 @@ use App\Http\Requests\Auth\MfaChallengeRequest;
 use App\Models\User;
 use App\Services\Identity\TotpService;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,7 @@ final class MfaController extends Controller
             $user->forceFill(['mfa_secret' => $totp->generateSecret()])->save();
         }
 
-        return view('auth.mfa', [
+        return WorkspacePage::render('auth.mfa', [
             'enrolling' => $user->mfa_confirmed_at === null,
             'secret' => $user->mfa_confirmed_at === null ? $user->mfa_secret : null,
             'provisioningUri' => $user->mfa_confirmed_at === null && is_string($user->mfa_secret)
@@ -57,7 +58,7 @@ final class MfaController extends Controller
             'session_version' => $user->refresh()->session_version,
         ]);
 
-        return view('auth.mfa-recovery', ['codes' => $codes]);
+        return WorkspacePage::render('auth.mfa-recovery', ['codes' => $codes]);
     }
 
     public function verify(

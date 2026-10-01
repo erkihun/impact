@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 
 class RegisteredUserController extends Controller
 {
@@ -22,7 +23,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return WorkspacePage::render('auth.register');
     }
 
     /**

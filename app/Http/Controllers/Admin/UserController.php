@@ -12,7 +12,8 @@ use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,7 @@ final class UserController extends Controller
             ->paginate(30)
             ->withQueryString();
 
-        return view('admin.users.index', [
+        return WorkspacePage::render('admin.users.index', [
             'users' => $users,
             'roles' => Role::query()->orderBy('name')->get(),
             'locales' => config('impact.locales.supported', ['en', 'am']),
@@ -42,7 +43,7 @@ final class UserController extends Controller
 
     public function edit(User $user): View
     {
-        return view('admin.users.edit', [
+        return WorkspacePage::render('admin.users.edit', [
             'managedUser' => $user->load('roles'),
             'roles' => Role::query()->orderBy('name')->get(),
             'statuses' => UserStatus::cases(),

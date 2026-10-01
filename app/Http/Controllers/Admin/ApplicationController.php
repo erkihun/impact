@@ -12,7 +12,8 @@ use App\Http\Requests\Admin\ChangeApplicationStatusRequest;
 use App\Models\Application;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,7 @@ final class ApplicationController extends Controller
             ->paginate(30)
             ->withQueryString();
 
-        return view('admin.applications.index', compact('applications'));
+        return WorkspacePage::render('admin.applications.index', compact('applications'));
     }
 
     public function show(
@@ -39,7 +40,7 @@ final class ApplicationController extends Controller
         $this->authorizeView($request, $application);
         $from = ApplicationStatus::from((string) $application->getRawOriginal('status'));
 
-        return view('admin.applications.show', [
+        return WorkspacePage::render('admin.applications.show', [
             'application' => $application->load(['vacancy', 'history', 'files.mediaAsset']),
             'destinations' => $action->allowedDestinations($from),
         ]);

@@ -9,7 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 
 class ConfirmablePasswordController extends Controller
 {
@@ -18,7 +19,7 @@ class ConfirmablePasswordController extends Controller
      */
     public function show(): View
     {
-        return view('auth.confirm-password');
+        return WorkspacePage::render('auth.confirm-password');
     }
 
     /**

@@ -15,7 +15,8 @@ use App\Models\User;
 use App\Support\CorrelationContext;
 use App\Support\SettingCatalog;
 use App\Support\Settings\EffectiveSettings;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -33,7 +34,7 @@ final class SettingController extends Controller
             ->limit(8)
             ->get();
 
-        return view('admin.settings.index', [
+        return WorkspacePage::render('admin.settings.index', [
             'categories' => $this->categoryCards($settings),
             'environment' => SettingCatalog::environmentSnapshot(),
             'lastChange' => $recentChanges->first(),
@@ -51,7 +52,7 @@ final class SettingController extends Controller
 
         $definitions = SettingCatalog::forCategory($category);
 
-        return view('admin.settings.show', [
+        return WorkspacePage::render('admin.settings.show', [
             'category' => $category,
             'categoryDefinition' => SettingCatalog::categoryDefinition($category),
             'definitions' => $definitions,

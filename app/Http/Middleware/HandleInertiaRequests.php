@@ -18,6 +18,10 @@ final class HandleInertiaRequests extends Middleware
      */
     protected $rootView = 'inertia';
 
+    // Only public content needs the rendering service. Authentication secrets
+    // and private administration data stay in the PHP/browser session.
+    protected $withoutSsr = ['admin*', 'login', 'forgot-password', 'reset-password*', 'invitations/*', 'mfa*', 'verify-email', 'confirm-password', 'profile*', 'dashboard'];
+
     /**
      * Props shared with every React page: site identity and settings, the
      * localized navigation shell, flash messages and the shell's UI strings.
@@ -36,6 +40,8 @@ final class HandleInertiaRequests extends Middleware
                 'submission' => $request->session()->get('submission'),
             ],
             'ui' => fn (): array => $this->uiStrings(),
+            'workspace' => fn (): ?array => $request->is('admin', 'admin/*', 'login', 'forgot-password', 'reset-password*', 'reset-password/*', 'invitations/*', 'mfa', 'mfa/*', 'verify-email', 'confirm-password', 'profile', 'dashboard')
+                ? \App\Support\Inertia\WorkspaceShell::data($request) : null,
         ];
     }
 
@@ -60,6 +66,9 @@ final class HandleInertiaRequests extends Middleware
                 'defaultTitle' => $experience['seo']['default_title'],
                 'titleSuffix' => $experience['seo']['title_suffix'],
                 'defaultDescription' => $experience['seo']['default_description'],
+                'robots' => $experience['seo']['robots'],
+                'canonicalUrl' => $request->url(),
+                'defaultLocaleUrl' => route('localized-home', ['locale' => $experience['localization']['default']]),
             ],
             'features' => $experience['features'],
             'privacy' => $experience['privacy'],

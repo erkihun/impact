@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 
 class NewPasswordController extends Controller
 {
@@ -23,7 +24,7 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request): View
     {
-        return view('auth.reset-password', ['request' => $request]);
+        return WorkspacePage::render('auth.reset-password', ['request' => $request]);
     }
 
     /**

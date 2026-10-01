@@ -597,7 +597,7 @@
     .public-detail-layout,
     .public-action-layout,
     .public-engagement-layout {
-        @apply grid gap-8 lg:items-start;
+        @apply grid grid-cols-1 gap-8 lg:items-start;
     }
 
     .public-detail-layout {
@@ -614,7 +614,7 @@
 
     .detail-context-panel,
     .task-panel {
-        @apply h-fit rounded-lg border border-slate-200 border-t-4 bg-white p-6 shadow-sm sm:p-8 lg:sticky lg:top-32;
+        @apply min-w-0 h-fit rounded-lg border border-slate-200 border-t-4 bg-white p-6 shadow-sm sm:p-8 lg:sticky lg:top-32;
     }
 
     .detail-context-panel {

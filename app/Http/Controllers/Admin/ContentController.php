@@ -24,7 +24,8 @@ use App\Models\ContentVersion;
 use App\Services\Workflow\ContentWorkflow;
 use App\Support\CorrelationContext;
 use App\Support\Settings\EffectiveSettings;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,14 +48,14 @@ final class ContentController extends Controller
             ))
             ->withQueryString();
 
-        return view('admin.content.index', compact('items'));
+        return WorkspacePage::render('admin.content.index', compact('items'));
     }
 
     public function create(EffectiveSettings $settings): View
     {
         abort_unless(request()->user()?->hasPermission('content.create'), 403);
 
-        return view('admin.content.create', [
+        return WorkspacePage::render('admin.content.create', [
             'types' => ContentType::cases(),
             'locales' => $settings->array('localization.enabled_locales'),
         ]);
@@ -91,7 +92,7 @@ final class ContentController extends Controller
 
         $state = ContentWorkflowState::from((string) $content->getRawOriginal('status'));
 
-        return view('admin.content.show', [
+        return WorkspacePage::render('admin.content.show', [
             'content' => $content,
             'allowedTransitions' => $workflow->allowedDestinations($state),
             'previewUrls' => $content->versions->mapWithKeys(
@@ -123,7 +124,7 @@ final class ContentController extends Controller
         Gate::authorize('update', $content);
         $content->load('currentVersion');
 
-        return view('admin.content.edit', compact('content'));
+        return WorkspacePage::render('admin.content.edit', compact('content'));
     }
 
     public function update(
@@ -150,14 +151,14 @@ final class ContentController extends Controller
     public function preview(
         ContentItem $content,
         ContentVersion $version,
-    ): Response {
+    ): View {
         Gate::authorize('view', $content);
         abort_unless((string) $version->content_item_id === (string) $content->getKey(), 404);
 
-        return response()
-            ->view('admin.content.preview', compact('content', 'version'))
-            ->header('Cache-Control', 'private, no-store, max-age=0')
-            ->header('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        return WorkspacePage::render('admin.content.preview', [
+            'content' => $content, 'version' => $version,
+            'meta' => ['title' => $version->title, 'robots' => 'noindex,nofollow,noarchive'],
+        ]);
     }
 
     public function rollback(

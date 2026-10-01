@@ -1,19 +1,19 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { forwardRef } from 'react';
 
 // Public pages are Inertia pages, so same-origin links navigate without a full
 // reload. Anything else (other origins, downloads, mail/tel, new tabs) stays a
 // plain anchor.
-function isInternal(href) {
-    if (! href || typeof window === 'undefined') {
+function isInternal(href, origin) {
+    if (! href || String(href).startsWith('#')) {
         return false;
     }
 
     try {
-        const url = new URL(href, window.location.origin);
+        const url = new URL(href, origin);
 
-        return url.origin === window.location.origin
-            && ! url.pathname.startsWith('/admin')
+        return url.origin === new URL(origin).origin
+            && ! /^\/(restricted-media|application-files|submission-files)\//.test(url.pathname)
             && ! url.pathname.startsWith('/storage')
             && ! /\.(pdf|docx?|xlsx?|pptx?|zip|xml|txt)$/i.test(url.pathname);
     } catch {
@@ -22,7 +22,8 @@ function isInternal(href) {
 }
 
 const AppLink = forwardRef(function AppLink({ href, target, download, children, ...props }, ref) {
-    if (target || download || ! isInternal(href)) {
+    const { site } = usePage().props;
+    if (target || (download !== undefined && download !== false) || ! isInternal(href, site.seo.canonicalUrl)) {
         return (
             <a ref={ref} href={href} target={target} download={download} {...props}>
                 {children}

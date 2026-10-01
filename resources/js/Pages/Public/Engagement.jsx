@@ -115,7 +115,11 @@ export default function Engagement({ meta, breadcrumbs, composition, header, for
 
     const next = () => valid() && setStep((value) => Math.min(value + 1, steps.length - 1));
     const previous = () => setStep((value) => Math.max(value - 1, 0));
-    const goTo = (index) => (index < step || valid()) && setStep(index);
+    const goTo = (index) => {
+        if (index < step || (index === step + 1 && valid())) {
+            setStep(index);
+        }
+    };
 
     const submit = (event) => {
         event.preventDefault();
@@ -162,6 +166,7 @@ export default function Engagement({ meta, breadcrumbs, composition, header, for
                                         <button
                                             className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-start text-xs font-bold ${index === step ? 'bg-action-500 text-white' : (index < step ? 'bg-action-50 text-action-800' : 'bg-quiet text-muted')}`}
                                             type="button"
+                                            disabled={index > step + 1 || form.processing}
                                             onClick={() => goTo(index)}
                                             aria-current={index === step ? 'step' : undefined}
                                         >

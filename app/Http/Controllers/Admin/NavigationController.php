@@ -11,7 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateNavigationRequest;
 use App\Models\PageNavigationConfiguration;
 use App\Support\CorrelationContext;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ final class NavigationController extends Controller
     {
         abort_unless(request()->user()?->hasPermission('navigation.manage'), 403);
 
-        return view('admin.navigation.edit', [
+        return WorkspacePage::render('admin.navigation.edit', [
             'items' => PageNavigationConfiguration::query()
                 ->orderBy('locale')
                 ->orderBy('location')

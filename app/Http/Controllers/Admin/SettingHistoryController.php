@@ -7,7 +7,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditEvent;
 use App\Support\SettingCatalog;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\Request;
 
 final class SettingHistoryController extends Controller
@@ -33,7 +34,7 @@ final class SettingHistoryController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.settings.history', [
+        return WorkspacePage::render('admin.settings.history', [
             'categories' => SettingCatalog::CATEGORIES,
             'events' => $events,
             'filters' => [

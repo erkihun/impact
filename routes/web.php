@@ -113,7 +113,7 @@ Route::middleware(['auth', 'session.current'])->group(function (): void {
     Route::get('/submission-files/{file}/download', SubmissionFileDownloadController::class)
         ->middleware('signed')
         ->name('submission-files.download');
-    Route::view('/dashboard', 'dashboard')->middleware('verified')->name('dashboard');
+    Route::get('/dashboard', fn () => \App\Support\Inertia\WorkspacePage::render('dashboard'))->middleware('verified')->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

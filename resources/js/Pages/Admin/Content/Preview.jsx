@@ -1,0 +1,2 @@
+import PublicLayout from '../../../Layouts/PublicLayout';
+export default function Preview({content,version}){return <PublicLayout title={version.title}><div className="status-warning">Private preview. Version {version.version_no}. This page is not published.</div><article className="content-container public-section"><h1 className="heading-1">{version.title}</h1><p className="mt-5 text-lg">{version.summary}</p><div className="mt-8 whitespace-pre-wrap">{version.body?.content}</div></article></PublicLayout>;}

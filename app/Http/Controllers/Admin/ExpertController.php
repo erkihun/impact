@@ -15,7 +15,8 @@ use App\Models\ExpertVersion;
 use App\Models\MediaAsset;
 use App\Models\User;
 use App\Support\Settings\EffectiveSettings;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -43,12 +44,12 @@ final class ExpertController extends Controller
                 $settings->integer('performance.maximum_pagination_size'),
             ));
 
-        return view('admin.experts.index', compact('experts'));
+        return WorkspacePage::render('admin.experts.index', compact('experts'));
     }
 
     public function create(EffectiveSettings $settings): View
     {
-        return view('admin.experts.create', $this->formData(
+        return WorkspacePage::render('admin.experts.create', $this->formData(
             expert: new Expert([
                 'status' => 'draft',
                 'public_email_enabled' => false,
@@ -102,7 +103,7 @@ final class ExpertController extends Controller
     {
         $expert->load(['profileMedia', 'user']);
 
-        return view('admin.experts.edit', $this->formData(
+        return WorkspacePage::render('admin.experts.edit', $this->formData(
             expert: $expert,
             version: $this->editableVersion($expert, $settings->string('localization.default_locale')),
             settings: $settings,

@@ -1,0 +1,4 @@
+import { Link } from '@inertiajs/react';
+import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
+import { Action, Editor, Field, Filters, Panel, Pagination, Status, Table, date, field, label, options, rows, useWorkspace } from '../../../Components/Workspace/UI';
+export default function Index({events}){return <WorkspaceLayout title="Audit log"><Filters fields={[field('action','Action'),field('from','From','date'),field('to','To','date')]}/><Table data={events} columns={[{label:'Action',key:'action'},{label:'Actor',render:e=>e.actor?.name},{label:'Subject',render:e=>`${e.auditable_type?.split('\\').at(-1)??''} ${e.auditable_id??''}`},{label:'Date',render:e=>date(e.created_at)},{label:'Details',render:e=><details><summary>Details</summary><pre className="max-w-sm overflow-auto text-xs">{JSON.stringify(e.metadata,null,2)}</pre><p className="text-xs">{e.correlation_id}</p></details>}]}/><Pagination data={events}/></WorkspaceLayout>;}

@@ -6,7 +6,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditEvent;
-use Illuminate\Contracts\View\View;
+use Inertia\Response as View;
+use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\Request;
 
 final class AuditEventController extends Controller
@@ -31,6 +32,6 @@ final class AuditEventController extends Controller
             ->paginate(50)
             ->withQueryString();
 
-        return view('admin.audit.index', compact('events'));
+        return WorkspacePage::render('admin.audit.index', compact('events'));
     }
 }
