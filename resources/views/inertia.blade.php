@@ -9,6 +9,7 @@
             ?: route('localized-home', ['locale' => $alternateLocale]))
         : null;
     $meta = $page['props']['meta'] ?? [];
+    $status = $page['props']['status'] ?? null;
     $title = filled($meta['title'] ?? null)
         ? $meta['title'].' - '.$publicExperience['seo']['title_suffix']
         : $publicExperience['seo']['default_title'];
@@ -66,8 +67,19 @@
     <script data-page="app" type="application/json">{!! json_encode($page, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
     <div id="app"></div>
     <noscript>
+        @if ($page['component'] === 'Error' && $status === 404)
+            <section style="padding:2rem;text-align:center">
+                <h1>{{ __('Where to go next') }}</h1>
+                <p>
+                    <a href="{{ route('search', ['locale' => $currentLocale]) }}">{{ __('Search the site') }}</a> &middot;
+                    <a href="{{ route('services.index', ['locale' => $currentLocale]) }}">{{ __('Browse services') }}</a> &middot;
+                    <a href="{{ route('insights.index', ['locale' => $currentLocale]) }}">{{ __('Read insights') }}</a> &middot;
+                    <a href="{{ route('contact.create', ['locale' => $currentLocale]) }}">{{ __('Contact us') }}</a>
+                </p>
+            </section>
+        @endif
         <p style="padding:2rem;text-align:center">{{ __('This page needs JavaScript. You can still reach our services, insights and contact routes from the links below.') }}</p>
-        <p style="text-align:center"><a href="{{ route('services.index', ['locale' => $currentLocale]) }}">{{ __('Services') }}</a> · <a href="{{ route('insights.index', ['locale' => $currentLocale]) }}">{{ __('Insights') }}</a> · <a href="{{ route('contact.create', ['locale' => $currentLocale]) }}">{{ __('Contact') }}</a></p>
+        <p style="text-align:center"><a href="{{ route('services.index', ['locale' => $currentLocale]) }}">{{ __('Services') }}</a> &middot; <a href="{{ route('insights.index', ['locale' => $currentLocale]) }}">{{ __('Insights') }}</a> &middot; <a href="{{ route('contact.create', ['locale' => $currentLocale]) }}">{{ __('Contact') }}</a></p>
     </noscript>
     @endif
 </body>

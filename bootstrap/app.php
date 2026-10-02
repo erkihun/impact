@@ -20,6 +20,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -68,7 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return $response;
             }
 
-            return \Inertia\Inertia::render('Error', [
+            return Inertia::render('Error', [
                 'status' => $status,
                 'meta' => ['robots' => 'noindex,nofollow'],
                 'correlation_id' => $request->attributes->get('correlation_id'),
@@ -87,7 +88,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
+                : Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
         $exceptions->render(function (
             InvalidStateTransitionException $exception,
@@ -95,13 +96,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ): Response {
             $payload = [
                 'code' => 'INVALID_STATE_TRANSITION',
-                'message' => __('The requested workflow transition is not allowed.'),
+                'message' => __('This request conflicts with the current state.'),
                 'correlation_id' => $request->attributes->get('correlation_id'),
             ];
 
             return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
+                : Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
         $exceptions->render(function (
             SettingsVersionConflictException $exception,
@@ -116,7 +117,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
+                : Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
     })
     ->create();
