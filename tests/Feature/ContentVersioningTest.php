@@ -69,7 +69,10 @@ it('serves signed authenticated previews without cache or indexing', function ()
     $response
         ->assertOk()
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive')
-        ->assertSee('Private preview.');
+        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('Admin/Content/Preview')
+            ->where('version.id', $version->id)
+            ->where('meta.robots', 'noindex,nofollow,noarchive'));
     expect($response->headers->get('Cache-Control'))->toContain('no-store');
 
     $this->actingAs($editor)->withSession(privilegedSession($editor))

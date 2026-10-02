@@ -48,7 +48,7 @@ final class ContentController extends Controller
             ))
             ->withQueryString();
 
-        return WorkspacePage::render('admin.content.index', compact('items'));
+        return WorkspacePage::render('admin.content.index', ['items' => $items, 'types' => ContentType::cases(), 'states' => ContentWorkflowState::cases()]);
     }
 
     public function create(EffectiveSettings $settings): View
@@ -94,7 +94,7 @@ final class ContentController extends Controller
 
         return WorkspacePage::render('admin.content.show', [
             'content' => $content,
-            'allowedTransitions' => $workflow->allowedDestinations($state),
+            'allowedTransitions' => array_values(array_filter($workflow->allowedDestinations($state), fn (ContentWorkflowState $to): bool => Gate::allows('transition', [$content, $to]))),
             'previewUrls' => $content->versions->mapWithKeys(
                 fn (ContentVersion $version): array => [
                     $version->id => URL::temporarySignedRoute(

@@ -7,6 +7,14 @@ export default defineConfig({
     // (CSP host-sources cannot name IPv6 literals such as [::1]).
     server: {
         host: '127.0.0.1',
+        // Inertia 3 sends development SSR requests through Vite. Keep the
+        // project's Vite 6 setup compatible with the standalone SSR worker.
+        proxy: {
+            '/__inertia_ssr': {
+                target: `http://127.0.0.1:${process.env.INERTIA_SSR_PORT ?? 13714}`,
+                rewrite: () => '/render',
+            },
+        },
     },
     plugins: [
         laravel({

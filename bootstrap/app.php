@@ -60,6 +60,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->respond(function (Response $response, Throwable $exception, Request $request): Response {
+            $status = $response->getStatusCode();
+            if (! in_array($status, [403, 404, 419, 429, 500, 503], true)
+                || ($request->expectsJson() && ! $request->header('X-Inertia'))
+                || ($status === 500 && config('app.debug'))) {
+                return $response;
+            }
+
+            return \Inertia\Inertia::render('Error', [
+                'status' => $status,
+                'meta' => ['robots' => 'noindex,nofollow'],
+                'correlation_id' => $request->attributes->get('correlation_id'),
+            ])->toResponse($request)->setStatusCode($status);
+        });
         $exceptions->render(function (
             ContentVersionConflictException $exception,
             Request $request,
@@ -71,9 +85,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 'current_version_id' => $exception->currentVersionId,
             ];
 
-            return $request->expectsJson()
+            return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : response()->view('errors.409', $payload, 409);
+                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
         $exceptions->render(function (
             InvalidStateTransitionException $exception,
@@ -85,9 +99,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 'correlation_id' => $request->attributes->get('correlation_id'),
             ];
 
-            return $request->expectsJson()
+            return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : response()->view('errors.409', $payload, 409);
+                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
         $exceptions->render(function (
             SettingsVersionConflictException $exception,
@@ -100,9 +114,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 'category' => $exception->category,
             ];
 
-            return $request->expectsJson()
+            return $request->expectsJson() && ! $request->header('X-Inertia')
                 ? response()->json($payload, 409)
-                : response()->view('errors.409', $payload, 409);
+                : \Inertia\Inertia::render('Error', ['status' => 409, ...$payload, 'meta' => ['robots' => 'noindex,nofollow']])->toResponse($request)->setStatusCode(409);
         });
     })
     ->create();

@@ -28,6 +28,8 @@ final class WorkspacePage
 {
     public static function render(string $page, array $props = []): Response
     {
+        Inertia::encryptHistory();
+        $props['meta'] ??= ['robots' => 'noindex,nofollow,noarchive'];
         $component = implode('/', array_map(Str::studly(...), explode('.', $page)));
 
         if (($props['settings'] ?? null) instanceof EffectiveSettings) {
@@ -37,7 +39,7 @@ final class WorkspacePage
                 $props['values'] = collect($props['definitions'])->mapWithKeys(function (array $definition, string $key) use ($settings): array {
                     $status = $settings->safeStatus($key);
                     return [SettingCatalog::inputName($key) => $status['editable'] && ($definition['sensitivity'] ?? null) !== 'secret_reference'
-                        ? $settings->get($key) : null];
+                        ? ($definition['type'] === 'media_reference' ? $settings->mediaReference($key) : $settings->get($key)) : null];
                 })->all();
             }
         }

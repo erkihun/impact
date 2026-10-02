@@ -20,7 +20,7 @@ createInertiaApp({
         const application = (
             <MotionConfig reducedMotion="user">
                 <App {...props} />
-            </MotionConfig>,
+            </MotionConfig>
         );
         if (el.hasChildNodes()) {
             hydrateRoot(el, application);

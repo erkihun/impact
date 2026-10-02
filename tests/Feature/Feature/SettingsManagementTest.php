@@ -51,29 +51,22 @@ it('renders the settings overview and category control center', function (): voi
         ->withSession(privilegedSession($administrator))
         ->get('/admin/settings')
         ->assertOk()
-        ->assertSee('Settings Center')
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Admin/Settings/Index'))
         ->assertSee('Branding and Identity')
         ->assertSee('Appearance')
         ->assertSee('Homepage Hero')
         ->assertSee('Security')
         ->assertSee('Notifications')
-        ->assertSee('Configuration history')
-        ->assertSee('data-settings-icon="branding"', false)
-        ->assertSee('data-settings-icon="homepage"', false)
-        ->assertSee('data-settings-icon="notifications"', false)
-        ->assertSee('data-settings-icon="history"', false)
-        ->assertSee('data-settings-icon="diagnostics"', false);
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('navigationGroups'));
 
     $this->actingAs($administrator)
         ->withSession(privilegedSession($administrator))
         ->get('/admin/settings/security')
         ->assertOk()
         ->assertSee('Security contact email')
-        ->assertSee('Recent MFA')
-        ->assertSee('Change reason')
-        ->assertSee('data-settings-icon="security"', false)
-        ->assertSee('x-data="settingsForm"', false)
-        ->assertSee('aria-current="page"', false);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('requiresRecentMfa', true)->where('requiresReason', true))
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Admin/Settings/Show')->where('category', 'security')->has('settingsVersion'));
 
     $this->actingAs($administrator)
         ->withSession(privilegedSession($administrator))
@@ -97,8 +90,8 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
         ->assertSee('Slide 1 heading — English')
         ->assertSee('Slide 1 heading — Amharic')
         ->assertSee('Slide 3 image')
-        ->assertSee('type="file"', false)
-        ->assertSee('data-settings-icon="homepage"', false);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('definitions', fn ($definitions): bool => collect($definitions)->contains(fn ($definition): bool => $definition['type'] === 'media_reference')));
 
     $this->actingAs($administrator)
         ->withSession(privilegedSession($administrator))
@@ -179,7 +172,7 @@ it('applies configured brand colors to the real admin shell palette', function (
         ->withSession(privilegedSession($administrator))
         ->get('/admin/settings')
         ->assertOk()
-        ->assertSee('class="admin-sidebar hidden lg:flex"', false)
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('workspace.privileged', true))
         ->assertSee('--palette-brand-900:17 34 51', false)
         ->assertSee('--palette-brand-950:12 24 36', false)
         ->assertSee('--palette-action-500:68 85 102', false)
@@ -278,7 +271,7 @@ it('updates sensitive settings with recent MFA and shows redacted safe history',
         ->withSession(privilegedSession($administrator))
         ->get('/admin/settings/history?category=security')
         ->assertOk()
-        ->assertSee('Configuration history')
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('navigationGroups'))
         ->assertSee('Approved quarterly security control review.');
 });
 
@@ -292,7 +285,8 @@ it('uses browsed image uploads for branding identity assets instead of typed url
         ->get('/admin/settings/branding')
         ->assertOk()
         ->assertSee('Primary logo image')
-        ->assertSee('type="file"', false)
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('definitions', fn ($definitions): bool => collect($definitions)->contains(fn ($definition): bool => $definition['type'] === 'media_reference')))
         ->assertDontSee('Primary logo URL');
 
     $this->actingAs($administrator)
@@ -330,8 +324,9 @@ it('normalizes legacy branding asset urls to the current host path', function ()
         ->withSession(privilegedSession($administrator))
         ->get('/admin/settings/branding')
         ->assertOk()
-        ->assertSee('src="/storage/branding/legacy-logo.png"', false)
-        ->assertDontSee('src="http://localhost/storage/branding/legacy-logo.png"', false);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('workspace.identity.logo', '/storage/branding/legacy-logo.png')
+            ->where('values.branding__logo_url', '/storage/branding/legacy-logo.png'));
 });
 
 it('resets only the selected category defaults', function (): void {

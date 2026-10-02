@@ -52,7 +52,7 @@
     @inertiaHead
 </head>
 <body
-    class="{{ $isPublic ? 'public-glass' : '' }} {{ implode(' ', $publicExperience['presentation']['body_classes']) }}"
+    class="{{ $isPublic ? 'public-glass' : '' }} {{ implode(' ', app(\App\Support\Settings\PublicUiSettings::class)->bodyClasses(admin: ! $isPublic)) }}"
     data-default-theme="{{ $publicExperience['presentation']['default_theme'] }}"
     data-user-theme-enabled="{{ $publicExperience['presentation']['allow_user_theme'] ? 'true' : 'false' }}"
     data-date-format="{{ $publicExperience['localization']['date_format'] }}"

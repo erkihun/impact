@@ -21,20 +21,18 @@ it('renders the permission-aware admin shell with active navigation and mobile d
         ->withSession(privilegedSession($administrator))
         ->get('/admin/content')
         ->assertOk()
-        ->assertSee('class="admin-shell"', false)
-        ->assertSee('aria-label="Administration navigation"', false)
-        ->assertSee('aria-current="page"', false)
-        ->assertSee('id="admin-mobile-navigation"', false)
-        ->assertSee('aria-modal="true"', false)
-        ->assertSee('x-bind:class="shellClass"', false)
-        ->assertSee('Content workspace');
+        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('Admin/Content/Index')
+            ->where('workspace.user.id', $administrator->id)
+            ->where('workspace.privileged', true)
+            ->where('workspace.permissions', fn ($permissions): bool => collect($permissions)->contains('content.view')));
 });
 
 it('keeps the admin shell backed by the approved semantic tokens only', function (): void {
     $css = File::get(resource_path('css/app.css'));
-    $views = collect(File::allFiles(resource_path('views/admin')))
-        ->merge(File::allFiles(resource_path('views/components/admin')))
-        ->merge(File::allFiles(resource_path('views/layouts')))
+    $views = collect(File::allFiles(resource_path('js/Pages/Admin')))
+        ->merge(File::allFiles(resource_path('js/Components/Workspace')))
+        ->merge(File::allFiles(resource_path('js/Layouts')))
         ->map(fn (SplFileInfo $file): string => $file->getContents())
         ->implode("\n");
 
@@ -47,66 +45,11 @@ it('keeps the admin shell backed by the approved semantic tokens only', function
         ->and($views)->not->toContain('style="');
 });
 
-it('provides the required shared admin component inventory', function (): void {
-    $required = [
-        'alert',
-        'attention-card',
-        'audit-timeline',
-        'bulk-action-bar',
-        'button',
-        'button-group',
-        'card',
-        'chart-card',
-        'chart-data-summary',
-        'chart-empty-state',
-        'chart-error-state',
-        'chart-header',
-        'chart-legend',
-        'chart-range-control',
-        'chart-toolbar',
-        'checkbox',
-        'confirmation-modal',
-        'content-container',
-        'content-summary-card',
-        'data-table',
-        'date-input',
-        'drawer',
-        'empty-state',
-        'error-summary',
-        'field-error',
-        'file-input',
-        'filter-bar',
-        'filter-chip',
-        'filter-panel',
-        'filter-sheet',
-        'form-section',
-        'help-text',
-        'icon-button',
-        'information-card',
-        'input',
-        'kpi-card',
-        'mobile-record-list',
-        'modal',
-        'no-results-state',
-        'pagination',
-        'progress',
-        'quick-action-card',
-        'radio',
-        'record-list',
-        'row-action-menu',
-        'search-input',
-        'select',
-        'skeleton',
-        'status-card',
-        'table-toolbar',
-        'textarea',
-        'toast',
-        'workflow-panel',
-        'workflow-rail',
-    ];
-
-    foreach ($required as $component) {
-        expect(File::exists(resource_path("views/components/admin/{$component}.blade.php")))
-            ->toBeTrue("Missing admin component: {$component}");
+it('provides the shared React workspace controls', function (): void {
+    $controls = File::get(resource_path('js/Components/Workspace/UI.jsx'));
+    foreach (['Field', 'Editor', 'Action', 'Errors', 'Table', 'Pagination', 'Filters', 'Panel', 'Status'] as $control) {
+        expect($controls)->toContain("export function {$control}(");
     }
+    expect(File::exists(resource_path('js/Layouts/WorkspaceLayout.jsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/Layouts/AuthLayout.jsx')))->toBeTrue();
 });

@@ -75,8 +75,9 @@ it('enrolls MFA and stores only hashed recovery codes', function (): void {
 
     $response = $this->actingAs($user)->withSession($session)->post('/mfa/enroll', ['code' => $code]);
 
-    $response->assertOk()->assertViewIs('auth.mfa-recovery');
-    $recoveryCodes = $response->viewData('codes');
+    $response->assertOk()->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+        ->component('Auth/MfaRecovery')->has('codes', 8));
+    $recoveryCodes = $response->viewData('page')['props']['codes'];
     expect($user->refresh()->mfa_confirmed_at)->not->toBeNull()
         ->and($user->mfa_recovery_codes)->toHaveCount(8)
         ->and($user->mfa_recovery_codes)->not->toContain($recoveryCodes[0]);
