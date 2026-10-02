@@ -25,7 +25,7 @@ function Ledger({ items, copy }) {
     }
 
     return (
-        <section className="m-section" aria-labelledby="home-proof-title">
+        <section className="m-proof-rail" aria-labelledby="home-proof-title">
             <div className="content-container">
                 <SectionLead id="home-proof-title" title={copy.ledgerTitle} />
                 <div className="m-stats">
@@ -43,6 +43,60 @@ function Ledger({ items, copy }) {
                         );
                     })}
                 </div>
+            </div>
+        </section>
+    );
+}
+
+function ExpertPerspective({ experts, insight, copy }) {
+    if (experts.length === 0 && ! insight) {
+        return null;
+    }
+
+    return (
+        <section className="m-section" aria-labelledby="home-perspectives-title">
+            <div className="content-container">
+                <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
+                {experts.length > 0 && (
+                    <Tiles
+                        items={experts.map((expert) => ({ ...expert, kind: 'expert' }))}
+                        columns={experts.length > 2 ? 3 : 2}
+                        className="m-expert-grid"
+                        renderItem={(item, index) => <ExpertCard item={item} copy={copy} index={index} />}
+                    />
+                )}
+                {insight && (
+                    <Reveal className="m-insight-feature">
+                        <MotionLink
+                            className="m-tile m-insight-tile"
+                            href={insight.href}
+                            whileHover={{ y: -4 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                        >
+                            <InsightCard item={insight} copy={copy} />
+                        </MotionLink>
+                    </Reveal>
+                )}
+            </div>
+        </section>
+    );
+}
+
+function FinalCta({ copy, links }) {
+    return (
+        <section className="m-section m-final-cta-section" aria-labelledby="home-final-cta-title">
+            <div className="content-container">
+                <Reveal>
+                    <div className="m-final-cta">
+                        <p className="m-eyebrow">{copy.finalCtaEyebrow}</p>
+                        <h2 id="home-final-cta-title">{copy.finalCtaTitle}</h2>
+                        <p>{copy.finalCtaLead}</p>
+                        <div className="m-links">
+                            <MotionLink className="m-btn" href={links.consultation} whileTap={{ scale: 0.97 }}>{copy.requestConsultation}</MotionLink>
+                            <AppLink className="m-link" href={links.services}>{copy.servicesLink}</AppLink>
+                        </div>
+                    </div>
+                </Reveal>
             </div>
         </section>
     );
@@ -228,6 +282,7 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, te
             <Services services={services} copy={copy} links={links} />
             <CaseStudy caseStudy={caseStudy} copy={copy} links={links} />
             <Testimonials testimonials={testimonials} copy={copy} />
+            <ExpertPerspective experts={experts} insight={insight} copy={copy} />
 
             {industries.length > 0 && (
                 <section className="m-section m-band" aria-labelledby="home-industries-title">
@@ -244,34 +299,6 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, te
                                 </>
                             )}
                         />
-                    </div>
-                </section>
-            )}
-
-            {(experts.length > 0 || insight) && (
-                <section className="m-section" aria-labelledby="home-perspectives-title">
-                    <div className="content-container">
-                        <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
-                        {experts.length > 0 && (
-                            <Tiles
-                                items={experts.map((expert) => ({ ...expert, kind: 'expert' }))}
-                                columns={experts.length > 2 ? 3 : 2}
-                                className="m-expert-grid"
-                                renderItem={(item, index) => <ExpertCard item={item} copy={copy} index={index} />}
-                            />
-                        )}
-                        {insight && (
-                            <Reveal className="m-insight-feature">
-                                <MotionLink
-                                    className="m-tile m-insight-tile"
-                                    href={insight.href}
-                                    whileHover={{ y: -4 }}
-                                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                                >
-                                    <InsightCard item={insight} copy={copy} />
-                                </MotionLink>
-                            </Reveal>
-                        )}
                     </div>
                 </section>
             )}
@@ -293,6 +320,7 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, te
                     </Reveal>
                 </div>
             </section>
+            <FinalCta copy={copy} links={links} />
         </PublicLayout>
     );
 }

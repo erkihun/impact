@@ -1362,6 +1362,20 @@ html[lang='am'] .public-glass .home-signature-title {
 }
 
 /* Numbers band. */
+.m-proof-rail {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(1.5rem, 4vw, 3rem) clamp(4.5rem, 8vw, 7rem);
+}
+
+.m-proof-rail .m-center {
+    max-width: 40rem;
+}
+
+.m-proof-rail .m-title {
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+}
+
 .m-stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1732,6 +1746,82 @@ a.m-stat:hover strong {
 .m-process strong {
     font-size: 1.1875rem;
     font-weight: 600;
+}
+
+/* Final conversion panel. */
+.m-final-cta-section {
+    background:
+        radial-gradient(38rem 22rem at 8% 12%, rgb(242 140 40 / 0.14), transparent 72%),
+        radial-gradient(42rem 26rem at 100% 100%, rgb(45 122 120 / 0.16), transparent 74%),
+        var(--m-white);
+}
+
+.m-final-cta {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    overflow: hidden;
+    border-radius: clamp(1.75rem, 4vw, 3rem);
+    background:
+        linear-gradient(135deg, rgb(255 255 255 / 0.08), transparent 38%),
+        var(--m-navy-deep);
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 5rem);
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 3rem 7rem -4.25rem rgb(15 36 56 / 0.95);
+}
+
+.m-final-cta::before,
+.m-final-cta::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.m-final-cta::before {
+    inset: -10rem auto auto -7rem;
+    width: 22rem;
+    height: 22rem;
+    background: radial-gradient(circle, rgb(242 140 40 / 0.3), transparent 66%);
+}
+
+.m-final-cta::after {
+    right: -5rem;
+    bottom: -10rem;
+    width: 26rem;
+    height: 26rem;
+    background: radial-gradient(circle, rgb(45 122 120 / 0.34), transparent 68%);
+}
+
+.m-final-cta > * {
+    position: relative;
+    z-index: 1;
+}
+
+.m-final-cta .m-eyebrow {
+    color: var(--m-orange);
+}
+
+.m-final-cta h2 {
+    max-width: 17ch;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    color: #ffffff;
+    text-wrap: balance;
+}
+
+.m-final-cta p {
+    max-width: 43rem;
+    margin: 0;
+    color: rgb(255 255 255 / 0.72);
+    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+}
+
+.m-final-cta .m-link {
+    color: #ffffff;
 }
 
 /* ---------- Motion: one calm fade-up ---------- */

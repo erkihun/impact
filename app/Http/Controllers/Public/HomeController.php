@@ -165,6 +165,9 @@ final class HomeController extends Controller
                 ],
                 'requestConsultation' => __('Request a consultation'),
                 'otherRoute' => __('Choose another route'),
+                'finalCtaEyebrow' => __('Start the next move'),
+                'finalCtaTitle' => __('Let us structure the path from question to measurable change.'),
+                'finalCtaLead' => __('Bring the issue, the stakeholders and the timing. We will help define the clearest advisory route.'),
             ],
         ]);
     }
