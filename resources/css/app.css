@@ -1,3 +1,5 @@
+@import '@fontsource-variable/noto-sans-ethiopic';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -202,7 +204,7 @@
     html[lang='am'] .font-sans,
     html[lang='am'] .font-serif,
     html[lang='am'] .font-editorial {
-        font-family: 'Abyssinica SIL', 'Noto Sans Ethiopic', Arial, sans-serif;
+        font-family: 'Noto Sans Ethiopic Variable', 'Abyssinica SIL', system-ui, sans-serif;
     }
 
     html[lang='am'] body {
