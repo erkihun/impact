@@ -168,25 +168,61 @@ final class PublicContentSeeder extends Seeder
                 'workflow_state' => 'published',
             ]);
 
-            $expert = Expert::query()->create([
-                'status' => 'published',
-                'public_email_enabled' => false,
-                'years_experience' => 15,
-                'publication_authorized_at' => now(),
-                'authorization_reference' => 'DEMO-EXPERT-CONSENT-001',
-            ]);
-            ExpertVersion::query()->create([
-                'expert_id' => $expert->id,
-                'locale' => 'en',
-                'version_no' => 1,
-                'slug' => 'selam-tadesse',
-                'display_name' => 'Selam Tadesse',
-                'professional_title' => 'Strategy and Institutional Transformation Lead',
-                'biography' => 'Selam helps leadership teams translate public value goals into operating models, delivery systems and measurable outcomes.',
-                'qualifications' => ['MSc Public Policy', 'Certified Change Practitioner'],
-                'languages' => ['English', 'Amharic'],
-                'workflow_state' => 'published',
-            ]);
+            collect([
+                [
+                    'slug' => 'selam-tadesse',
+                    'display_name' => 'Selam Tadesse',
+                    'professional_title' => 'Strategy and Institutional Transformation Lead',
+                    'biography' => 'Selam helps leadership teams translate public value goals into operating models, delivery systems and measurable outcomes.',
+                    'qualifications' => ['MSc Public Policy', 'Certified Change Practitioner'],
+                    'years_experience' => 15,
+                ],
+                [
+                    'slug' => 'dawit-bekele',
+                    'display_name' => 'Dawit Bekele',
+                    'professional_title' => 'Research, Monitoring and Learning Advisor',
+                    'biography' => 'Dawit designs evidence systems that help teams test assumptions, understand progress and make decisions with confidence.',
+                    'qualifications' => ['MA Development Studies', 'Evaluation Design Specialist'],
+                    'years_experience' => 12,
+                ],
+                [
+                    'slug' => 'mihret-abebe',
+                    'display_name' => 'Mihret Abebe',
+                    'professional_title' => 'Organizational Strengthening Specialist',
+                    'biography' => 'Mihret works with institutions to clarify roles, improve delivery routines and build practical management capacity.',
+                    'qualifications' => ['MBA Organizational Leadership', 'Certified Facilitation Practitioner'],
+                    'years_experience' => 10,
+                ],
+                [
+                    'slug' => 'yonas-tesfaye',
+                    'display_name' => 'Yonas Tesfaye',
+                    'professional_title' => 'Sector Strategy and Delivery Consultant',
+                    'biography' => 'Yonas connects sector context, stakeholder incentives and implementation planning so strategies can move into disciplined action.',
+                    'qualifications' => ['MPA Public Administration', 'Programme Delivery Professional'],
+                    'years_experience' => 14,
+                ],
+            ])->each(function (array $profile, int $index): void {
+                $expert = Expert::query()->create([
+                    'status' => 'published',
+                    'public_email_enabled' => false,
+                    'years_experience' => $profile['years_experience'],
+                    'publication_authorized_at' => now(),
+                    'authorization_reference' => 'DEMO-EXPERT-CONSENT-'.str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT),
+                ]);
+
+                ExpertVersion::query()->create([
+                    'expert_id' => $expert->id,
+                    'locale' => 'en',
+                    'version_no' => 1,
+                    'slug' => $profile['slug'],
+                    'display_name' => $profile['display_name'],
+                    'professional_title' => $profile['professional_title'],
+                    'biography' => $profile['biography'],
+                    'qualifications' => $profile['qualifications'],
+                    'languages' => ['English', 'Amharic'],
+                    'workflow_state' => 'published',
+                ]);
+            });
 
             foreach (['en', 'am'] as $locale) {
                 Event::query()->create([

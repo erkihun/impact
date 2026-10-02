@@ -34,7 +34,7 @@ final class HomeController extends Controller
             ->where('locale', $locale)->publiclyVisible();
 
         $caseStudy = (clone $visibleCaseStudies)->latest('version_no')->first();
-        $experts = (clone $visibleExperts)->with('expert.profileMedia')->latest('version_no')->get()
+        $experts = (clone $visibleExperts)->with('expert.profileMedia')->orderBy('display_name')->latest('version_no')->get()
             ->unique('expert_id')
             ->values();
         $insight = (clone $visibleInsights)->with('insight')->latest('version_no')->first();

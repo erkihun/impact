@@ -133,12 +133,18 @@ function Tiles({ items, renderItem, columns = 3, className = '' }) {
     );
 }
 
-function ExpertCard({ item, copy }) {
+function ExpertCard({ item, copy, index = 0 }) {
     return (
         <>
-            <span className="m-avatar m-expert-avatar">
+            <motion.span
+                className="m-avatar m-expert-avatar"
+                initial={{ opacity: 0, y: 18, scale: 0.88 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+                transition={{ type: 'spring', stiffness: 180, damping: 18, delay: index * 0.08 }}
+            >
                 {item.photo ? <img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async" /> : <span aria-hidden="true">{item.initial}</span>}
-            </span>
+            </motion.span>
             <span className="m-index">{copy.perspectivesEyebrow}</span>
             <h3>{item.name}</h3>
             <p>{item.title}</p>
@@ -195,7 +201,7 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, in
                                 items={experts.map((expert) => ({ ...expert, kind: 'expert' }))}
                                 columns={experts.length > 2 ? 3 : 2}
                                 className="m-expert-grid"
-                                renderItem={(item) => <ExpertCard item={item} copy={copy} />}
+                                renderItem={(item, index) => <ExpertCard item={item} copy={copy} index={index} />}
                             />
                         )}
                         {insight && (
