@@ -86,6 +86,26 @@ final class HomeController extends Controller
                 'href' => route('case-studies.show', ['locale' => $locale, 'slug' => $caseStudy->slug]),
                 'image' => asset(self::FEATURE_IMAGE),
             ] : null,
+            'testimonials' => [
+                [
+                    'quote' => __('The team helped us turn a complex reform agenda into decisions, routines and evidence we could use every week.'),
+                    'name' => __('Programme Director'),
+                    'role' => __('Public institution transformation programme'),
+                    'metric' => __('12 workstreams aligned'),
+                ],
+                [
+                    'quote' => __('Their facilitation made the trade-offs visible and gave our leadership group a shared operating rhythm.'),
+                    'name' => __('Executive Sponsor'),
+                    'role' => __('Institutional strengthening engagement'),
+                    'metric' => __('6 agencies coordinated'),
+                ],
+                [
+                    'quote' => __('The monitoring approach was practical. It helped teams learn faster without adding unnecessary reporting burden.'),
+                    'name' => __('Learning Lead'),
+                    'role' => __('Research and delivery support'),
+                    'metric' => __('Quarterly learning cycle'),
+                ],
+            ],
             'industries' => (clone $visibleIndustries)->latest('version_no')->limit(4)->get()
                 ->map(fn (IndustryVersion $industry): array => [
                     'name' => $industry->name,
@@ -124,6 +144,8 @@ final class HomeController extends Controller
                 'caseEyebrow' => __('Transformation record'),
                 'caseLink' => __('Examine the full record'),
                 'caseStudies' => __('Case studies'),
+                'testimonialsEyebrow' => __('Client testimony'),
+                'testimonialsTitle' => __('What partners say after the work becomes real'),
                 'industriesEyebrow' => __('Sector intelligence'),
                 'industriesTitle' => __('Context changes the answer'),
                 'industriesLead' => __('Our sector work starts with institutions, incentives and operating realities. Explore the published contexts in which we advise.'),

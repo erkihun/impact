@@ -114,6 +114,61 @@ function CaseStudy({ caseStudy, copy, links }) {
     );
 }
 
+function Testimonials({ testimonials, copy }) {
+    if (! testimonials?.length) {
+        return null;
+    }
+
+    const [lead, ...supporting] = testimonials;
+
+    return (
+        <section className="m-section m-testimonials-section" aria-labelledby="home-testimonials-title">
+            <div className="content-container">
+                <SectionLead id="home-testimonials-title" eyebrow={copy.testimonialsEyebrow} title={copy.testimonialsTitle} />
+                <div className="m-testimonials">
+                    <Reveal className="m-testimonial-lead">
+                        <motion.figure
+                            className="m-testimonial-card m-testimonial-card-lead"
+                            initial={{ opacity: 0, y: 28, rotateX: 5 }}
+                            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                            viewport={{ once: true, margin: '0px 0px -12% 0px' }}
+                            transition={{ type: 'spring', stiffness: 140, damping: 18 }}
+                        >
+                            <span className="m-testimonial-mark" aria-hidden="true">“</span>
+                            <blockquote>{lead.quote}</blockquote>
+                            <figcaption>
+                                <strong>{lead.name}</strong>
+                                <span>{lead.role}</span>
+                            </figcaption>
+                            {lead.metric && <p className="m-testimonial-metric">{lead.metric}</p>}
+                        </motion.figure>
+                    </Reveal>
+                    {supporting.length > 0 && (
+                        <div className="m-testimonial-list">
+                            {supporting.map((item, index) => (
+                                <Reveal key={`${item.name}-${index}`} index={index}>
+                                    <motion.figure
+                                        className="m-testimonial-card"
+                                        whileHover={{ y: -5, rotate: index % 2 === 0 ? -0.3 : 0.3 }}
+                                        transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                                    >
+                                        <blockquote>{item.quote}</blockquote>
+                                        <figcaption>
+                                            <strong>{item.name}</strong>
+                                            <span>{item.role}</span>
+                                        </figcaption>
+                                        {item.metric && <p className="m-testimonial-metric">{item.metric}</p>}
+                                    </motion.figure>
+                                </Reveal>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </section>
+    );
+}
+
 function Tiles({ items, renderItem, columns = 3, className = '' }) {
     return (
         <div className={`m-grid ${columns > 2 ? 'm-grid-3' : 'm-grid-2'} mt-14 ${className}`}>
@@ -164,7 +219,7 @@ function InsightCard({ item, copy }) {
     );
 }
 
-export default function Home({ meta, heroSlider, ledger, services, caseStudy, industries, experts = [], insight, copy, links }) {
+export default function Home({ meta, heroSlider, ledger, services, caseStudy, testimonials = [], industries, experts = [], insight, copy, links }) {
     return (
         <PublicLayout title={meta?.title}>
             {heroSlider.slides.length > 0 && <HeroSlider slider={heroSlider} />}
@@ -172,6 +227,7 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, in
             <Ledger items={ledger} copy={copy} />
             <Services services={services} copy={copy} links={links} />
             <CaseStudy caseStudy={caseStudy} copy={copy} links={links} />
+            <Testimonials testimonials={testimonials} copy={copy} />
 
             {industries.length > 0 && (
                 <section className="m-section m-band" aria-labelledby="home-industries-title">
