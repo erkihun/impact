@@ -114,9 +114,9 @@ function CaseStudy({ caseStudy, copy, links }) {
     );
 }
 
-function Tiles({ items, renderItem, columns = 3 }) {
+function Tiles({ items, renderItem, columns = 3, className = '' }) {
     return (
-        <div className={`m-grid ${columns > 2 ? 'm-grid-3' : 'm-grid-2'} mt-14`}>
+        <div className={`m-grid ${columns > 2 ? 'm-grid-3' : 'm-grid-2'} mt-14 ${className}`}>
             {items.map((item, index) => (
                 <Reveal key={item.href} index={index} className="flex">
                     <MotionLink
@@ -133,7 +133,32 @@ function Tiles({ items, renderItem, columns = 3 }) {
     );
 }
 
-export default function Home({ meta, heroSlider, ledger, services, caseStudy, industries, expert, insight, copy, links }) {
+function ExpertCard({ item, copy }) {
+    return (
+        <>
+            <span className="m-avatar m-expert-avatar">
+                {item.photo ? <img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async" /> : <span aria-hidden="true">{item.initial}</span>}
+            </span>
+            <span className="m-index">{copy.perspectivesEyebrow}</span>
+            <h3>{item.name}</h3>
+            <p>{item.title}</p>
+            <span className="m-link">{copy.meetTeam}</span>
+        </>
+    );
+}
+
+function InsightCard({ item, copy }) {
+    return (
+        <>
+            <span className="m-index">{copy.insight}</span>
+            <h3>{item.title}</h3>
+            {item.excerpt && <p>{item.excerpt}</p>}
+            <span className="m-link">{copy.readInsight}</span>
+        </>
+    );
+}
+
+export default function Home({ meta, heroSlider, ledger, services, caseStudy, industries, experts = [], insight, copy, links }) {
     return (
         <PublicLayout title={meta?.title}>
             {heroSlider.slides.length > 0 && <HeroSlider slider={heroSlider} />}
@@ -161,31 +186,30 @@ export default function Home({ meta, heroSlider, ledger, services, caseStudy, in
                 </section>
             )}
 
-            {(expert || insight) && (
+            {(experts.length > 0 || insight) && (
                 <section className="m-section" aria-labelledby="home-perspectives-title">
                     <div className="content-container">
                         <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
-                        <Tiles
-                            items={[expert && { ...expert, kind: 'expert' }, insight && { ...insight, kind: 'insight' }].filter(Boolean)}
-                            columns={2}
-                            renderItem={(item) => (item.kind === 'expert' ? (
-                                <>
-                                    <span className="m-avatar">
-                                        {item.photo ? <img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async" /> : <span aria-hidden="true">{item.initial}</span>}
-                                    </span>
-                                    <h3>{item.name}</h3>
-                                    <p>{item.title}</p>
-                                    <span className="m-link">{copy.meetTeam}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="m-index">{copy.insight}</span>
-                                    <h3>{item.title}</h3>
-                                    {item.excerpt && <p>{item.excerpt}</p>}
-                                    <span className="m-link">{copy.readInsight}</span>
-                                </>
-                            ))}
-                        />
+                        {experts.length > 0 && (
+                            <Tiles
+                                items={experts.map((expert) => ({ ...expert, kind: 'expert' }))}
+                                columns={experts.length > 2 ? 3 : 2}
+                                className="m-expert-grid"
+                                renderItem={(item) => <ExpertCard item={item} copy={copy} />}
+                            />
+                        )}
+                        {insight && (
+                            <Reveal className="m-insight-feature">
+                                <MotionLink
+                                    className="m-tile m-insight-tile"
+                                    href={insight.href}
+                                    whileHover={{ y: -4 }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                                >
+                                    <InsightCard item={insight} copy={copy} />
+                                </MotionLink>
+                            </Reveal>
+                        )}
                     </div>
                 </section>
             )}

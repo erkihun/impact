@@ -34,9 +34,10 @@ final class HomeController extends Controller
             ->where('locale', $locale)->publiclyVisible();
 
         $caseStudy = (clone $visibleCaseStudies)->latest('version_no')->first();
-        $expert = (clone $visibleExperts)->with('expert.profileMedia')->latest('version_no')->first();
+        $experts = (clone $visibleExperts)->with('expert.profileMedia')->latest('version_no')->get()
+            ->unique('expert_id')
+            ->values();
         $insight = (clone $visibleInsights)->with('insight')->latest('version_no')->first();
-        $expertPhoto = $expert?->expert?->profileMedia;
 
         return Inertia::render('Public/Home', [
             'meta' => [
@@ -91,14 +92,18 @@ final class HomeController extends Controller
                     'summary' => $industry->summary ? Str::limit((string) $industry->summary, 120) : null,
                     'href' => route('industries.show', ['locale' => $locale, 'slug' => $industry->slug]),
                 ]),
-            'expert' => $expert ? [
-                'name' => $expert->display_name,
-                'title' => $expert->professional_title,
-                'initial' => Str::upper(Str::substr((string) $expert->display_name, 0, 1)),
-                'photo' => $expertPhoto?->isPubliclyUsable() ? $expertPhoto->publicUrl() : null,
-                'photoAlt' => $expertPhoto?->alt_text ?: $expert->display_name,
-                'href' => route('experts.show', ['locale' => $locale, 'slug' => $expert->slug]),
-            ] : null,
+            'experts' => $experts->map(function (ExpertVersion $expert) use ($locale): array {
+                $photo = $expert->expert?->profileMedia;
+
+                return [
+                    'name' => $expert->display_name,
+                    'title' => $expert->professional_title,
+                    'initial' => Str::upper(Str::substr((string) $expert->display_name, 0, 1)),
+                    'photo' => $photo?->isPubliclyUsable() ? $photo->publicUrl() : null,
+                    'photoAlt' => $photo?->alt_text ?: $expert->display_name,
+                    'href' => route('experts.show', ['locale' => $locale, 'slug' => $expert->slug]),
+                ];
+            }),
             'insight' => $insight ? [
                 'title' => $insight->title,
                 'excerpt' => $insight->excerpt ? Str::limit((string) $insight->excerpt, 150) : null,

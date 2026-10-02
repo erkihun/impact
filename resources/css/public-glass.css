@@ -1499,6 +1499,75 @@ a.m-stat:hover strong {
     object-fit: cover;
 }
 
+.m-expert-grid {
+    align-items: stretch;
+}
+
+.m-expert-grid .m-tile {
+    min-height: 24rem;
+    background:
+        radial-gradient(18rem 12rem at 50% 0%, rgb(242 140 40 / 0.14), transparent 70%),
+        linear-gradient(180deg, #ffffff 0%, #f7f8fa 100%);
+}
+
+.m-expert-avatar {
+    position: relative;
+    width: 8rem;
+    height: 8rem;
+    border: 6px solid #ffffff;
+    box-shadow:
+        0 0 0 1px rgb(23 50 77 / 0.1),
+        0 1.25rem 2.5rem -1.75rem rgb(15 36 56 / 0.55);
+    transition:
+        transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+        box-shadow 0.45s ease;
+}
+
+.m-expert-avatar::after {
+    content: '';
+    position: absolute;
+    right: 0.55rem;
+    bottom: 0.55rem;
+    width: 1rem;
+    height: 1rem;
+    border: 3px solid #ffffff;
+    border-radius: 999px;
+    background: var(--m-orange);
+}
+
+.m-expert-grid .m-tile:hover .m-expert-avatar {
+    box-shadow:
+        0 0 0 1px rgb(242 140 40 / 0.45),
+        0 1.75rem 3.25rem -1.75rem rgb(15 36 56 / 0.62);
+    transform: translateY(-4px) scale(1.035);
+}
+
+.m-insight-feature {
+    margin-top: 1.25rem;
+}
+
+.m-insight-tile {
+    min-height: 16rem;
+    margin-inline: auto;
+    background:
+        radial-gradient(35rem 16rem at 100% 0%, rgb(242 140 40 / 0.2), transparent 68%),
+        var(--m-navy);
+    color: #ffffff;
+}
+
+.m-insight-tile h3,
+.m-insight-tile .m-index {
+    color: #ffffff;
+}
+
+.m-insight-tile p {
+    color: rgb(255 255 255 / 0.76);
+}
+
+.m-insight-tile .m-link {
+    color: #ffffff;
+}
+
 /* Process steps. */
 .m-process {
     display: grid;
@@ -1882,6 +1951,11 @@ a.m-tile:hover::after,
 @media (max-width: 47.99rem) {
     .m-tile {
         min-height: 0;
+    }
+
+    .m-expert-avatar {
+        width: 6.5rem;
+        height: 6.5rem;
     }
 
     .m-tile .m-link {
