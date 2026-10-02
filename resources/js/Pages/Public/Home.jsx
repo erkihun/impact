@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import HeroSlider from '../../Components/Public/HeroSlider';
 import AppLink from '../../Components/AppLink';
+import Icon from '../../Components/Icon';
 import Reveal from '../../Components/Reveal';
 import PublicLayout from '../../Layouts/PublicLayout';
 import { pad } from '../../lib/format';
@@ -70,7 +71,9 @@ function Services({ services, copy, links }) {
                                     <h3>{service.name}</h3>
                                     <span className="m-row-text">{service.summary}</span>
                                 </span>
-                                <span className="m-row-arrow" aria-hidden="true">→</span>
+                                <span className="m-row-arrow" aria-hidden="true">
+                                    <Icon name="arrow-right" className="size-4" strokeWidth={2} />
+                                </span>
                             </MotionLink>
                         </Reveal>
                     ))}

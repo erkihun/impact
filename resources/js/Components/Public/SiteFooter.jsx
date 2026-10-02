@@ -1,5 +1,6 @@
 import { useForm, usePage } from '@inertiajs/react';
 import AppLink from '../AppLink';
+import Icon from '../Icon';
 
 export default function SiteFooter() {
     const { site, navigation, ui } = usePage().props;
@@ -38,7 +39,8 @@ export default function SiteFooter() {
                             </address>
                             {site.features.consultation && (
                                 <AppLink className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href={site.routes.consultation}>
-                                    {ui.requestConsultation} <span aria-hidden="true">→</span>
+                                    {ui.requestConsultation}
+                                    <Icon name="arrow-right" className="size-4" strokeWidth={2} aria-hidden="true" />
                                 </AppLink>
                             )}
                         </div>
@@ -109,7 +111,7 @@ export default function SiteFooter() {
 
                     <div className="border-t border-white/10">
                         <div className="flex flex-col justify-between gap-4 py-6 text-xs text-slate-400 lg:flex-row lg:items-center">
-                            <p>© {identity.copyright_start_year}-{year} {identity.copyright_owner}</p>
+                            <p>&copy; {identity.copyright_start_year}-{year} {identity.copyright_owner}</p>
                             <nav aria-label={ui.legal} className="flex flex-wrap items-center gap-x-5 gap-y-1">
                                 {navigation.footer.footer_legal.map((item) => (
                                     <AppLink key={item.href} className="footer-legal-link" href={item.href}>{item.label}</AppLink>

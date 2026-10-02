@@ -39,7 +39,7 @@ function MegaPanel({ menu, onNavigate }) {
                         <p className="text-sm font-bold text-white">{menu.promo.title}</p>
                         <p className="mt-2 text-sm leading-6 text-slate-300">{menu.promo.text}</p>
                         <AppLink className="text-link mt-3 gap-2" href={menu.promo.href} onClick={onNavigate}>
-                            {menu.promo.label} <span aria-hidden="true">→</span>
+                            {menu.promo.label} <Icon name="arrow-right" className="size-4" strokeWidth={2} aria-hidden="true" />
                         </AppLink>
                     </div>
                 )}

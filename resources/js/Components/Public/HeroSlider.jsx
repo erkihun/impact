@@ -70,7 +70,8 @@ export default function HeroSlider({ slider }) {
                                     <div className="home-signature-actions">
                                         {slider.primary_action && (
                                             <a className="button-primary" href={slider.primary_action.href}>
-                                                {slider.primary_action.label} <span aria-hidden="true">→</span>
+                                                {slider.primary_action.label}
+                                                <Icon name="arrow-right" className="size-4" strokeWidth={2} aria-hidden="true" />
                                             </a>
                                         )}
                                         {slider.secondary_action && (

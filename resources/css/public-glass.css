@@ -1565,6 +1565,281 @@ a.m-stat:hover strong {
     }
 }
 
+/* ================= Public UX refresh =================
+   A restrained editorial pass for the public React surface: clearer depth,
+   better tap targets, stronger page hierarchy and cleaner mobile scanning. */
+
+.public-glass {
+    background:
+        linear-gradient(90deg, rgb(23 50 77 / 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgb(23 50 77 / 0.025) 1px, transparent 1px),
+        var(--m-white);
+    background-size: 4rem 4rem, 4rem 4rem, auto;
+}
+
+.public-glass .public-main {
+    overflow: clip;
+}
+
+.public-glass .public-header {
+    background: rgb(255 255 255 / 0.84);
+}
+
+.public-glass .nav-link,
+.public-glass .mega-trigger,
+.public-glass .icon-link,
+.public-glass .icon-button,
+.glass-lang {
+    transition:
+        background 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+        color 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.public-glass .nav-link:hover,
+.public-glass .mega-trigger:hover,
+.public-glass .icon-link:hover,
+.public-glass .icon-button:hover,
+.glass-lang:hover {
+    background: rgb(23 50 77 / 0.055);
+    transform: translateY(-1px);
+}
+
+.public-glass .home-signature-hero-section {
+    padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+    background:
+        radial-gradient(42rem 22rem at 15% 8%, rgb(242 140 40 / 0.13), transparent 70%),
+        radial-gradient(42rem 22rem at 90% 18%, rgb(45 122 120 / 0.12), transparent 72%),
+        linear-gradient(180deg, #ffffff 0%, #f7f8fa 100%);
+}
+
+.public-glass .home-signature-title {
+    max-width: 15ch;
+    text-wrap: balance;
+}
+
+.public-glass .home-signature-summary,
+.public-glass .m-lead {
+    text-wrap: pretty;
+}
+
+.public-glass .home-signature-image {
+    border: 1px solid rgb(23 50 77 / 0.12);
+    box-shadow:
+        0 2.5rem 5rem -3.25rem rgb(15 36 56 / 0.55),
+        0 0 0 0.5rem rgb(255 255 255 / 0.82);
+}
+
+.public-glass .home-signature-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(180deg, rgb(15 36 56 / 0), rgb(15 36 56 / 0.22)),
+        linear-gradient(90deg, rgb(255 255 255 / 0.18), transparent 35%);
+}
+
+.public-glass .button-primary,
+.public-glass .button-light,
+.public-glass .m-btn {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1rem 2rem -1.25rem rgb(194 85 10 / 0.8);
+    transition:
+        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.public-glass .button-primary:hover,
+.public-glass .button-light:hover,
+.public-glass .m-btn:hover {
+    box-shadow: 0 1.25rem 2.5rem -1.3rem rgb(194 85 10 / 0.95);
+    transform: translateY(-1px);
+}
+
+.public-glass .button-primary:active,
+.public-glass .button-light:active,
+.public-glass .m-btn:active {
+    transform: translateY(0) scale(0.985);
+}
+
+.m-stats {
+    gap: 1rem;
+}
+
+.m-stat {
+    min-height: 12rem;
+    justify-content: center;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    border: 1px solid rgb(23 50 77 / 0.1);
+    border-radius: 1.5rem;
+    background: rgb(255 255 255 / 0.74);
+    box-shadow: 0 1.75rem 4rem -3.25rem rgb(15 36 56 / 0.5);
+    backdrop-filter: blur(14px);
+}
+
+a.m-stat {
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.m-stat:hover {
+    border-color: rgb(242 140 40 / 0.55);
+    box-shadow: 0 2rem 4.5rem -3rem rgb(15 36 56 / 0.62);
+    transform: translateY(-3px);
+}
+
+.m-row {
+    border-radius: 1.25rem;
+    border: 1px solid transparent;
+    border-bottom-color: var(--m-line);
+}
+
+.m-row:hover {
+    border-color: rgb(23 50 77 / 0.1);
+    box-shadow: 0 1.5rem 3rem -2.5rem rgb(15 36 56 / 0.5);
+}
+
+.m-feature {
+    box-shadow: 0 2.5rem 6rem -4rem rgb(15 36 56 / 0.75);
+}
+
+.m-feature-media {
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-bottom: 0;
+    box-shadow: 0 -1.5rem 3rem -2.25rem rgb(0 0 0 / 0.7);
+}
+
+.m-tile,
+.m-card {
+    border: 1px solid rgb(23 50 77 / 0.09);
+    box-shadow: 0 1.5rem 4rem -3.25rem rgb(15 36 56 / 0.45);
+}
+
+.m-tile::after,
+.m-card::before {
+    content: '';
+    position: absolute;
+    inset: auto 1.25rem 1.25rem 1.25rem;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--m-orange), rgb(45 122 120 / 0.65), transparent);
+    opacity: 0;
+    transform: scaleX(0.6);
+    transform-origin: left;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.m-tile:hover::after,
+.m-card:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.m-process {
+    gap: 1rem;
+}
+
+.m-process li {
+    min-height: 12rem;
+    justify-content: center;
+    padding: 1.5rem;
+    border: 1px solid rgb(23 50 77 / 0.1);
+    border-radius: 1.5rem;
+    background: var(--m-white);
+    box-shadow: 0 1.5rem 4rem -3rem rgb(15 36 56 / 0.42);
+}
+
+.public-glass .public-footer {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(45rem 26rem at 0% 0%, rgb(45 122 120 / 0.22), transparent 72%),
+        radial-gradient(50rem 24rem at 100% 0%, rgb(242 140 40 / 0.16), transparent 70%),
+        linear-gradient(180deg, #122b42 0%, #0b1b2b 100%);
+}
+
+.public-glass .public-footer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.75), transparent 80%);
+}
+
+.public-glass .public-footer .form-input:focus,
+.public-glass .public-footer input[type='checkbox']:focus {
+    border-color: var(--m-orange);
+    --tw-ring-color: rgb(242 140 40 / 0.45);
+}
+
+.public-glass :focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+@media (max-width: 47.99rem) {
+    .public-glass {
+        background-size: 2.75rem 2.75rem, 2.75rem 2.75rem, auto;
+    }
+
+    .public-glass .home-signature-hero-section {
+        padding-top: clamp(2.75rem, 12vw, 4rem);
+    }
+
+    .public-glass .home-signature-title {
+        font-size: clamp(2.6rem, 14vw, 4rem);
+    }
+
+    .public-glass .home-signature-actions,
+    .m-links {
+        width: 100%;
+    }
+
+    .public-glass .home-signature-actions .button-primary,
+    .public-glass .m-btn,
+    .public-glass .button-primary,
+    .public-glass .button-secondary {
+        width: 100%;
+    }
+
+    .m-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .m-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+        align-items: start;
+        padding: 1.25rem 0.25rem;
+    }
+
+    .m-row-number {
+        font-size: 0.875rem;
+    }
+
+    .m-row-arrow {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    .m-row:hover {
+        padding-inline: 0.75rem;
+    }
+}
+
 .setting-high-contrast.public-glass {
     --m-muted: #3a3a3c;
     --m-line: #8e8e93;
