@@ -41,6 +41,7 @@ final readonly class RollbackContentAction
 
             $source = ContentVersion::query()
                 ->whereBelongsTo($content)
+                ->where('locale', 'en')
                 ->lockForUpdate()
                 ->findOrFail($data->sourceVersionId);
             $wasApproved = WorkflowEvent::query()

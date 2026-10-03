@@ -37,7 +37,7 @@ final class UserController extends Controller
         return WorkspacePage::render('admin.users.index', [
             'users' => $users,
             'roles' => Role::query()->orderBy('name')->get(),
-            'locales' => config('impact.locales.supported', ['en', 'am']),
+            'locales' => config('impact.locales.supported', ['en']),
         ]);
     }
 

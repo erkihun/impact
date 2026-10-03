@@ -41,20 +41,7 @@
                     <input class="form-input" id="expert-slug" name="slug" required maxlength="200" value="{{ old('slug', $version->slug) }}">
                     <x-input-error class="mt-2" :messages="$errors->get('slug')" />
                 </div>
-                <div>
-                    <label class="form-label" for="expert-locale">{{ __('Locale') }}</label>
-                    @if ($version->exists)
-                        <input type="hidden" name="locale" value="{{ $selectedLocale }}">
-                        <input class="form-input bg-quiet" id="expert-locale" value="{{ strtoupper($selectedLocale) }}" disabled>
-                    @else
-                        <select class="form-input" id="expert-locale" name="locale">
-                            @foreach ($locales as $locale)
-                                <option value="{{ $locale }}" @selected($selectedLocale === $locale)>{{ strtoupper($locale) }}</option>
-                            @endforeach
-                        </select>
-                    @endif
-                    <x-input-error class="mt-2" :messages="$errors->get('locale')" />
-                </div>
+                <input type="hidden" name="locale" value="en">
                 <div class="sm:col-span-2">
                     <label class="form-label" for="expert-biography">{{ __('Biography') }}</label>
                     <textarea class="form-input min-h-52" id="expert-biography" name="biography" required maxlength="12000">{{ old('biography', $version->biography) }}</textarea>

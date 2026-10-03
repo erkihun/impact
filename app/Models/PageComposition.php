@@ -27,6 +27,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 final class PageComposition extends Model
 {
+    protected static function booted(): void
+    {
+        static::addGlobalScope('english', fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where($query->getModel()->qualifyColumn('locale'), 'en'));
+    }
+
     use HasBinaryUuid, SoftDeletes;
 
     protected $guarded = ['id'];

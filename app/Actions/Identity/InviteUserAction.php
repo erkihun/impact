@@ -95,7 +95,7 @@ final readonly class InviteUserAction
         }, attempts: 3);
 
         DB::afterCommit(fn () => $invitation->user->notify(
-            (new UserInvitationNotification($rawToken, $invitation->expires_at))->locale($invitation->locale),
+            (new UserInvitationNotification($rawToken, $invitation->expires_at))->locale('en'),
         ));
 
         return $invitation;

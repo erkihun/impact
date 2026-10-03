@@ -31,9 +31,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', '"Noto Sans Ethiopic"', 'Arial', ...defaultTheme.fontFamily.sans],
-                editorial: ['Inter', '"Noto Sans Ethiopic"', 'Arial', ...defaultTheme.fontFamily.sans],
-                serif: ['Inter', '"Noto Sans Ethiopic"', 'Arial', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Arial', ...defaultTheme.fontFamily.sans],
+                editorial: ['Inter', 'Arial', ...defaultTheme.fontFamily.sans],
+                serif: ['Inter', 'Arial', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: runtimeScale('brand'),

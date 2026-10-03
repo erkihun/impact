@@ -17,7 +17,7 @@ final class SearchSuggestionController extends Controller
         abort_unless($settings->enabled(), 404);
         $validated = $request->validate([
             'q' => ['required', 'string', 'min:2', 'max:100'],
-            'locale' => ['nullable', 'in:en,am'],
+            'locale' => ['nullable', 'in:en'],
         ]);
 
         $suggestions = SearchDocument::query()

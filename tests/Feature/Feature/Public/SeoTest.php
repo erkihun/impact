@@ -8,7 +8,7 @@ it('renders canonical and locale alternate metadata and noindexes search', funct
     $this->get('/en')
         ->assertOk()
         ->assertSee('<link rel="canonical" href="http://localhost/en" data-inertia="canonical">', false)
-        ->assertSee('hreflang="am"', false);
+        ->assertDontSee('hreflang="am"', false);
 
     $this->get('/en/search')
         ->assertOk()

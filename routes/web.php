@@ -28,6 +28,11 @@ use App\Http\Controllers\Public\VacancyController;
 use App\Http\Controllers\SubmissionFileDownloadController;
 use Illuminate\Support\Facades\Route;
 
+// Keep previously shared language links useful without serving a second locale.
+Route::get('/am/{path?}', function (\Illuminate\Http\Request $request, ?string $path = null) {
+    $target = url('/en'.($path ? '/'.$path : ''));
+    return redirect($target.($request->getQueryString() ? '?'.$request->getQueryString() : ''), 301);
+})->where('path', '.*');
 Route::get('/', HomeController::class)->name('home');
 Route::get('/ready', [HealthController::class, 'ready'])->name('ready');
 Route::post('/consent', [ConsentController::class, 'store'])->name('consent.update');
@@ -39,7 +44,7 @@ Route::get('/newsletter/unsubscribe/{token}', [NewsletterSubscriptionController:
     ->name('newsletter.unsubscribe');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemaps/{locale}.xml', [SitemapController::class, 'locale'])
-    ->where(['locale' => 'en|am'])
+    ->where(['locale' => 'en'])
     ->name('sitemap.locale');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 Route::get('/status', SystemStatusController::class)
@@ -47,7 +52,7 @@ Route::get('/status', SystemStatusController::class)
     ->name('system-status');
 
 Route::prefix('{locale}')
-    ->where(['locale' => 'en|am'])
+    ->where(['locale' => 'en'])
     ->group(function (): void {
         Route::get('/', HomeController::class)->name('localized-home');
         Route::get('/about', [PublicPageController::class, 'about'])->name('about.show');

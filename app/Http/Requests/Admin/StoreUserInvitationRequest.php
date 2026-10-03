@@ -20,7 +20,7 @@ final class StoreUserInvitationRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'email:rfc', 'max:255'],
-            'locale' => ['required', Rule::exists('locales', 'code')->where('enabled', true)],
+            'locale' => ['required', Rule::in(['en'])],
             'roles' => ['required', 'array', 'min:1'],
             'roles.*' => ['required', 'uuid', 'distinct', Rule::exists('roles', 'id')],
         ];

@@ -107,14 +107,14 @@ it('adds and updates immutable section versions with optimistic locking and audi
         ->assertJsonPath('code', 'CONTENT_VERSION_CONFLICT');
 });
 
-it('seeds complete bilingual page coverage and passes the strict verifier', function (): void {
+it('seeds complete English page coverage and passes the strict verifier', function (): void {
     Cache::flush();
     User::factory()->create();
     $this->seed([PageCompositionSeeder::class, NavigationConfigurationSeeder::class]);
 
     expect(Artisan::call('public-content:verify', ['--strict' => true]))->toBe(0)
         ->and(PageComposition::query()->where('state', PageCompositionState::Published)->count())
-        ->toBe(52);
+        ->toBe(26);
 });
 
 it('denies page composition administration without page permissions', function (): void {
@@ -123,7 +123,7 @@ it('denies page composition administration without page permissions', function (
         ->assertForbidden();
 });
 
-it('lists each logical page once with the newest version of both languages and paginates pages', function (): void {
+it('lists each English page once with its newest version and paginates pages', function (): void {
     $editor = User::factory()->create();
     $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
     $source = draftComposition($editor);
@@ -146,18 +146,40 @@ it('lists each logical page once with the newest version of both languages and p
             ->has('compositions.data', 30)
             ->where('compositions.total', 31)
             ->where('compositions.data.0.page_key', 'page.00')
-            ->has('compositions.data.0.translations', 2)
-            ->where('compositions.data.0.translations.0.locale', 'am')
-            ->where('compositions.data.0.translations.1.locale', 'en')
-            ->where('compositions.data.0.translations.1.version_no', 2));
+            ->has('compositions.data.0.translations', 1)
+            ->where('compositions.data.0.translations.0.locale', 'en')
+            ->where('compositions.data.0.translations.0.version_no', 2));
     $this->get(route('admin.page-compositions.index', ['page' => 2]))
         ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
             ->has('compositions.data', 1)
             ->where('compositions.data.0.page_key', 'page.30')
-            ->has('compositions.data.0.translations', 2));
+            ->has('compositions.data.0.translations', 1));
 });
 
-it('exposes sibling translations and version history without mixing other pages into the editor', function (): void {
+it('filters the latest page status and searches across all pages', function (): void {
+    $editor = User::factory()->create();
+    $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
+    $published = draftComposition($editor);
+    $published->forceFill(['page_key' => 'home', 'state' => PageCompositionState::Published])->save();
+    $published->replicate()->forceFill(['version_no' => 2, 'state' => PageCompositionState::Draft])->save();
+    $published->replicate()->forceFill(['page_key' => 'about'])->save();
+    $this->actingAs($editor)->withSession(privilegedSession($editor));
+    $this->get('/admin/page-compositions?state=published')->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('compositions.total', 1)
+            ->where('compositions.data.0.page_key', 'about')
+            ->where('summary.total', 2)->where('summary.published', 1)->where('summary.in_progress', 1));
+    $this->get('/admin/page-compositions?q=Homepage&state=draft')->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('compositions.total', 1)->where('compositions.data.0.page_key', 'home')
+            ->where('compositions.data.0.translations.0.version_no', 2)
+            ->where('filters.q', 'Homepage'));
+    $this->get('/admin/page-compositions?q=missing')->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('compositions.total', 0));
+    $this->get('/admin/page-compositions?state=unknown')->assertSessionHasErrors('state');
+});
+
+it('exposes English version history without mixing other pages into the editor', function (): void {
     $editor = User::factory()->create();
     $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
     $english = draftComposition($editor);
@@ -169,14 +191,13 @@ it('exposes sibling translations and version history without mixing other pages 
         ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
             ->where('composition.id', $english->id)
             ->where('composition.locale', 'en')
-            ->has('pageVersions', 3)
-            ->where('pageVersions.0.locale', 'am')
-            ->where('pageVersions.1.locale', 'en')
-            ->where('pageVersions.1.version_no', 2)
-            ->where('pageVersions.2.id', $english->id));
+            ->has('pageVersions', 2)
+            ->where('pageVersions.0.locale', 'en')
+            ->where('pageVersions.0.version_no', 2)
+            ->where('pageVersions.1.id', $english->id));
 });
 
-it('renders managed public headers in both locales and the three-panel editor workspace', function (): void {
+it('renders managed English public headers and the three-panel editor workspace', function (): void {
     Cache::flush();
     $editor = User::factory()->create();
     $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
@@ -188,9 +209,7 @@ it('renders managed public headers in both locales and the three-panel editor wo
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Public/Home')
             ->has('heroSlider.slides', 3));
-    $this->get('/am')
-        ->assertOk()
-        ->assertSee('ለተቋማት የወደፊት አቅጣጫ በሚወስኑ ውሳኔዎች ላይ የተመሠረተ ማስረጃ።');
+    $this->get('/am')->assertRedirect('/en');
 
     $composition = PageComposition::query()
         ->where('page_key', 'home')
@@ -199,10 +218,7 @@ it('renders managed public headers in both locales and the three-panel editor wo
     $this->actingAs($editor)->withSession(privilegedSession($editor))
         ->get(route('admin.page-compositions.edit', $composition))
         ->assertOk()
-        ->assertSee('የክፍል ቤተ መዘክር')
-        ->assertSee('የገጽ አጠቃላይ ቅርጽ')
-        ->assertSee('የገጽ መቆጣጠሪያዎች')
-        ->assertSee('ሊርትዑ የሚችሉትን ረቂቅ ይፍጠሩ');
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Admin/PageCompositions/Edit'));
 
     $this->actingAs($editor)->withSession(privilegedSession($editor))
         ->post(route('admin.page-compositions.drafts.store', $composition))

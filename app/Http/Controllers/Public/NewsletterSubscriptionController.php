@@ -41,7 +41,7 @@ final class NewsletterSubscriptionController extends Controller
         $subscription = $action->execute($token, $correlation->id());
 
         return redirect()
-            ->route('localized-home', ['locale' => $subscription->locale])
+            ->route('localized-home', ['locale' => 'en'])
             ->with('status', __('Your newsletter subscription is confirmed.'));
     }
 
@@ -54,7 +54,7 @@ final class NewsletterSubscriptionController extends Controller
         $subscription = $action->execute($token, $correlation->id());
 
         return redirect()
-            ->route('localized-home', ['locale' => $subscription->locale])
+            ->route('localized-home', ['locale' => 'en'])
             ->with('status', __('You have been unsubscribed.'));
     }
 }

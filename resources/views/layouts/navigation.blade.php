@@ -51,8 +51,6 @@
         ->values();
 
     $currentLocale = app()->getLocale();
-    $alternateLocale = $currentLocale === 'en' ? 'am' : 'en';
-    $alternateUrl = url('/'.$alternateLocale);
     $effectiveSettings = app(\App\Support\Settings\EffectiveSettings::class);
     $identity = app(\App\Support\Settings\PublicUiSettings::class)->identity();
     $adminBrand = (string) $effectiveSettings->effective('site.short_name');
@@ -168,9 +166,6 @@
             <a class="mobile-link gap-3" href="{{ route('profile.edit') }}">
                 <x-admin.icon name="profile" class="size-5 shrink-0" />{{ __('Profile and security') }}
             </a>
-            <a class="mobile-link gap-3" href="{{ $alternateUrl }}" hreflang="{{ $alternateLocale }}" lang="{{ $alternateLocale }}">
-                <x-admin.icon name="external" class="size-5 shrink-0" />{{ $alternateLocale === 'am' ? 'አማርኛ' : 'English' }}
-            </a>
             <a class="mobile-link gap-3" href="{{ route('localized-home', ['locale' => $currentLocale]) }}">
                 <x-admin.icon name="external" class="size-5 shrink-0" />{{ __('View public website') }}
             </a>
@@ -186,13 +181,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            {{-- Language is a labelled control, never a flag. --}}
-            <a
-                class="hidden min-h-11 items-center rounded-lg border border-edge px-3 text-xs font-bold uppercase text-brand-900 hover:border-action-500 hover:text-action-700 sm:inline-flex"
-                href="{{ $alternateUrl }}"
-                hreflang="{{ $alternateLocale }}"
-                lang="{{ $alternateLocale }}"
-            >{{ $alternateLocale }}</a>
 
             <a class="button-tertiary hidden sm:inline-flex" href="{{ route('localized-home', ['locale' => $currentLocale]) }}">{{ __('View website') }}</a>
 
@@ -210,7 +198,6 @@
                         <p class="truncate text-xs text-muted">{{ Auth::user()->email }}</p>
                     </div>
                     <x-dropdown-link :href="route('profile.edit')">{{ __('Profile and security') }}</x-dropdown-link>
-                    <x-dropdown-link :href="$alternateUrl">{{ $alternateLocale === 'am' ? 'አማርኛ' : 'English' }}</x-dropdown-link>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-dropdown-link :href="route('logout')" data-logout>{{ __('Sign out') }}</x-dropdown-link>

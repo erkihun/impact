@@ -28,7 +28,7 @@ it('invites and activates a staff account through a one-use token', function ():
         ->post('/admin/users/invitations', [
             'name' => 'Invited Editor',
             'email' => 'invited@example.test',
-            'locale' => 'am',
+            'locale' => 'en',
             'roles' => [$editor->id],
         ])
         ->assertRedirect()

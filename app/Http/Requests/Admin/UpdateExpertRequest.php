@@ -30,7 +30,7 @@ final class UpdateExpertRequest extends FormRequest
             'version_id' => [
                 'nullable',
                 'uuid',
-                Rule::exists('expert_versions', 'id')->where('expert_id', $expertId),
+                Rule::exists('expert_versions', 'id')->where('expert_id', $expertId)->where('locale', 'en'),
             ],
             'user_id' => ['nullable', 'uuid', Rule::exists('users', 'id')],
             'status' => ['required', Rule::in(['draft', 'published', 'unpublished', 'archived'])],

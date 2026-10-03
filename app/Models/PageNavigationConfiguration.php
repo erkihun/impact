@@ -27,6 +27,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 final class PageNavigationConfiguration extends Model
 {
+    protected static function booted(): void
+    {
+        static::addGlobalScope('english', fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where($query->getModel()->qualifyColumn('locale'), 'en'));
+    }
+
     use HasBinaryUuid;
 
     protected $guarded = ['id'];

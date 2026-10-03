@@ -19,7 +19,7 @@ export function Errors({ errors }) {
 export function Field({ form, name, label: title, type = 'text', options = [], help, ...props }) {
     const generated = useId(); const id = props.id ?? `field-${name}-${generated}`; const { t } = useWorkspace();
     const value = form.data[name]; const error = form.errors[name];
-    const opts = (Array.isArray(options) ? options.map(o => typeof o === 'object' ? o : ({ value: o, label: label(o) })) : Object.entries(options).map(([value, label]) => ({ value, label }))).map(option => name === 'locale' ? { ...option, label: ({ en: 'English', am: 'አማርኛ' }[option.value] ?? option.label) } : option);
+    const opts = (Array.isArray(options) ? options.map(o => typeof o === 'object' ? o : ({ value: o, label: label(o) })) : Object.entries(options).map(([value, label]) => ({ value, label })));
     const common = { ...props, id, name, 'aria-invalid': error ? true : undefined, 'aria-describedby': [help && `${id}-help`, error && `${id}-error`].filter(Boolean).join(' ') || undefined };
     let input;
     if (type === 'checkbox') input = <input {...common} type="checkbox" checked={!!value} onChange={e => form.setData(name, e.target.checked)} className="rounded" />;

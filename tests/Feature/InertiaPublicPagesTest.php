@@ -9,8 +9,8 @@ beforeEach(function (): void {
     $this->withHeader('X-Inertia-Version', app(HandleInertiaRequests::class)->version(request()) ?? '');
 });
 
-it('serves migrated public routes through Inertia in both languages', function (string $path, string $component): void {
-    foreach (['en', 'am'] as $locale) {
+it('serves migrated public routes through Inertia in English', function (string $path, string $component): void {
+    foreach (['en'] as $locale) {
         $this->get("/{$locale}{$path}", ['X-Inertia' => 'true'])
             ->assertOk()
             ->assertHeader('X-Inertia', 'true')
@@ -48,7 +48,7 @@ it('supplies fresh metadata for client visits and preserves search indexing rule
         ->assertOk()
         ->assertJsonPath('props.meta.robots', 'noindex,follow')
         ->assertJsonPath('props.site.seo.canonicalUrl', url('/en/search'))
-        ->assertJsonPath('props.site.locale.alternateUrl', url('/am/search'))
+        ->assertJsonPath('props.site.locale.alternateUrl', null)
         ->assertJsonPath('props.site.seo.defaultLocaleUrl', url('/en'));
 });
 

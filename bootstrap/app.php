@@ -45,10 +45,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnforceHttps::class,
             AddSecurityHeaders::class,
             AssignCorrelationId::class,
-            SetLocale::class,
         ]);
 
         $middleware->web(append: [
+            SetLocale::class,
             HandleInertiaRequests::class,
         ]);
 

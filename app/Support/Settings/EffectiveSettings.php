@@ -84,7 +84,7 @@ final readonly class EffectiveSettings
                 : null;
         } else {
             $environmentScope = 'environment:'.app()->environment();
-            $localeScope = 'locale:'.($locale ?? app()->getLocale());
+            $localeScope = 'locale:en';
             $record = Setting::query()
                 ->where('key', $key)
                 ->whereIn('scope', [$environmentScope, $localeScope, 'global'])
@@ -397,6 +397,10 @@ final readonly class EffectiveSettings
 
     private function normalize(string $key, mixed $value): bool|int|float|string|array|null
     {
+        if (in_array($key, ['localization.default_locale', 'localization.fallback_locale', 'localization.enabled_locales', 'email.default_locale', 'engagement.default_submission_locale'], true)) {
+            return 'en';
+        }
+
         if ($value === null) {
             $rules = SettingCatalog::DEFINITIONS[$key]['rule'] ?? [];
             if (in_array('nullable', $rules, true)) {

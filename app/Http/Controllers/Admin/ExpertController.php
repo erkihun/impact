@@ -36,7 +36,7 @@ final class ExpertController extends Controller
             ->with([
                 'profileMedia',
                 'user',
-                'versions' => fn ($query) => $query->orderBy('locale')->orderByDesc('version_no'),
+                'versions' => fn ($query) => $query->where('locale', 'en')->orderBy('locale')->orderByDesc('version_no'),
             ])
             ->latest()
             ->paginate(min(
@@ -188,7 +188,6 @@ final class ExpertController extends Controller
             ->where('locale', $preferredLocale)
             ->orderByDesc('version_no')
             ->first()
-            ?? $expert->versions()->orderBy('locale')->orderByDesc('version_no')->first()
             ?? new ExpertVersion([
                 'expert_id' => $expert->id,
                 'locale' => $preferredLocale,

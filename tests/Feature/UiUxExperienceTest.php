@@ -13,8 +13,8 @@ it('renders the public editorial shell with accessible desktop and mobile naviga
             ->where('ui.skip', 'Skip to content')
             ->where('ui.primaryNavigation', 'Primary navigation')
             ->where('ui.requestConsultation', 'Request a consultation')
-            ->where('site.locale.alternate', 'am')
-            ->where('site.locale.alternateUrl', route('about.show', ['locale' => 'am']))
+            ->where('site.locale.alternate', null)
+            ->where('site.locale.alternateUrl', null)
             ->has('navigation.mobile', 10));
 });
 
@@ -69,7 +69,7 @@ it('renders localized error states without exposing implementation details', fun
 ]);
 
 it('publishes the legal, cookie and accessibility pages in both locales', function (string $path, string $heading): void {
-    foreach (['en', 'am'] as $locale) {
+    foreach (['en'] as $locale) {
         $this->get("/{$locale}/{$path}")->assertOk();
     }
 
@@ -185,56 +185,4 @@ it('defines the approved executive editorial core color tokens', function (): vo
         ->toContain("runtimeScale('knowledge')")
         ->toContain("runtimeScale('gold')")
         ->toContain('--palette-${token}');
-});
-
-it('has an Amharic translation for every literal Blade translation key', function (): void {
-    /** @var array<string, string> $translations */
-    $translations = json_decode(
-        File::get(lang_path('am.json')),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
-
-    $missing = [];
-    $pattern = '/__\(\s*([\'"])((?:\\\\.|(?!\1).)*)\1/sU';
-
-    foreach (File::allFiles(resource_path('views')) as $file) {
-        preg_match_all($pattern, $file->getContents(), $matches);
-
-        foreach ($matches[2] ?? [] as $key) {
-            $normalizedKey = str_replace("\\'", "'", (string) $key);
-
-            if (! array_key_exists($normalizedKey, $translations)) {
-                $missing[] = $normalizedKey;
-            }
-        }
-    }
-
-    expect(array_values(array_unique($missing)))->toBe([]);
-});
-
-it('has an Amharic translation for every literal public controller translation key', function (): void {
-    /** @var array<string, string> $translations */
-    $translations = json_decode(
-        File::get(lang_path('am.json')),
-        true,
-        flags: JSON_THROW_ON_ERROR,
-    );
-
-    $missing = [];
-    $pattern = '/__\(\s*([\'"])((?:\\\\.|(?!\1).)*)\1/sU';
-
-    foreach (File::allFiles(app_path('Http/Controllers/Public')) as $file) {
-        preg_match_all($pattern, $file->getContents(), $matches);
-
-        foreach ($matches[2] ?? [] as $key) {
-            $normalizedKey = str_replace("\\'", "'", (string) $key);
-
-            if (! array_key_exists($normalizedKey, $translations)) {
-                $missing[] = $normalizedKey;
-            }
-        }
-    }
-
-    expect(array_values(array_unique($missing)))->toBe([]);
 });

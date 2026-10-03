@@ -26,7 +26,7 @@ final class UploadMediaRequest extends FormRequest
             'visibility' => ['required', Rule::enum(MediaVisibility::class)],
             'title' => ['nullable', 'string', 'max:220'],
             'alt_text' => ['nullable', 'string', 'max:500'],
-            'locale' => ['nullable', Rule::in(config('impact.locales.supported', ['en', 'am']))],
+            'locale' => ['nullable', Rule::in(config('impact.locales.supported', ['en']))],
         ];
     }
 

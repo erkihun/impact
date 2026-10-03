@@ -50,15 +50,6 @@ final class HandleInertiaRequests extends Middleware
     {
         $experience = app(PublicUiSettings::class)->viewData();
         $current = $experience['localization']['current'];
-        $alternate = $experience['localization']['alternate'];
-        $alternateUrl = $alternate
-            ? (preg_replace(
-                '#/'.preg_quote($current, '#').'(?=/|$)#',
-                '/'.$alternate,
-                $request->url(),
-                1,
-            ) ?: route('localized-home', ['locale' => $alternate]))
-            : null;
 
         return [
             'identity' => $experience['identity'],
@@ -75,9 +66,9 @@ final class HandleInertiaRequests extends Middleware
             'maintenance' => $experience['maintenance'],
             'locale' => [
                 'current' => $current,
-                'alternate' => $alternate,
-                'alternateUrl' => $alternateUrl,
-                'alternateLabel' => $alternate === 'am' ? 'አማርኛ' : 'English',
+                'alternate' => null,
+                'alternateUrl' => null,
+                'alternateLabel' => null,
             ],
             'csrfToken' => csrf_token(),
             'routes' => [

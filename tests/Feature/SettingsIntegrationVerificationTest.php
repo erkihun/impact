@@ -33,13 +33,13 @@ it('resolves explicit precedence and rejects invalid stored booleans', function 
     Setting::query()->create([
         'key' => 'site.name',
         'type' => 'string',
-        'scope' => 'locale:am',
-        'value' => 'የተፅዕኖ አማካሪ',
+        'scope' => 'locale:en',
+        'value' => 'English scoped identity',
     ]);
 
     $settings = app(EffectiveSettings::class);
-    expect($settings->resolve('site.name', 'am')->value)->toBe('የተፅዕኖ አማካሪ')
-        ->and($settings->resolve('site.name', 'am')->source)->toBe('Locale-scoped setting');
+    expect($settings->resolve('site.name', 'en')->value)->toBe('English scoped identity')
+        ->and($settings->resolve('site.name', 'en')->source)->toBe('Locale-scoped setting');
 
     Setting::query()->where('key', 'search.enabled')->where('scope', 'global')
         ->update(['value' => 'not-a-boolean']);

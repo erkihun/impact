@@ -1,20 +1,9 @@
-@import '@fontsource-variable/noto-sans-ethiopic';
 @import './workspace-brand.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-    font-family: 'Abyssinica SIL';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src:
-        local('Abyssinica SIL'),
-        local('AbyssinicaSIL-Regular'),
-        url('../fonts/abyssinica-sil/AbyssinicaSIL-Regular.woff2') format('woff2');
-}
 
 @layer base {
     /*
@@ -195,21 +184,6 @@
     .setting-high-contrast {
         --color-border-default: var(--color-text-default);
         --color-border-strong: var(--color-primary-900);
-    }
-
-    html[lang='am'] body,
-    html[lang='am'] button,
-    html[lang='am'] input,
-    html[lang='am'] select,
-    html[lang='am'] textarea,
-    html[lang='am'] .font-sans,
-    html[lang='am'] .font-serif,
-    html[lang='am'] .font-editorial {
-        font-family: 'Noto Sans Ethiopic Variable', 'Abyssinica SIL', system-ui, sans-serif;
-    }
-
-    html[lang='am'] body {
-        line-height: 1.7;
     }
 
     a,
@@ -461,10 +435,6 @@
         @apply text-[0.68rem] font-black uppercase tracking-[0.24em] text-action-700;
     }
 
-    html[lang='am'] .eyebrow {
-        @apply tracking-[0.08em];
-    }
-
     .heading-1 {
         @apply font-editorial text-3xl font-black leading-[1.1] tracking-[-0.03em] sm:text-4xl lg:text-5xl;
     }
@@ -475,13 +445,6 @@
 
     .heading-3 {
         @apply font-editorial text-xl font-bold leading-snug text-brand-900 sm:text-2xl;
-    }
-
-    html[lang='am'] .heading-1,
-    html[lang='am'] .heading-2,
-    html[lang='am'] .heading-3 {
-        @apply tracking-normal;
-        line-height: 1.35;
     }
 
     .page-hero {

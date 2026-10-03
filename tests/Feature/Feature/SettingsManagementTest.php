@@ -87,8 +87,8 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
         ->get('/admin/settings/homepage')
         ->assertOk()
         ->assertSee('Slider behavior')
-        ->assertSee('Slide 1 heading — English')
-        ->assertSee('Slide 1 heading — Amharic')
+        ->assertSee('Slide 1 heading')
+        ->assertDontSee('Amharic')
         ->assertSee('Slide 3 image')
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->where('definitions', fn ($definitions): bool => collect($definitions)->contains(fn ($definition): bool => $definition['type'] === 'media_reference')));
@@ -100,7 +100,6 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
             'homepage__hero__interval_seconds' => '9',
             'homepage__hero__slide_1__order' => '30',
             'homepage__hero__slide_1__heading_en' => 'Managed English hero statement.',
-            'homepage__hero__slide_1__heading_am' => 'በአስተዳዳሪ የተቀናበረ የአማርኛ ዋና መልዕክት።',
             'homepage__hero__slide_1__image' => UploadedFile::fake()->image('hero-slide.webp', 1440, 900),
             'homepage__hero__slide_2__order' => '10',
             'change_reason' => 'Approved homepage hero rotation update.',
@@ -128,10 +127,7 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
             ->where('heroSlider.autoplay', false)
             ->where('heroSlider.interval_ms', 9000));
 
-    $this->get('/am')
-        ->assertOk()
-        ->assertSee('በአስተዳዳሪ የተቀናበረ የአማርኛ ዋና መልዕክት።')
-        ->assertInertia(fn (AssertableInertia $page) => $page->component('Public/Home'));
+    $this->get('/am')->assertRedirect('/en');
 });
 
 it('rejects invalid homepage hero rotation settings', function (): void {

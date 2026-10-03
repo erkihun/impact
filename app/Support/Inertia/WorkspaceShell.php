@@ -30,7 +30,7 @@ final class WorkspaceShell
             'sidebarDefault' => $settings->string('appearance.default_admin_sidebar_state'),
             'loginNotice' => $settings->nullableString('security.login_notice'),
             'securityEmail' => $settings->nullableString('security.contact_email'),
-            'text' => app()->getLocale() === 'en' ? [] : json_decode(file_get_contents(lang_path(app()->getLocale().'.json')), true),
+            'text' => [],
         ];
     }
 }

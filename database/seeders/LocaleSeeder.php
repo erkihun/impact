@@ -11,9 +11,9 @@ final class LocaleSeeder extends Seeder
 {
     public function run(): void
     {
+        Locale::query()->where('code', '!=', 'en')->update(['enabled' => false, 'is_default' => false]);
         foreach ([
             ['code' => 'en', 'name' => 'English', 'native_name' => 'English', 'is_default' => true, 'sort_order' => 1],
-            ['code' => 'am', 'name' => 'Amharic', 'native_name' => 'አማርኛ', 'is_default' => false, 'sort_order' => 2],
         ] as $locale) {
             Locale::query()->updateOrCreate(
                 ['code' => $locale['code']],

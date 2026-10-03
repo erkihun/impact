@@ -39,35 +39,52 @@ use Illuminate\Support\Facades\URL;
 
 final class PageComposerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         Gate::authorize('viewAny', PageComposition::class);
 
-        // Paginate logical pages, so translations and older versions never
-        // appear as duplicate entries or split across different list pages.
-        $pages = PageComposition::query()
-            ->select('page_key')
-            ->groupBy('page_key')
-            ->orderBy('page_key')
-            ->paginate(30);
-        $translations = PageComposition::query()
-            ->whereIn('page_key', $pages->getCollection()->pluck('page_key'))
-            ->withCount('sections')
-            ->orderBy('locale')
-            ->latest('version_no')
-            ->get()
-            ->groupBy('page_key');
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', \Illuminate\Validation\Rule::enum(PageCompositionState::class)],
+        ]);
+        $search = strtolower(trim($filters['q'] ?? ''));
+        $search = match ($search) {
+            'homepage' => 'home',
+            'request for proposal' => 'rfp',
+            default => str_replace(' ', '.', $search),
+        };
+        // Filter the newest English version of each page, rather than finding
+        // an older published revision when the current draft has a different status.
+        $latest = PageComposition::query()->whereNotExists(function ($query): void {
+            $query->selectRaw('1')->from('page_compositions as newer')
+                ->whereColumn('newer.page_key', 'page_compositions.page_key')
+                ->where('newer.locale', 'en')->whereNull('newer.deleted_at')
+                ->whereColumn('newer.version_no', '>', 'page_compositions.version_no');
+        });
+        $summary = [
+            'total' => (clone $latest)->count(),
+            'published' => (clone $latest)->where('state', PageCompositionState::Published)->count(),
+            'in_progress' => (clone $latest)->whereIn('state', [
+                PageCompositionState::Draft, PageCompositionState::InReview, PageCompositionState::ChangesRequested,
+                PageCompositionState::Approved, PageCompositionState::Scheduled,
+            ])->count(),
+        ];
+        $pages = $latest
+            ->when(filled($filters['q'] ?? null), fn ($query) => $query->where(
+                'page_key', 'like', '%'.$search.'%',
+            ))
+            ->when(filled($filters['state'] ?? null), fn ($query) => $query->where('state', $filters['state']))
+            ->withCount('sections')->orderBy('page_key')->paginate(30)->withQueryString();
         $pages->through(fn (PageComposition $page): array => [
             'page_key' => $page->page_key,
-            'translations' => $translations->get($page->page_key)
-                ->unique('locale')->values()
-                ->map(fn (PageComposition $translation): array => $translation->only([
-                    'id', 'locale', 'version_no', 'state', 'sections_count',
-                ]))->all(),
+            'translations' => [$page->only(['id', 'locale', 'version_no', 'state', 'sections_count', 'updated_at'])],
         ]);
 
         return WorkspacePage::render('admin.page-compositions.index', [
             'compositions' => $pages,
+            'summary' => $summary,
+            'filters' => ['q' => $filters['q'] ?? '', 'state' => $filters['state'] ?? ''],
+            'states' => PageCompositionState::cases(),
         ]);
     }
 

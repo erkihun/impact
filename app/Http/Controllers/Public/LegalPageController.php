@@ -286,7 +286,7 @@ final class LegalPageController extends Controller
                         __('Form labels, instructions and error messages are connected to their fields so that screen readers announce them.'),
                         __('Pages remain usable at 200 percent zoom and reflow to narrow screens without loss of information.'),
                         __('Informative images have meaningful alternative text, and animation respects a reduced-motion preference.'),
-                        __('Content is published in English and Amharic, with the page language identified for assistive technology.'),
+                        __('Content is published in English, with the page language identified for assistive technology.'),
                     ],
                 ],
                 [

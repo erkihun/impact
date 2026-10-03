@@ -27,9 +27,7 @@ it('renders localized public RFP and contact intake pages', function (): void {
             ->where('form.multipart', true)
             ->where('form.hidden.type', 'rfp')
             ->where('form.action', route('rfp-requests.store', ['locale' => 'en'])));
-    $this->get('/am/request-for-proposal')
-        ->assertOk()
-        ->assertSee('የፕሮጀክት መግለጫዎን በደህንነት ያጋሩ።');
+    $this->get('/am/request-for-proposal')->assertRedirect('/en/request-for-proposal');
     $this->get('/en/contact')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page

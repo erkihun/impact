@@ -8,7 +8,6 @@ use App\Enums\Settings\SettingType;
 use App\Models\Setting;
 use App\Support\SettingCatalog;
 use Illuminate\Support\Facades\Schema;
-use Throwable;
 
 final readonly class SettingsVerificationService
 {
@@ -29,9 +28,11 @@ final readonly class SettingsVerificationService
         $stored = Schema::hasTable('settings')
             ? Setting::query()->get(['key', 'scope', 'type', 'value', 'updated_at'])->groupBy('key')
             : collect();
-        $translations = $this->amharicTranslations();
 
         foreach ($stored->keys()->diff(array_keys(SettingCatalog::DEFINITIONS)) as $unknownKey) {
+            if (preg_match('/^homepage\.hero\.slide_[1-3]\.(eyebrow|heading|summary)_am$/', (string) $unknownKey)) {
+                continue;
+            }
             $issues[] = $this->issue('error', 'UNKNOWN_DATABASE_KEY', (string) $unknownKey, 'Stored key is not registered.');
         }
 
@@ -60,13 +61,6 @@ final readonly class SettingsVerificationService
                     $issues[] = $this->issue('error', 'STORED_TYPE_MISMATCH', $key, "Stored type [{$record->type}] does not match the registry.");
                 }
             }
-            if (! isset($translations[$definition['label']])) {
-                $issues[] = $this->issue('warning', 'MISSING_AMHARIC_LABEL', $key, 'Amharic label translation is missing.');
-            }
-            if (! isset($translations[$definition['description']])) {
-                $issues[] = $this->issue('warning', 'MISSING_AMHARIC_HELP', $key, 'Amharic help translation is missing.');
-            }
-
             $rows[] = [
                 'key' => $key,
                 'category' => $definition['category'],
@@ -148,20 +142,4 @@ final readonly class SettingsVerificationService
             ], true);
     }
 
-    /** @return array<string, string> */
-    private function amharicTranslations(): array
-    {
-        try {
-            $translations = json_decode(
-                (string) file_get_contents(lang_path('am.json')),
-                true,
-                512,
-                JSON_THROW_ON_ERROR,
-            );
-
-            return is_array($translations) ? $translations : [];
-        } catch (Throwable) {
-            return [];
-        }
-    }
 }

@@ -77,9 +77,9 @@ it('supports idempotent one-click unsubscribe and suppresses future marketing', 
     );
 
     $this->get($unsubscribeUrl)
-        ->assertRedirect(route('localized-home', ['locale' => 'am']));
+        ->assertRedirect(route('localized-home', ['locale' => 'en']));
     $this->get($unsubscribeUrl)
-        ->assertRedirect(route('localized-home', ['locale' => 'am']));
+        ->assertRedirect(route('localized-home', ['locale' => 'en']));
 
     expect($subscription->refresh()->status)->toBe(NewsletterStatus::Unsubscribed)
         ->and($subscription->unsubscribed_at)->not->toBeNull()

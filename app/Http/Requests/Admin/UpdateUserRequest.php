@@ -35,7 +35,7 @@ final class UpdateUserRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->route('user')),
             ],
-            'locale' => ['required', Rule::exists('locales', 'code')->where('enabled', true)],
+            'locale' => ['required', Rule::in(['en'])],
             'status' => ['required', Rule::enum(UserStatus::class)],
             'expires_at' => ['nullable', 'date', 'after:today'],
             'roles' => ['required', 'array', 'min:1'],

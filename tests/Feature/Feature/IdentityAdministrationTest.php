@@ -27,7 +27,7 @@ it('updates a user, audits the change, and revokes existing sessions', function 
         ->patch("/admin/users/{$target->id}", [
             'name' => 'Updated Person',
             'email' => 'updated@example.test',
-            'locale' => 'am',
+            'locale' => 'en',
             'status' => 'suspended',
             'roles' => [$reviewer->id],
         ])
@@ -84,4 +84,31 @@ it('denies user administration without the server-side permission', function ():
     $this->actingAs(User::factory()->create())
         ->get('/admin/users')
         ->assertForbidden();
+});
+
+it('provides readable permission descriptions and assigned user counts for role management', function (): void {
+    $administrator = User::factory()->create();
+    $administrator->roles()->attach(Role::query()->where('code', 'super_administrator')->sole());
+    $editor = Role::query()->where('code', 'editor')->sole();
+    User::factory()->create()->roles()->attach($editor);
+
+    $this->actingAs($administrator)->withSession(privilegedSession($administrator))
+        ->get('/admin/roles')->assertOk()->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->component('Admin/Roles/Index')
+            ->where('roles', function ($roles) use ($editor): bool {
+                $role = collect($roles)->firstWhere('id', $editor->id);
+                return $role['users_count'] === 1
+                    && collect($role['permissions'])->every(fn ($permission): bool => filled($permission['description'] ?? null));
+            }));
+    $this->get("/admin/roles/{$editor->id}/edit")->assertOk()->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+        ->component('Admin/Roles/Edit')
+        ->where('managedRole.users_count', 1)
+        ->has('permissions.content'));
+});
+
+it('denies role listing and editing without role management permission', function (): void {
+    $user = User::factory()->create();
+    $role = Role::query()->where('code', 'editor')->sole();
+    $this->actingAs($user)->get('/admin/roles')->assertForbidden();
+    $this->get("/admin/roles/{$role->id}/edit")->assertForbidden();
 });

@@ -16,8 +16,8 @@ return [
         'recent_mfa_required' => env('RECENT_MFA_REQUIRED', true),
     ],
     'locales' => [
-        'default' => env('IMPACT_DEFAULT_LOCALE', 'en'),
-        'supported' => ['en', 'am'],
+        'default' => 'en',
+        'supported' => ['en'],
     ],
     'privacy' => [
         'policy_version' => env('PRIVACY_POLICY_VERSION', '2026-07-26'),

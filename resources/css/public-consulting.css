@@ -1,6 +1,6 @@
 /* Shared public layout with Impact's dark blue and orange brand palette. */
 html .public-glass {
-    --m-font: 'DM Sans Variable', 'Noto Sans Ethiopic Variable', system-ui, sans-serif;
+    --m-font: 'DM Sans Variable', system-ui, sans-serif;
     --m-orange: #f28c28;
     --m-orange-strong: #c2550a;
     --m-orange-ink: #b4500a;
@@ -63,11 +63,7 @@ html .public-glass {
     font-family: var(--m-font);
 }
 
-html[lang='am'] .public-glass {
-    --m-font: 'Noto Sans Ethiopic Variable', 'DM Sans Variable', system-ui, sans-serif;
-}
-
-html:not([lang='am']) .public-glass :is(h1, h2, .m-title, .home-signature-title, .heading-1, .heading-2) {
+html .public-glass :is(h1, h2, .m-title, .home-signature-title, .heading-1, .heading-2) {
     font-family: 'DM Serif Display', Georgia, serif;
     font-weight: 400;
     letter-spacing: -0.035em;
@@ -136,12 +132,6 @@ html .public-glass .home-signature-title {
     color: #ffffff;
     font-size: clamp(3rem, 5.8vw, 5.75rem);
     line-height: 1.03;
-}
-
-html[lang='am'] .public-glass .home-signature-title {
-    font-family: var(--m-font);
-    font-size: clamp(1.875rem, 3.2vw, 3rem);
-    line-height: 1.35;
 }
 
 html .public-glass .home-signature-summary {
@@ -405,10 +395,6 @@ html .public-glass .public-footer .border-white\/10 {
 @media (max-width: 47.99rem) {
     html .public-glass .home-signature-title {
         font-size: clamp(2.25rem, 9vw, 3.5rem);
-    }
-
-    html[lang='am'] .public-glass .home-signature-title {
-        font-size: 1.875rem;
     }
 
     html .public-glass .home-hero-stat {

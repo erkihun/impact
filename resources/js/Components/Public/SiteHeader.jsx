@@ -111,11 +111,6 @@ function MobileSheet({ open, onClose, navigation, site, ui }) {
                             {site.features.search && (
                                 <AppLink className="button-secondary" href={site.routes.search}><Icon name="search" className="size-4" />{ui.search}</AppLink>
                             )}
-                            {site.locale.alternateUrl && (
-                                <a className="button-secondary" href={site.locale.alternateUrl} hrefLang={site.locale.alternate} lang={site.locale.alternate}>
-                                    {site.locale.alternateLabel}
-                                </a>
-                            )}
                         </div>
                         {site.features.consultation && (
                             <AppLink className="button-primary w-full" href={site.routes.consultation}>{ui.requestConsultation}</AppLink>
@@ -259,17 +254,6 @@ export default function SiteHeader() {
                             <AppLink href={site.routes.search} className="icon-link" aria-label={ui.search}>
                                 <Icon name="search" strokeWidth={2} />
                             </AppLink>
-                        )}
-                        {site.locale.alternateUrl && (
-                            <a
-                                href={site.locale.alternateUrl}
-                                className="glass-lang"
-                                hrefLang={site.locale.alternate}
-                                lang={site.locale.alternate}
-                                aria-label={`${site.locale.alternate.toUpperCase()} – ${site.locale.alternateLabel}`}
-                            >
-                                {site.locale.alternate}
-                            </a>
                         )}
                         {site.features.consultation && (
                             <AppLink className="button-primary ms-1 hidden xl:inline-flex" href={site.routes.consultation}>

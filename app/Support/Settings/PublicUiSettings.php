@@ -18,10 +18,9 @@ final readonly class PublicUiSettings
      */
     public function viewData(): array
     {
-        $enabledLocales = $this->settings->array('localization.enabled_locales');
-        $currentLocale = app()->getLocale();
-        $alternateLocale = collect($enabledLocales)
-            ->first(fn (string $locale): bool => $locale !== $currentLocale);
+        $enabledLocales = ['en'];
+        $currentLocale = 'en';
+        $alternateLocale = null;
 
         return [
             'identity' => $this->identity(),

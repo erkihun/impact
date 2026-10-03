@@ -4,7 +4,7 @@ import { Panel, Status, label, useWorkspace } from '../../Components/Workspace/U
 import Icon from '../../Components/Icon';
 
 const tasks = [
- ['pages.view', 'Website pages', 'Edit page sections in Amharic and English.', '/admin/page-compositions', 'about'],
+ ['pages.view', 'Website pages', 'Edit website pages and their sections.', '/admin/page-compositions', 'about'],
  ['content.view', 'Content', 'Manage articles, services and published work.', '/admin/content', 'rfp'],
  ['experts.manage', 'Experts', 'Update expert profiles and biographies.', '/admin/experts', 'experts'],
  ['media.view', 'Media library', 'Find and manage website images and files.', '/admin/media', 'media'],

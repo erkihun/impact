@@ -31,7 +31,7 @@ final readonly class HomepageHeroSettings
      */
     public function viewData(string $locale): array
     {
-        $locale = $locale === 'am' ? 'am' : 'en';
+        $locale = 'en';
         $slides = [];
 
         for ($slot = 1; $slot <= self::SLIDE_COUNT; $slot++) {

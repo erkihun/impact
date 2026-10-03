@@ -46,10 +46,10 @@ final class PublicContentSeeder extends Seeder
 
         DB::transaction(function () use ($author): void {
             foreach ([
-                ['STRATEGY', 'strategy-transformation', 'Strategy and transformation', 'ስትራቴጂ እና ተቋማዊ ለውጥ', 'Translate ambition into a focused strategy, operating model and delivery roadmap.'],
-                ['INSTITUTION', 'institutional-strengthening', 'Institutional strengthening', 'ተቋማዊ ማጠናከር', 'Build the systems, structures and capabilities that make performance sustainable.'],
-                ['RESEARCH', 'research-learning', 'Research, monitoring and learning', 'ጥናት፣ ክትትል እና ትምህርት', 'Use credible evidence to make decisions, learn quickly and demonstrate impact.'],
-            ] as $index => [$code, $slug, $name, $amharicName, $summary]) {
+                ['STRATEGY', 'strategy-transformation', 'Strategy and transformation', 'Translate ambition into a focused strategy, operating model and delivery roadmap.'],
+                ['INSTITUTION', 'institutional-strengthening', 'Institutional strengthening', 'Build the systems, structures and capabilities that make performance sustainable.'],
+                ['RESEARCH', 'research-learning', 'Research, monitoring and learning', 'Use credible evidence to make decisions, learn quickly and demonstrate impact.'],
+            ] as $index => [$code, $slug, $name, $summary]) {
                 $service = Service::query()->create([
                     'code' => $code,
                     'status' => 'published',
@@ -61,7 +61,7 @@ final class PublicContentSeeder extends Seeder
 
                 foreach ([
                     ['en', $slug, $name, $summary],
-                    ['am', $slug.'-am', $amharicName, 'ውስብስብ ፈተናዎችን ወደ ግልጽ፣ ተግባራዊ እና ዘላቂ ውጤት እንቀይራለን።'],
+
                 ] as [$locale, $localizedSlug, $localizedName, $localizedSummary]) {
                     $version = ServiceVersion::query()->create([
                         'service_id' => $service->id,
@@ -71,16 +71,10 @@ final class PublicContentSeeder extends Seeder
                         'name' => $localizedName,
                         'summary' => $localizedSummary,
                         'problem_statement' => $localizedSummary,
-                        'approach' => $locale === 'am'
-                            ? 'ምርመራን፣ የጋራ ንድፍንና የተደራጀ ትግበራን እናጣምራለን። እያንዳንዱ ትብብር ግልጽ አስተዳደር፣ ተግባራዊ ምዕራፎችና የአቅም ሽግግር ያካትታል።'
-                            : 'We combine diagnosis, co-design and disciplined implementation. Every engagement includes clear governance, practical milestones and capability transfer.',
-                        'deliverables' => $locale === 'am'
-                            ? ['ምርመራ', 'ስትራቴጂ', 'የአፈጻጸም ፍኖተ ካርታ']
-                            : ['Diagnostic', 'Strategy', 'Delivery roadmap'],
-                        'benefits' => $locale === 'am'
-                            ? 'የተሻሉ ውሳኔዎች፣ ግልጽ ተጠያቂነትና ሊለካ የሚችል እድገት።'
-                            : 'Stronger decisions, clearer accountability and measurable progress.',
-                        'cta_label' => $locale === 'am' ? 'ስለዚህ አገልግሎት ይወያዩ' : 'Discuss this service',
+                        'approach' => 'We combine diagnosis, co-design and disciplined implementation. Every engagement includes clear governance, practical milestones and capability transfer.',
+                        'deliverables' => ['Diagnostic', 'Strategy', 'Delivery roadmap'],
+                        'benefits' => 'Stronger decisions, clearer accountability and measurable progress.',
+                        'cta_label' => 'Discuss this service',
                         'workflow_state' => 'published',
                     ]);
 
@@ -99,10 +93,10 @@ final class PublicContentSeeder extends Seeder
             }
 
             foreach ([
-                ['PUBLIC', 'public-institutions', 'Public institutions', 'የመንግሥት ተቋማት'],
-                ['SOCIAL', 'social-impact', 'Social impact', 'ማኅበራዊ ተፅዕኖ'],
-                ['BUSINESS', 'responsible-business', 'Responsible business', 'ኃላፊነት ያለው ንግድ'],
-            ] as $index => [$code, $slug, $name, $amharicName]) {
+                ['PUBLIC', 'public-institutions', 'Public institutions'],
+                ['SOCIAL', 'social-impact', 'Social impact'],
+                ['BUSINESS', 'responsible-business', 'Responsible business'],
+            ] as $index => [$code, $slug, $name]) {
                 $industry = Industry::query()->create([
                     'code' => $code,
                     'status' => 'published',
@@ -110,22 +104,16 @@ final class PublicContentSeeder extends Seeder
                     'featured' => true,
                 ]);
 
-                foreach ([['en', $slug, $name], ['am', $slug.'-am', $amharicName]] as [$locale, $localizedSlug, $localizedName]) {
+                foreach ([['en', $slug, $name], ] as [$locale, $localizedSlug, $localizedName]) {
                     IndustryVersion::query()->create([
                         'industry_id' => $industry->id,
                         'locale' => $locale,
                         'version_no' => 1,
                         'slug' => $localizedSlug,
                         'name' => $localizedName,
-                        'summary' => $locale === 'am'
-                            ? 'በፖሊሲ፣ በተቋማዊ እውነታና በባለድርሻ ፍላጎቶች ላይ የተመሠረተ ዘርፍ-ተኮር ምክር።'
-                            : 'Sector-aware advice grounded in policy, institutional reality and stakeholder needs.',
-                        'overview' => $locale === 'am'
-                            ? 'ባለሙያዎቻችን የዘርፍ እውቀትን ከስትራቴጂ፣ ከድርጅታዊ ንድፍ፣ ከጥናትና ከትግበራ ልምድ ጋር ያጣምራሉ።'
-                            : 'Our specialists combine sector knowledge with strategy, organizational design, research and implementation expertise.',
-                        'challenges' => $locale === 'am'
-                            ? 'ውስብስብ ተልዕኮዎች፣ ውስን ሀብቶች፣ የሚለዋወጡ የባለድርሻ ተስፋዎችና ሊለኩ የሚችሉ ውጤቶች አስፈላጊነት።'
-                            : 'Complex mandates, constrained resources, shifting stakeholder expectations and the need for measurable outcomes.',
+                        'summary' => 'Sector-aware advice grounded in policy, institutional reality and stakeholder needs.',
+                        'overview' => 'Our specialists combine sector knowledge with strategy, organizational design, research and implementation expertise.',
+                        'challenges' => 'Complex mandates, constrained resources, shifting stakeholder expectations and the need for measurable outcomes.',
                         'workflow_state' => 'published',
                     ]);
                 }
@@ -224,7 +212,7 @@ final class PublicContentSeeder extends Seeder
                 ]);
             });
 
-            foreach (['en', 'am'] as $locale) {
+            foreach (['en'] as $locale) {
                 Event::query()->create([
                     'status' => 'registration_open',
                     'format' => 'hybrid',

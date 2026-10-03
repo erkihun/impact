@@ -3,11 +3,6 @@
     $identity = $publicExperience['identity'];
     $isPublic = str_starts_with($page['component'], 'Public/');
     $currentLocale = $publicExperience['localization']['current'];
-    $alternateLocale = $publicExperience['localization']['alternate'];
-    $alternateUrl = $alternateLocale
-        ? (preg_replace('#/'.preg_quote($currentLocale, '#').'(?=/|$)#', '/'.$alternateLocale, url()->current(), 1)
-            ?: route('localized-home', ['locale' => $alternateLocale]))
-        : null;
     $meta = $page['props']['meta'] ?? [];
     $status = $page['props']['status'] ?? null;
     $title = filled($meta['title'] ?? null)
@@ -41,9 +36,6 @@
     @if (! $ssr)
     <link rel="canonical" href="{{ url()->current() }}" data-inertia="canonical">
     <link rel="alternate" hreflang="{{ $currentLocale }}" href="{{ url()->current() }}" data-inertia="alternate-current">
-    @if ($alternateLocale && $alternateUrl)
-        <link rel="alternate" hreflang="{{ $alternateLocale }}" href="{{ $alternateUrl }}" data-inertia="alternate-other">
-    @endif
     <link rel="alternate" hreflang="x-default" href="{{ route('localized-home', ['locale' => $publicExperience['localization']['default']]) }}" data-inertia="alternate-default">
     <title data-inertia="">{{ $title }}</title>
     @endif

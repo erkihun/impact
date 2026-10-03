@@ -38,6 +38,7 @@ final class ContentController extends Controller
     {
         Gate::authorize('viewAny', ContentItem::class);
         $items = ContentItem::query()
+            ->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))
             ->with(['currentVersion', 'owner'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->when($request->filled('type'), fn ($query) => $query->where('type', $request->string('type')))
@@ -88,7 +89,7 @@ final class ContentController extends Controller
         EffectiveSettings $settings,
     ): View {
         Gate::authorize('view', $content);
-        $content->load(['currentVersion', 'versions', 'workflowEvents.actor', 'owner']);
+        $content->load(['currentVersion', 'versions' => fn ($query) => $query->where('locale', 'en'), 'workflowEvents.actor', 'owner']);
 
         $state = ContentWorkflowState::from((string) $content->getRawOriginal('status'));
 
@@ -153,6 +154,7 @@ final class ContentController extends Controller
         ContentVersion $version,
     ): View {
         Gate::authorize('view', $content);
+        abort_unless($version->locale === 'en', 404);
         abort_unless((string) $version->content_item_id === (string) $content->getKey(), 404);
 
         return WorkspacePage::render('admin.content.preview', [

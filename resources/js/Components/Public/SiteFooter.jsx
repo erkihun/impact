@@ -60,11 +60,6 @@ export default function SiteFooter() {
                                 {navigation.footer.footer_engage.map((item) => (
                                     <AppLink key={item.href} className="footer-menu-link" href={item.href}>{item.label}</AppLink>
                                 ))}
-                                {site.locale.alternateUrl && (
-                                    <a className="footer-menu-link" href={site.locale.alternateUrl} hrefLang={site.locale.alternate} lang={site.locale.alternate}>
-                                        {site.locale.alternateLabel}
-                                    </a>
-                                )}
                             </div>
                         </nav>
 

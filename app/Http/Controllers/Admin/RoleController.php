@@ -21,14 +21,14 @@ final class RoleController extends Controller
     public function index(): View
     {
         return WorkspacePage::render('admin.roles.index', [
-            'roles' => Role::query()->withCount('users')->with('permissions:id,code')->orderBy('name')->get(),
+            'roles' => Role::query()->withCount('users')->with('permissions:id,code,description')->orderBy('name')->get(),
         ]);
     }
 
     public function edit(Role $role): View
     {
         return WorkspacePage::render('admin.roles.edit', [
-            'managedRole' => $role->load('permissions'),
+            'managedRole' => $role->load('permissions')->loadCount('users'),
             'permissions' => Permission::query()->orderBy('code')->get()->groupBy(
                 fn (Permission $permission): string => str($permission->code)->before('.')->toString(),
             ),

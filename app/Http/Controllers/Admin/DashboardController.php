@@ -30,24 +30,24 @@ final class DashboardController extends Controller
         $openEngagements = [];
 
         if ($user->hasPermission('content.view')) {
-            $metrics['draft_content'] = ContentItem::query()->where('status', 'draft')->count();
-            $metrics['in_review'] = ContentItem::query()->where('status', 'in_review')->count();
+            $metrics['draft_content'] = ContentItem::query()->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))->where('status', 'draft')->count();
+            $metrics['in_review'] = ContentItem::query()->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))->where('status', 'in_review')->count();
             $metrics['scheduled_publications'] = PublicationSchedule::query()
                 ->where('status', 'pending')->count();
-            $metrics['stale_content'] = ContentItem::query()
+            $metrics['stale_content'] = ContentItem::query()->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))
                 ->where('updated_at', '<=', now('UTC')->subDays(
                     $settings->integer('content.stale_content_threshold_days'),
                 ))
                 ->count();
 
-            $awaitingReview = ContentItem::query()
+            $awaitingReview = ContentItem::query()->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))
                 ->with(['currentVersion', 'owner'])
                 ->where('status', 'in_review')
                 ->latest('updated_at')
                 ->limit(5)
                 ->get();
 
-            $recentWork = ContentItem::query()
+            $recentWork = ContentItem::query()->whereHas('currentVersion', fn ($query) => $query->where('locale', 'en'))
                 ->with(['currentVersion', 'owner'])
                 ->latest('updated_at')
                 ->limit(5)

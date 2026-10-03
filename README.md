@@ -6,7 +6,7 @@ Laravel 12 implementation of the public website, bilingual content platform and 
 
 Implemented and verified:
 
-- English/Amharic public routes and responsive Blade/Tailwind design system
+- English-only public routes and responsive Blade/Tailwind design system
 - services, industries, experts, case studies, insights, events, careers and search read models
 - consultation/contact/RFP intake with encrypted sensitive fields, consent evidence, auditable lifecycle assignment and queued acknowledgement
 - UUIDv7 domain identifiers, RBAC seed catalog, append-only audit/security events

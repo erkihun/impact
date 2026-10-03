@@ -25,14 +25,12 @@ function CompositionEditor({composition:c,registry,previewUrl,eligibleMedia,arch
  const unsavedSections=Object.entries(dirty).some(([key,value])=>key!=='workflow'&&value);
  const reportDirty=(key,value)=>setDirty(current=>current[key]===value?current:{...current,[key]:value});
  const leave=visit=>{if(!Object.values(dirty).some(Boolean))return true;setPendingHref(visit.url.href);return false;};
- const translations=pageVersions.filter((version,index,all)=>all.findIndex(other=>other.locale===version.locale)===index);
  const versions=pageVersions.filter(version=>version.locale===c.locale);
  const transition=transitions[c.state], destinations=transition&&can(transition[0])?transition[1]:[];
  const reorder=(index,offset)=>{const ids=c.sections.map(s=>s.id);[ids[index],ids[index+offset]]=[ids[index+offset],ids[index]];return {lock_version:c.lock_version,section_ids:ids};};
- return <WorkspaceLayout title={label(c.page_key)} description="Choose a language, open a section, then save your changes." actions={<><a className="button-secondary" href={previewUrl} target="_blank" rel="noreferrer">{t('Preview page')}</a>{!c.editable&&can('pages.create')&&<Action href={`/admin/page-compositions/${c.id}/drafts`} className="button-primary">{t('Edit this page')}</Action>}</>}>
+ return <WorkspaceLayout title={label(c.page_key)} description="Open a section, then save your changes." actions={<><a className="button-secondary" href={previewUrl} target="_blank" rel="noreferrer">{t('Preview page')}</a>{!c.editable&&can('pages.create')&&<Action href={`/admin/page-compositions/${c.id}/drafts`} className="button-primary">{t('Edit this page')}</Action>}</>}>
   <Link className="text-link" href="/admin/page-compositions" onBefore={leave}>{t('Back to website pages')}</Link>
   {pendingHref&&<div className="status-warning" role="alert"><p>{t('You have unsaved changes. Leave without saving?')}</p><div className="mt-3 flex flex-wrap gap-3"><button className="button-secondary" onClick={()=>setPendingHref(null)}>{t('Keep editing')}</button><button className="button-primary" onClick={()=>{setPendingHref(null);router.visit(pendingHref);}}>{t('Discard changes')}</button></div></div>}
-  <nav className="composition-language-tabs" aria-label={t('Languages')}>{translations.map(version=><Link key={version.locale} className="composition-language-tab" href={`/admin/page-compositions/${version.locale===c.locale?c.id:version.id}`} aria-current={version.locale===c.locale?'page':undefined} onBefore={leave}><span lang={version.locale}>{localeLabel(version.locale)}</span></Link>)}</nav>
   <div className="workspace-page-status"><strong>{t(label(c.state))}</strong><span>{localeLabel(c.locale)}</span><span>{c.sections.length} {t('Sections')}</span></div>
   {!c.editable&&<p className="status-information">{t('Published version is read-only')}</p>}
   <section aria-labelledby="page-sections-title"><h2 id="page-sections-title" className="heading-3 mb-4">{t('Page sections')}</h2><p className="text-sm text-muted mb-4">{t('Open only the section you want to change.')}</p><div className="grid gap-4">

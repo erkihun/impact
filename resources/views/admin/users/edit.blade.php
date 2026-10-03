@@ -56,13 +56,7 @@
                     :description="__('Suspending or expiring an account prevents sign-in without deleting any history.')"
                 >
                     <div class="grid gap-5 sm:grid-cols-3">
-                        <div>
-                            <label class="form-label" for="locale">{{ __('Working language') }}</label>
-                            <select class="form-input" id="locale" name="locale">
-                                <option value="en" @selected(old('locale', $managedUser->locale) === 'en')>English</option>
-                                <option value="am" @selected(old('locale', $managedUser->locale) === 'am')>አማርኛ</option>
-                            </select>
-                        </div>
+                        <input type="hidden" name="locale" value="en">
                         <div>
                             <label class="form-label" for="status">{{ __('Status') }}</label>
                             <select class="form-input" id="status" name="status">

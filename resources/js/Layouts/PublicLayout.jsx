@@ -65,9 +65,6 @@ export default function PublicLayout({ title, description, breadcrumbs, children
                 <meta head-key="og:url" property="og:url" content={site.seo.canonicalUrl} />
                 <link head-key="canonical" rel="canonical" href={site.seo.canonicalUrl} />
                 <link head-key="alternate-current" rel="alternate" hrefLang={site.locale.current} href={site.seo.canonicalUrl} />
-                {site.locale.alternate && site.locale.alternateUrl && (
-                    <link head-key="alternate-other" rel="alternate" hrefLang={site.locale.alternate} href={site.locale.alternateUrl} />
-                )}
                 <link head-key="alternate-default" rel="alternate" hrefLang="x-default" href={site.seo.defaultLocaleUrl} />
             </Head>
             <a href="#main-content" className="skip-link">{ui.skip}</a>

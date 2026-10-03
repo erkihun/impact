@@ -31,14 +31,7 @@
                     <input class="form-input" id="invite-email" name="email" type="email" required value="{{ old('email') }}" autocomplete="email">
                     <x-input-error class="mt-2" :messages="$errors->get('email')" />
                 </div>
-                <div>
-                    <label class="form-label" for="invite-locale">{{ __('Working language') }}</label>
-                    <select class="form-input" id="invite-locale" name="locale">
-                        @foreach ($locales as $locale)
-                            <option value="{{ $locale }}" @selected(old('locale') === $locale)>{{ strtoupper($locale) }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <input type="hidden" name="locale" value="en">
                 <fieldset>
                     <legend class="form-label">{{ __('Roles') }}</legend>
                     <p class="mb-3 text-sm leading-6 text-muted">{{ __('Roles decide what this person can see and change. Assign the least access needed for their work.') }}</p>

@@ -14,6 +14,12 @@ final class ContentItem extends BaseModel
 {
     use SoftDeletes;
 
+    public function resolveRouteBindingQuery($query, $value, $field = null)
+    {
+        return parent::resolveRouteBindingQuery($query, $value, $field)
+            ->whereHas('currentVersion', fn ($version) => $version->where('locale', 'en'));
+    }
+
     protected function casts(): array
     {
         return [

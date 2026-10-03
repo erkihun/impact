@@ -1,13 +1,6 @@
 @php
     $identity = $publicExperience['identity'];
     $currentLocale = $publicExperience['localization']['current'];
-    $alternateLocale = $publicExperience['localization']['alternate'];
-    $alternateUrl = preg_replace(
-        '#/'.preg_quote($currentLocale, '#').'(?=/|$)#',
-        '/'.$alternateLocale,
-        url()->current(),
-        1,
-    ) ?: ($alternateLocale ? route('localized-home', ['locale' => $alternateLocale]) : null);
     $publicBrandName = $identity['short_name'];
     $publicBrandFull = $identity['name'];
     $publicBrandTagline = $identity['tagline'];
@@ -39,9 +32,6 @@
     @endif
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="{{ $currentLocale }}" href="{{ url()->current() }}">
-    @if ($alternateLocale && $alternateUrl)
-        <link rel="alternate" hreflang="{{ $alternateLocale }}" href="{{ $alternateUrl }}">
-    @endif
     <link rel="alternate" hreflang="x-default" href="{{ route('localized-home', ['locale' => $publicExperience['localization']['default']]) }}">
     <title>@hasSection('title')@yield('title') - {{ $publicExperience['seo']['title_suffix'] }}@else{{ $publicExperience['seo']['default_title'] }}@endif</title>
     @stack('structured_data')
@@ -279,11 +269,6 @@
                         <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
                     </a>
                 @endif
-                @if ($alternateLocale && $alternateUrl)
-                    <a href="{{ $alternateUrl }}" class="glass-lang" hreflang="{{ $alternateLocale }}" lang="{{ $alternateLocale }}" aria-label="{{ strtoupper($alternateLocale) }} – {{ $alternateLocale === 'am' ? 'አማርኛ' : 'English' }}">
-                        {{ $alternateLocale }}
-                    </a>
-                @endif
                 @if ($consultationEnabled)
                     <a class="button-primary ms-1 hidden xl:inline-flex" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}">
                         {{ __('Consultation') }}
@@ -317,7 +302,6 @@
             <div class="content-container grid gap-6 py-6">
                 <div class="grid grid-cols-2 gap-3">
                     @if ($searchEnabled)<a class="button-secondary" href="{{ route('search', ['locale' => $currentLocale]) }}"><x-ui.icon name="search" class="size-4" />{{ __('Search') }}</a>@endif
-                    @if ($alternateLocale && $alternateUrl)<a class="button-secondary" href="{{ $alternateUrl }}" hreflang="{{ $alternateLocale }}"><x-ui.icon name="language" class="size-4" />{{ strtoupper($alternateLocale) }}</a>@endif
                 </div>
                 @if ($consultationEnabled)<a class="button-primary w-full" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="consultation" />{{ __('Request a consultation') }}</a>@endif
                 <nav aria-label="{{ __('Mobile navigation') }}" class="grid gap-2">
@@ -388,9 +372,6 @@
                     @foreach ($managedNavigation['footer_engage'] as $item)
                         <a class="footer-menu-link" href="{{ $item['url'] }}"><x-ui.icon :name="$item['icon']" class="footer-menu-icon" />{{ $item['label'] }}</a>
                     @endforeach
-                    @if ($alternateLocale && $alternateUrl)
-                        <a class="footer-menu-link" href="{{ $alternateUrl }}" hreflang="{{ $alternateLocale }}" lang="{{ $alternateLocale }}"><x-ui.icon name="language" class="footer-menu-icon" />{{ $alternateLocale === 'am' ? 'አማርኛ' : 'English' }}</a>
-                    @endif
                 </div>
             </nav>
             <div>

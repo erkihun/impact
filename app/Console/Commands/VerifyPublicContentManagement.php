@@ -48,7 +48,7 @@ final class VerifyPublicContentManagement extends Command
         $warnings = [];
         $locales = collect((array) $this->option('locale'))
             ->filter()
-            ->whenEmpty(fn ($items) => $items->push('en')->push('am'))
+            ->whenEmpty(fn ($items) => $items->push('en'))
             ->unique()
             ->values();
 

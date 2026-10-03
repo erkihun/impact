@@ -25,7 +25,7 @@
                     <x-ui.error-summary class="mt-6" :errors="$errors" />
                     <div class="mt-7 grid gap-7">
                         <div class="grid gap-5 sm:grid-cols-2">
-                            <div><label class="form-label" for="content-locale">{{ __('Locale') }}</label><input class="form-input bg-quiet" id="content-locale" value="{{ strtoupper($content->currentVersion->locale) }}" disabled></div>
+                            <input type="hidden" name="locale" value="en">
                             <div><label class="form-label" for="content-slug">{{ __('Stable URL slug') }}</label><input class="form-input bg-quiet" id="content-slug" value="{{ $content->currentVersion->slug }}" disabled></div>
                         </div>
                         <div>

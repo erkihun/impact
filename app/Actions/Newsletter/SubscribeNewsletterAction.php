@@ -104,8 +104,8 @@ final readonly class SubscribeNewsletterAction
             DB::afterCommit(static fn () => Notification::route('mail', $subscription->email)
                 ->notify((new ConfirmNewsletterSubscriptionNotification(
                     confirmationToken: $confirmationToken,
-                    subscriptionLocale: $subscription->locale,
-                ))->locale($subscription->locale)));
+                    subscriptionLocale: 'en',
+                ))->locale('en')));
         }
 
         return $subscription;

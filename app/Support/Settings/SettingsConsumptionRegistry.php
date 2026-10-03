@@ -39,12 +39,12 @@ final class SettingsConsumptionRegistry
             'homepage' => [
                 'consumer' => HomepageHeroSettings::class,
                 'file' => 'resources/js/Components/Public/HeroSlider.jsx',
-                'behavior' => 'Controls localized hero slide content, ordering, images, approved actions, and rotation.',
+                'behavior' => 'Controls hero slide content, ordering, images, approved actions, and rotation.',
             ],
             'localization' => [
                 'consumer' => SetLocale::class,
                 'file' => 'app/Http/Middleware/SetLocale.php',
-                'behavior' => 'Controls enabled locale routing, fallback, and publication locale requirements.',
+                'behavior' => 'Applies date, time and calendar formats to the English website.',
             ],
             'security', 'authentication' => [
                 'consumer' => PasswordPolicy::class,

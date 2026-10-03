@@ -19,7 +19,7 @@ it('serves the homepage as a React page inside the shared public shell', functio
             ->has('navigation.mobile', 10)
             ->has('navigation.footer.footer_legal')
             ->where('site.locale.current', 'en')
-            ->where('site.locale.alternate', 'am')
+            ->where('site.locale.alternate', null)
             ->where('ui.skip', 'Skip to content')
             ->where('ui.acceptOptional', 'Accept optional')
             ->where('ui.rejectOptional', 'Reject optional')
@@ -27,12 +27,12 @@ it('serves the homepage as a React page inside the shared public shell', functio
 });
 
 it('localizes the React shell on the server so the client never loads the dictionary', function (): void {
-    $this->get('/am')
+    $this->withSession(['locale' => 'am'])->get('/en')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
-            ->where('site.locale.current', 'am')
-            ->where('ui.skip', __('Skip to content', [], 'am'))
+            ->where('site.locale.current', 'en')
+            ->where('ui.skip', 'Skip to content')
             ->missing('translations'));
 });
 
@@ -63,7 +63,7 @@ it('builds the React shell with the accessibility contract of the Blade shell', 
         ->toContain('aria-modal="true"')
         ->toContain('trapFocus')
         ->toContain("event.key !== 'Escape'")
-        ->toContain('hrefLang={site.locale.alternate}')
+        ->not->toContain('hrefLang={site.locale.alternate}')
         ->and($consent)
         ->toContain('aria-modal="true"')
         ->toContain("const STORAGE_KEY = 'impact.consent'")
