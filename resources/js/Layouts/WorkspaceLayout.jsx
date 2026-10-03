@@ -26,6 +26,7 @@ export default function WorkspaceLayout({ title, description, actions, children 
  const [collapsed,setCollapsed] = useState(sidebarDefault === 'collapsed');
  const panel = useRef(null), opener = useRef(null);
  const currentPath = url.split('?')[0], dashboard = privileged ? '/admin' : '/dashboard';
+ const parentModule=links.find(([permission, ,href])=>can(permission)&&currentPath.startsWith(`${href}/`));
  useEffect(() => { setOpen(false); }, [url]);
  useEffect(() => {
   if (!open) return;
@@ -59,7 +60,7 @@ export default function WorkspaceLayout({ title, description, actions, children 
    <aside className="workspace-sidebar"><button className="workspace-collapse" onClick={()=>setCollapsed(!collapsed)} aria-label={t('Toggle navigation')} aria-expanded={!collapsed}><Icon name="menu" /></button>{navigation}</aside>
    <div className="workspace-main">
     <header className="workspace-topbar"><button ref={opener} className="icon-button lg:hidden" onClick={()=>setOpen(true)} aria-label={t('Open menu')} aria-expanded={open}><Icon name="menu" /></button><span className="workspace-security"><Icon name="shield" className="size-4" />{t('Protected workspace')}</span><Link className="workspace-website" href="/">{t('View website')}<Icon name="arrow-up-right" className="size-4" /></Link><Link className="workspace-avatar" href="/profile" aria-label={t('Profile')}>{user?.name?.slice(0,1).toUpperCase() ?? 'I'}</Link></header>
-    <div className="admin-page-header"><div><p className="eyebrow">{t('Administration')}</p><h1 className="heading-2 mt-2">{t(title)}</h1>{description&&<p className="mt-3 text-muted">{t(description)}</p>}</div>{actions&&<div className="workspace-page-actions">{actions}</div>}</div>
+    <div className="admin-page-header"><div>{currentPath!==dashboard&&<nav className="workspace-breadcrumbs" aria-label={t('Location')}><Link href={dashboard}>{t('Dashboard')}</Link>{parentModule&&<><span aria-hidden="true">/</span><Link href={parentModule[2]}>{t(navigationLabels[parentModule[1]]??parentModule[1])}</Link></>}</nav>}<p className="eyebrow">{t('Administration')}</p><h1 className="heading-2 mt-2">{t(title)}</h1>{description&&<p className="mt-3 text-muted">{t(description)}</p>}</div>{actions&&<div className="workspace-page-actions">{actions}</div>}</div>
     <main id="admin-main-content" tabIndex={-1} className="admin-workspace grid gap-6">{flash.status&&<div className="status-success" role="status">{t(flash.status)}</div>}{children}</main>
    </div>
    <AnimatePresence>{open&&<motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="workspace-overlay" onClick={()=>setOpen(false)}><motion.div ref={panel} role="dialog" aria-modal="true" aria-label={t('Navigation')} onKeyDown={keydown} onClick={event=>event.stopPropagation()} initial={{x:reducedMotion?0:-300}} animate={{x:0}} exit={{x:reducedMotion?0:-300}} transition={reducedMotion?{duration:0}:{type:'spring',stiffness:320,damping:32}} className="workspace-mobile-sidebar"><button className="workspace-close" onClick={()=>setOpen(false)}><Icon name="close" /><span>{t('Close menu')}</span></button>{navigation}</motion.div></motion.div>}</AnimatePresence>

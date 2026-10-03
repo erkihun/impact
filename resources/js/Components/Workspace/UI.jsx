@@ -19,7 +19,7 @@ export function Errors({ errors }) {
 export function Field({ form, name, label: title, type = 'text', options = [], help, ...props }) {
     const generated = useId(); const id = props.id ?? `field-${name}-${generated}`; const { t } = useWorkspace();
     const value = form.data[name]; const error = form.errors[name];
-    const opts = Array.isArray(options) ? options.map(o => typeof o === 'object' ? o : ({ value: o, label: label(o) })) : Object.entries(options).map(([value, label]) => ({ value, label }));
+    const opts = (Array.isArray(options) ? options.map(o => typeof o === 'object' ? o : ({ value: o, label: label(o) })) : Object.entries(options).map(([value, label]) => ({ value, label }))).map(option => name === 'locale' ? { ...option, label: ({ en: 'English', am: 'አማርኛ' }[option.value] ?? option.label) } : option);
     const common = { ...props, id, name, 'aria-invalid': error ? true : undefined, 'aria-describedby': [help && `${id}-help`, error && `${id}-error`].filter(Boolean).join(' ') || undefined };
     let input;
     if (type === 'checkbox') input = <input {...common} type="checkbox" checked={!!value} onChange={e => form.setData(name, e.target.checked)} className="rounded" />;
@@ -30,7 +30,7 @@ export function Field({ form, name, label: title, type = 'text', options = [], h
     else input = <input {...common} className="form-input" type={type} value={value ?? ''} onChange={e => form.setData(name, e.target.value)} />;
     return <div className="min-w-0 grid gap-2">{type === 'checks' ? <fieldset><legend className="form-label">{t(title)}</legend>{input}</fieldset> : type === 'checkbox' ? <label className="flex min-h-11 items-center gap-3" htmlFor={id}>{input}<span>{t(title)}</span></label> : <><label className="form-label" htmlFor={id}>{t(title)}{props.required ? ` (${t('required')})` : ''}</label>{input}</>}{help && <p id={`${id}-help`} className="form-help">{t(help)}</p>}{error && <p id={`${id}-error`} className="field-error">{error}</p>}</div>;
 }
-export function Editor({ action, method = 'post', initial = {}, fields = [], children, submit = 'Save changes', confirm, transform, errorBag, onSuccess, onDirtyChange, disabled = false, className = '' }) {
+export function Editor({ action, method = 'post', initial = {}, fields = [], fieldGroups = [], children, submit = 'Save changes', confirm, transform, errorBag, onSuccess, onDirtyChange, disabled = false, className = '' }) {
     const form = useForm(initial); const { t } = useWorkspace();
     const dirtyCallback = useRef(onDirtyChange);
     dirtyCallback.current = onDirtyChange;
@@ -40,7 +40,7 @@ export function Editor({ action, method = 'post', initial = {}, fields = [], chi
         form.transform(data => transform ? transform(data) : data);
         form.submit(method, action, { preserveScroll: true, errorBag, onSuccess: () => onSuccess?.(form) });
     };
-    return <form className={`grid gap-5 ${className}`} onSubmit={send} aria-busy={form.processing || undefined}><Errors errors={form.errors} />{fields.map(field => <Field key={field.name} form={form} {...field} />)}{typeof children === 'function' ? children(form) : children}{submit && <div><button className="button-primary" disabled={disabled || form.processing} type="submit">{form.processing ? t('Saving…') : t(submit)}</button></div>}</form>;
+    return <form className={`grid gap-5 ${className}`} onSubmit={send} aria-busy={form.processing || undefined}><Errors errors={form.errors} />{fields.map(field => <Field key={field.name} form={form} {...field} />)}{fieldGroups.map(group => <details className="workspace-advanced" key={group.title} open={group.open || group.fields.some(field => Object.keys(form.errors).some(key => key === field.name || key.startsWith(`${field.name}.`)))}><summary>{t(group.title)}</summary>{group.description && <p className="form-help mt-3">{t(group.description)}</p>}<div className="grid gap-5 mt-4">{group.fields.map(field => <Field key={field.name} form={form} {...field} />)}</div></details>)}{typeof children === 'function' ? children(form) : children}{submit && <div><button className="button-primary" disabled={disabled || form.processing} type="submit">{form.processing ? t('Saving…') : t(submit)}</button></div>}</form>;
 }
 export function Action({ href, method = 'post', data = {}, children, confirm, className = 'button-secondary' }) {
     const form = useForm(data); const { t } = useWorkspace();

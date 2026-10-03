@@ -119,6 +119,13 @@ details.workspace-nav-group > summary { cursor: pointer; }
 .workspace-page-status { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: #5d6a74; }
 .workspace-page-status strong { color: var(--workspace-navy); }
 .workspace-filters > summary { cursor: pointer; }
+.workspace-setting-group { padding-block: 1.25rem; border-top: 1px solid #e0e7ee; }
+.workspace-setting-group > summary, .impact-workspace details.admin-panel > summary { cursor: pointer; }
+.workspace-menu-item { display: grid; grid-template-columns: minmax(0, 1fr) 6rem 9rem; align-items: center; gap: 1rem; padding: 1.25rem; border: 1px solid #e0e7ee; border-radius: 0.7rem; }
+.workspace-menu-item > details { grid-column: 1 / -1; }
+.workspace-breadcrumbs { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: #5d6a74; }
+.workspace-breadcrumbs a:hover { color: #b4500a; }
+@media (max-width: 47.99rem) { .workspace-menu-item { grid-template-columns: 1fr; } }
 @media (min-width: 64rem) {
     .workspace-sidebar { display: flex; }
     .workspace-collapsed .workspace-sidebar { width: 5rem; }
