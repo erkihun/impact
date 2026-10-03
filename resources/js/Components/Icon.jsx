@@ -1,5 +1,10 @@
 // Stroke icon set shared with the Blade `x-ui.icon` component.
 const PATHS = {
+    shield: ['M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7l-9-4Z', 'm8 12 3 3 5-6'],
+    users: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M16 4a4 4 0 0 1 0 7M22 21v-2a4 4 0 0 0-3-4'],
+    media: ['M3 3h18v18H3z', 'm3 17 6-6 4 4 3-3 5 5M8 8h.01'],
+    settings: ['M4 6h16M4 12h16M4 18h16', 'M8 3v6M16 9v6M10 15v6'],
+    logout: ['M9 4H4v16h5M9 12h12m-4-4 4 4-4 4'],
     home: ['m3 11 9-8 9 8', 'M5 10v11h14V10M9 21v-6h6v6'],
     about: ['M4 20h16M6 20V9l6-5 6 5v11M9 20v-6h6v6'],
     services: ['M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 9h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z', 'M4 13h16M10 13v2h4v-2'],

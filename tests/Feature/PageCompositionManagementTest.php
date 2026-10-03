@@ -123,6 +123,59 @@ it('denies page composition administration without page permissions', function (
         ->assertForbidden();
 });
 
+it('lists each logical page once with the newest version of both languages and paginates pages', function (): void {
+    $editor = User::factory()->create();
+    $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
+    $source = draftComposition($editor);
+    $source->forceFill(['page_key' => 'page.00'])->save();
+    for ($index = 0; $index < 31; $index++) {
+        foreach ([['en', 1], ['en', 2], ['am', 1]] as [$locale, $version]) {
+            if ($index === 0 && $locale === 'en' && $version === 1) {
+                continue;
+            }
+            $source->replicate()->forceFill([
+                'page_key' => sprintf('page.%02d', $index),
+                'locale' => $locale,
+                'version_no' => $version,
+            ])->save();
+        }
+    }
+    $this->actingAs($editor)->withSession(privilegedSession($editor))
+        ->get(route('admin.page-compositions.index'))
+        ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('compositions.data', 30)
+            ->where('compositions.total', 31)
+            ->where('compositions.data.0.page_key', 'page.00')
+            ->has('compositions.data.0.translations', 2)
+            ->where('compositions.data.0.translations.0.locale', 'am')
+            ->where('compositions.data.0.translations.1.locale', 'en')
+            ->where('compositions.data.0.translations.1.version_no', 2));
+    $this->get(route('admin.page-compositions.index', ['page' => 2]))
+        ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('compositions.data', 1)
+            ->where('compositions.data.0.page_key', 'page.30')
+            ->has('compositions.data.0.translations', 2));
+});
+
+it('exposes sibling translations and version history without mixing other pages into the editor', function (): void {
+    $editor = User::factory()->create();
+    $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
+    $english = draftComposition($editor);
+    $amharic = $english->replicate()->forceFill(['locale' => 'am'])->save();
+    $english->replicate()->forceFill(['version_no' => 2])->save();
+    $english->replicate()->forceFill(['page_key' => 'other.page'])->save();
+    $this->actingAs($editor)->withSession(privilegedSession($editor))
+        ->get(route('admin.page-compositions.edit', $english))
+        ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('composition.id', $english->id)
+            ->where('composition.locale', 'en')
+            ->has('pageVersions', 3)
+            ->where('pageVersions.0.locale', 'am')
+            ->where('pageVersions.1.locale', 'en')
+            ->where('pageVersions.1.version_no', 2)
+            ->where('pageVersions.2.id', $english->id));
+});
+
 it('renders managed public headers in both locales and the three-panel editor workspace', function (): void {
     Cache::flush();
     $editor = User::factory()->create();

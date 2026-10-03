@@ -43,13 +43,31 @@ final class PageComposerController extends Controller
     {
         Gate::authorize('viewAny', PageComposition::class);
 
+        // Paginate logical pages, so translations and older versions never
+        // appear as duplicate entries or split across different list pages.
+        $pages = PageComposition::query()
+            ->select('page_key')
+            ->groupBy('page_key')
+            ->orderBy('page_key')
+            ->paginate(30);
+        $translations = PageComposition::query()
+            ->whereIn('page_key', $pages->getCollection()->pluck('page_key'))
+            ->withCount('sections')
+            ->orderBy('locale')
+            ->latest('version_no')
+            ->get()
+            ->groupBy('page_key');
+        $pages->through(fn (PageComposition $page): array => [
+            'page_key' => $page->page_key,
+            'translations' => $translations->get($page->page_key)
+                ->unique('locale')->values()
+                ->map(fn (PageComposition $translation): array => $translation->only([
+                    'id', 'locale', 'version_no', 'state', 'sections_count',
+                ]))->all(),
+        ]);
+
         return WorkspacePage::render('admin.page-compositions.index', [
-            'compositions' => PageComposition::query()
-                ->withCount('sections')
-                ->orderBy('page_key')
-                ->orderBy('locale')
-                ->latest('version_no')
-                ->paginate(30),
+            'compositions' => $pages,
         ]);
     }
 
@@ -66,6 +84,11 @@ final class PageComposerController extends Controller
 
         return WorkspacePage::render('admin.page-compositions.edit', [
             'composition' => $composition,
+            'pageVersions' => PageComposition::query()
+                ->where('page_key', $composition->page_key)
+                ->orderBy('locale')
+                ->latest('version_no')
+                ->get(['id', 'locale', 'version_no', 'state']),
             'registry' => $registry->all(),
             'archivedSections' => $composition->sections()->onlyTrashed()->get(),
             'previewUrl' => URL::temporarySignedRoute(

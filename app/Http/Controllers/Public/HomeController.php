@@ -80,6 +80,20 @@ final class HomeController extends Controller
                     'summary' => Str::limit((string) ($service->summary ?: $service->problem_statement), 130),
                     'href' => route('services.show', ['locale' => $locale, 'slug' => $service->slug]),
                 ]),
+            'projects' => (clone $visibleCaseStudies)->latest('version_no')->get()
+                ->unique('case_study_id')->take(3)->values()
+                ->map(fn (CaseStudyVersion $project): array => [
+                    'title' => $project->title,
+                    'summary' => $project->outcomes ? Str::limit((string) $project->outcomes, 180) : null,
+                    'href' => route('case-studies.show', ['locale' => $locale, 'slug' => $project->slug]),
+                ]),
+            'articles' => (clone $visibleInsights)->latest('version_no')->get()
+                ->unique('insight_id')->take(3)->values()
+                ->map(fn (InsightVersion $article): array => [
+                    'title' => $article->title,
+                    'excerpt' => $article->excerpt ? Str::limit((string) $article->excerpt, 150) : null,
+                    'href' => route('insights.show', ['locale' => $locale, 'slug' => $article->slug]),
+                ]),
             'caseStudy' => $caseStudy ? [
                 'title' => $caseStudy->title,
                 'outcomes' => $caseStudy->outcomes ? Str::limit((string) $caseStudy->outcomes, 200) : null,
@@ -132,31 +146,35 @@ final class HomeController extends Controller
             'links' => [
                 'services' => route('services.index', ['locale' => $locale]),
                 'caseStudies' => route('case-studies.index', ['locale' => $locale]),
+                'insights' => route('insights.index', ['locale' => $locale]),
                 'consultation' => route('consultation.create', ['locale' => $locale]),
                 'contact' => route('contact.create', ['locale' => $locale]),
             ],
             'copy' => [
-                'ledgerTitle' => __('Current publication record'),
-                'servicesEyebrow' => __('Advisory architecture'),
-                'servicesTitle' => __('Where complex problems become workable choices'),
-                'servicesLead' => __('Each capability begins with the decision or delivery problem—not a pre-packaged solution.'),
-                'servicesLink' => __('Explore the capability system'),
-                'caseEyebrow' => __('Transformation record'),
-                'caseLink' => __('Examine the full record'),
+                'ledgerTitle' => __('Explore our expertise'),
+                'servicesEyebrow' => __('What we do'),
+                'servicesTitle' => __('Advisory services for your next challenge'),
+                'servicesLead' => __('Explore our services and find the expertise that fits your strategy, research or institutional development needs.'),
+                'servicesLink' => __('View all services'),
+                'caseEyebrow' => __('Our work'),
+                'caseLink' => __('View the case study'),
                 'caseStudies' => __('Case studies'),
+                'portfolioTitle' => __('Selected work'),
+                'allArticles' => __('All articles'),
                 'testimonialsEyebrow' => __('Client testimony'),
-                'testimonialsTitle' => __('What partners say after the work becomes real'),
+                'testimonialsTitle' => __('Partner perspectives'),
                 'industriesEyebrow' => __('Sector intelligence'),
-                'industriesTitle' => __('Context changes the answer'),
+                'industriesTitle' => __('Sectors we work in'),
                 'industriesLead' => __('Our sector work starts with institutions, incentives and operating realities. Explore the published contexts in which we advise.'),
                 'perspectivesEyebrow' => __('Expert perspective'),
-                'perspectivesTitle' => __('People and published thinking'),
+                'perspectivesTitle' => __('Meet the people behind the work'),
                 'meetTeam' => __('Meet the advisory team'),
                 'insight' => __('Insight'),
+                'insightsTitle' => __('Ideas that inform better decisions'),
                 'readInsight' => __('Read the insight'),
                 'learnMore' => __('Learn more'),
                 'engagementEyebrow' => __('Engagement pathway'),
-                'engagementTitle' => __('Bring the question. We will help structure the next move.'),
+                'engagementTitle' => __('A clear path from conversation to collaboration'),
                 'engagementLead' => __('Share the outcome, context, stakeholders and timing. Our team will review the request and identify the most relevant response.'),
                 'steps' => [
                     __('Submit the essential context'),
@@ -166,8 +184,8 @@ final class HomeController extends Controller
                 'requestConsultation' => __('Request a consultation'),
                 'otherRoute' => __('Choose another route'),
                 'finalCtaEyebrow' => __('Start the next move'),
-                'finalCtaTitle' => __('Let us structure the path from question to measurable change.'),
-                'finalCtaLead' => __('Bring the issue, the stakeholders and the timing. We will help define the clearest advisory route.'),
+                'finalCtaTitle' => __('Let us discuss your next project.'),
+                'finalCtaLead' => __('Tell us what you want to achieve. Our team will help you identify the right expertise and next steps.'),
             ],
         ]);
     }

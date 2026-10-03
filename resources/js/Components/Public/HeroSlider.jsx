@@ -6,7 +6,7 @@ import Icon from '../Icon';
 
 const EASE = [0.2, 0.8, 0.2, 1];
 
-export default function HeroSlider({ slider }) {
+export default function HeroSlider({ slider, stats = [], statsLabel }) {
     const { ui } = usePage().props;
     const slides = slider.slides;
     const count = slides.length;
@@ -56,14 +56,17 @@ export default function HeroSlider({ slider }) {
                         aria-roledescription={ui.slide}
                         aria-label={format(ui.slideOf, { current: current + 1, total: count })}
                         custom={direction}
-                        initial={{ opacity: 0, y: 16 }}
+                        initial={false}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        exit={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.55, ease: EASE }}
                     >
                         <div className="home-signature-hero">
                             <div className="home-signature-copy">
-                                <p className="insight-marker">{slide.eyebrow}</p>
+                                <p className="insight-marker">
+                                    <Icon name="insights" className="size-5" />
+                                    {slide.eyebrow}
+                                </p>
                                 <Heading className="home-signature-title">{slide.heading}</Heading>
                                 <p className="home-signature-summary">{slide.summary}</p>
                                 {(slider.primary_action || slider.secondary_action) && (
@@ -83,6 +86,16 @@ export default function HeroSlider({ slider }) {
                                     </div>
                                 )}
                             </div>
+                            {stats.length > 0 && (
+                                <div className="home-hero-evidence" role="group" aria-label={statsLabel}>
+                                    {stats.map((item) => (
+                                        <a className="home-hero-stat" key={item.label} href={item.href}>
+                                            <strong>{item.value}</strong>
+                                            <span>{item.label}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
                             <motion.div
                                 className="home-signature-art"
                                 initial={{ opacity: 0, scale: 0.985 }}
@@ -91,7 +104,7 @@ export default function HeroSlider({ slider }) {
                             >
                                 <div className="home-signature-image">
                                     <img
-                                        src={slide.image}
+                                        src={slide.image.includes('impact-hero-clean.svg') ? '/images/ethiopia-highlands.jpg' : slide.image}
                                         alt=""
                                         aria-hidden="true"
                                         width="1536"
@@ -100,6 +113,10 @@ export default function HeroSlider({ slider }) {
                                         decoding="async"
                                     />
                                 </div>
+                                <div className="home-signature-caption" aria-hidden="true">
+                                    <span>{slide.eyebrow}</span>
+                                    <span className="home-signature-caption-index">{pad(current + 1)} / {pad(count)}</span>
+                                </div>
                             </motion.div>
                         </div>
                     </motion.article>
@@ -107,7 +124,7 @@ export default function HeroSlider({ slider }) {
             </div>
 
             {count > 1 && (
-                <div className="content-container">
+                <div className="sr-only focus-within:not-sr-only">
                     <div className="home-hero-slider-controls">
                         <div className="home-hero-slider-dots" role="group" aria-label={ui.chooseSlide}>
                             {slides.map((item, index) => (

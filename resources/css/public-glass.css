@@ -1,4 +1,7 @@
 @import '@fontsource-variable/instrument-sans';
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource/dm-serif-display/latin-400.css';
+@import './public-consulting.css';
 
 /*
  * Public theme: minimal premium.
@@ -23,8 +26,7 @@
     --m-orange-ink: #b4500a;
     --m-line: #d2d2d7;
     --m-radius: 1.75rem;
-    --m-gutter: clamp(1.25rem, 5vw, 5rem);
-    --m-max: 80rem;
+    --m-gutter: clamp(1rem, 2vw, 2.5rem);
     --m-header: 3.75rem;
     --m-font: 'Instrument Sans Variable', 'Noto Sans Ethiopic Variable', system-ui, -apple-system, sans-serif;
     --focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px var(--m-orange-strong);
@@ -172,8 +174,10 @@ html[lang='am'] .public-glass .font-editorial {
 
 .public-glass .content-container,
 .public-glass .site-shell {
-    max-width: calc(var(--m-max) + 2 * var(--m-gutter));
-    padding-inline: var(--m-gutter);
+    width: 90%;
+    max-width: none;
+    margin-inline: auto;
+    padding-inline: 0;
 }
 
 .m-section {
@@ -1165,10 +1169,10 @@ html[lang='am'] .m-page-header h1 {
 
 /* ================= Homepage ================= */
 
-/* Hero slider: centred statement above one large rounded image. */
+/* Hero slider: editorial copy beside an immersive image. */
 .public-glass .home-signature-hero-section {
     position: relative;
-    padding-top: clamp(3.5rem, 7vw, 6rem);
+    padding-top: clamp(1.5rem, 3vw, 3rem);
     border: 0;
     background: var(--m-white);
 }
@@ -1187,26 +1191,44 @@ html[lang='am'] .m-page-header h1 {
 }
 
 .public-glass .home-signature-hero {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     align-items: center;
-    gap: clamp(2.5rem, 5vw, 4rem);
+    gap: clamp(2rem, 4vw, 4rem);
+    padding: clamp(1.25rem, 3vw, 3rem);
+    border: 1px solid var(--m-line);
+    border-radius: 2rem;
+    background: var(--m-band);
 }
 
 .public-glass .home-signature-copy {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    max-width: 56rem;
-    text-align: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+    min-width: 0;
+    max-width: 48rem;
+    text-align: start;
+}
+
+.public-glass .home-signature-copy .insight-marker {
+    gap: 0.625rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--m-line);
+    border-radius: 999px;
+    background: var(--m-white);
+    color: var(--m-navy);
+}
+
+.public-glass .home-signature-copy .insight-marker svg {
+    flex-shrink: 0;
+    color: var(--m-orange-ink);
 }
 
 .public-glass .home-signature-title {
     margin: 0;
     max-width: 16ch;
     font-family: var(--m-font);
-    font-size: clamp(3rem, 7.5vw, 6rem);
+    font-size: clamp(2.5rem, 4.5vw, 5.5rem);
     font-weight: 600;
     line-height: 1.02;
     letter-spacing: -0.04em;
@@ -1232,7 +1254,7 @@ html[lang='am'] .public-glass .home-signature-title {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.75rem 1.75rem;
     margin: 1rem 0 0;
 }
@@ -1269,24 +1291,51 @@ html[lang='am'] .public-glass .home-signature-title {
     position: relative;
     width: 100%;
     min-height: 0;
+    min-width: 0;
 }
 
 .public-glass .home-signature-image {
     position: relative;
     inset: auto;
     height: auto;
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     border: 0;
-    border-radius: clamp(1.25rem, 3vw, 2.25rem);
+    border-radius: 1.25rem;
     background: var(--m-band);
     box-shadow: none;
     --tw-ring-shadow: 0 0 #0000;
 }
 
-@media (max-width: 47.99rem) {
+.public-glass .home-signature-caption {
+    position: absolute;
+    inset: auto 1rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--m-navy-deep);
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.public-glass .home-signature-caption-index {
+    flex-shrink: 0;
+    color: var(--m-orange);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 64rem) {
+    .public-glass .home-signature-hero {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    }
+
     .public-glass .home-signature-image {
-        aspect-ratio: 4 / 3;
+        min-height: 34rem;
+        aspect-ratio: 1 / 1;
     }
 }
 
@@ -1309,7 +1358,7 @@ html[lang='am'] .public-glass .home-signature-title {
 
 .public-glass .home-hero-slider-controls {
     width: fit-content;
-    margin: 1.75rem auto 0;
+    margin: 1rem auto 0;
     gap: 1rem;
     padding: 0.25rem;
     border: 0;
@@ -1329,11 +1378,14 @@ html[lang='am'] .public-glass .home-signature-title {
     border: 0;
     border-radius: 999px;
     background: transparent;
-    color: transparent;
-    font-size: 0;
+    color: var(--m-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 .public-glass .home-hero-slider-dots button::before {
+    display: none;
     content: '';
     width: 0.5rem;
     height: 0.5rem;
@@ -1346,10 +1398,15 @@ html[lang='am'] .public-glass .home-signature-title {
     display: none;
 }
 
-.public-glass .home-hero-slider-dots button:hover,
+.public-glass .home-hero-slider-dots button:hover {
+    background: var(--m-white);
+    color: var(--m-navy);
+}
+
 .public-glass .home-hero-slider-dots .home-hero-slider-dot-active {
     border-color: transparent;
-    background: transparent;
+    background: var(--m-navy);
+    color: #ffffff;
 }
 
 .public-glass .home-hero-slider-dots .home-hero-slider-dot-active::before {
@@ -1481,7 +1538,7 @@ a.m-stat:hover strong {
 
 .m-feature-media {
     width: 100%;
-    max-width: 64rem;
+    max-width: none;
     aspect-ratio: 16 / 8;
     margin-top: 2rem;
     overflow: hidden;
@@ -1499,7 +1556,7 @@ a.m-stat:hover strong {
 .m-testimonials-section {
     background:
         radial-gradient(34rem 20rem at 12% 12%, rgb(242 140 40 / 0.11), transparent 72%),
-        radial-gradient(34rem 20rem at 90% 80%, rgb(45 122 120 / 0.1), transparent 72%),
+        radial-gradient(34rem 20rem at 90% 80%, rgb(23 50 77 / 0.1), transparent 72%),
         var(--m-white);
 }
 
@@ -1717,7 +1774,7 @@ a.m-stat:hover strong {
 .m-process {
     display: grid;
     gap: 2rem;
-    max-width: 64rem;
+    max-width: none;
     margin: 3.5rem auto 0;
     padding: 0;
     list-style: none;
@@ -1758,7 +1815,7 @@ a.m-stat:hover strong {
 .m-final-cta-section {
     background:
         radial-gradient(38rem 22rem at 8% 12%, rgb(242 140 40 / 0.14), transparent 72%),
-        radial-gradient(42rem 26rem at 100% 100%, rgb(45 122 120 / 0.16), transparent 74%),
+        radial-gradient(42rem 26rem at 100% 100%, rgb(23 50 77 / 0.16), transparent 74%),
         var(--m-white);
 }
 
@@ -1798,7 +1855,7 @@ a.m-stat:hover strong {
     bottom: -10rem;
     width: 26rem;
     height: 26rem;
-    background: radial-gradient(circle, rgb(45 122 120 / 0.34), transparent 68%);
+    background: radial-gradient(circle, rgb(23 50 77 / 0.34), transparent 68%);
 }
 
 .m-final-cta > * {
@@ -1899,7 +1956,7 @@ a.m-stat:hover strong {
     padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
     background:
         radial-gradient(42rem 22rem at 15% 8%, rgb(242 140 40 / 0.13), transparent 70%),
-        radial-gradient(42rem 22rem at 90% 18%, rgb(45 122 120 / 0.12), transparent 72%),
+        radial-gradient(42rem 22rem at 90% 18%, rgb(23 50 77 / 0.12), transparent 72%),
         linear-gradient(180deg, #ffffff 0%, #f7f8fa 100%);
 }
 
@@ -2018,7 +2075,7 @@ a.m-stat:hover {
     inset: auto 1.25rem 1.25rem 1.25rem;
     height: 3px;
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--m-orange), rgb(45 122 120 / 0.65), transparent);
+    background: linear-gradient(90deg, var(--m-orange), rgb(23 50 77 / 0.65), transparent);
     opacity: 0;
     transform: scaleX(0.6);
     transform-origin: left;
@@ -2051,7 +2108,7 @@ a.m-tile:hover::after,
     position: relative;
     isolation: isolate;
     background:
-        radial-gradient(45rem 26rem at 0% 0%, rgb(45 122 120 / 0.22), transparent 72%),
+        radial-gradient(45rem 26rem at 0% 0%, rgb(23 50 77 / 0.22), transparent 72%),
         radial-gradient(50rem 24rem at 100% 0%, rgb(242 140 40 / 0.16), transparent 70%),
         linear-gradient(180deg, #122b42 0%, #0b1b2b 100%);
 }
@@ -2086,11 +2143,11 @@ a.m-tile:hover::after,
     }
 
     .public-glass .home-signature-hero-section {
-        padding-top: clamp(2.75rem, 12vw, 4rem);
+        padding-top: 1.5rem;
     }
 
     .public-glass .home-signature-title {
-        font-size: clamp(2.6rem, 14vw, 4rem);
+        font-size: clamp(2rem, 9vw, 3rem);
     }
 
     .public-glass .home-signature-actions,
@@ -2499,6 +2556,150 @@ a.m-tile:hover::after,
     transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
+/* Consulting homepage: compact evidence, comparable services and a clear portfolio. */
+.m-proof-rail {
+    padding-block: 2rem 3rem;
+}
+
+.m-proof-rail .m-title {
+    font-size: 1.125rem;
+}
+
+.m-proof-rail .m-stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding-block: 1.5rem;
+    border-block: 1px solid var(--m-line);
+}
+
+.m-proof-rail .m-stat-number {
+    font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.m-services-section .m-split-lead {
+    position: static;
+}
+
+.m-service-cards {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.m-service-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    padding: clamp(1.25rem, 2vw, 2rem);
+    border: 1px solid var(--m-line);
+    border-radius: 1rem;
+    background: var(--m-white);
+    color: var(--m-ink);
+    transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.m-service-card:hover {
+    border-color: var(--m-navy);
+    background: #fafbfc;
+}
+
+.m-service-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--m-navy);
+}
+
+.m-service-card h3 {
+    font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+    line-height: 1.25;
+}
+
+.m-service-card p {
+    color: var(--m-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.m-service-card-link {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    color: var(--m-navy);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.m-feature {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.5rem, 3vw, 3rem);
+    background: var(--m-navy-deep);
+    text-align: start;
+}
+
+.m-feature-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.m-feature-copy > p:not(.m-eyebrow) {
+    color: #d4dde5;
+    line-height: 1.65;
+}
+
+.m-feature .m-links {
+    justify-content: flex-start;
+}
+
+.m-feature-media {
+    margin-top: 0;
+    aspect-ratio: 4 / 3;
+    border-radius: 1rem;
+    min-width: 0;
+}
+
+.m-intelligence-lead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 0 1.5rem;
+    color: var(--m-navy);
+}
+
+.m-intelligence-lead > svg {
+    flex-shrink: 0;
+}
+
+.m-intelligence-lead .m-title {
+    font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+}
+
+@media (min-width: 48rem) {
+    .m-service-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 64rem) {
+    .m-services-section .m-split {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        gap: 3rem;
+    }
+
+    .m-feature {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: center;
+    }
+}
+
 /* Ethiopic needs open tracking and extra height for its taller letterforms. */
 html[lang='am'] .public-glass :is(h1, h2, h3, .heading-1, .heading-2, .heading-3, .m-title, .home-signature-title) {
     line-height: 1.3;
@@ -2506,11 +2707,25 @@ html[lang='am'] .public-glass :is(h1, h2, h3, .heading-1, .heading-2, .heading-3
     text-wrap: balance;
 }
 
+html[lang='am'] .public-glass :is(h1, .heading-1, .home-signature-title) {
+    font-size: clamp(1.875rem, 3.2vw, 3rem);
+}
+
+html[lang='am'] .public-glass :is(h2, .heading-2, .m-title) {
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+}
+
+html[lang='am'] .public-glass :is(h3, .heading-3) {
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+}
+
 html[lang='am'] .public-glass :is(.m-lead, .home-signature-summary, .m-row-text, .m-final-cta p) {
+    font-size: clamp(1rem, 1.2vw, 1.125rem);
     line-height: 1.75;
 }
 
 html[lang='am'] .public-glass :is(blockquote, .m-quote) {
+    font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
     font-weight: 500;
     line-height: 1.6;
     letter-spacing: 0;

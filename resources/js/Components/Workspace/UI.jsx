@@ -30,14 +30,17 @@ export function Field({ form, name, label: title, type = 'text', options = [], h
     else input = <input {...common} className="form-input" type={type} value={value ?? ''} onChange={e => form.setData(name, e.target.value)} />;
     return <div className="min-w-0 grid gap-2">{type === 'checks' ? <fieldset><legend className="form-label">{t(title)}</legend>{input}</fieldset> : type === 'checkbox' ? <label className="flex min-h-11 items-center gap-3" htmlFor={id}>{input}<span>{t(title)}</span></label> : <><label className="form-label" htmlFor={id}>{t(title)}{props.required ? ` (${t('required')})` : ''}</label>{input}</>}{help && <p id={`${id}-help`} className="form-help">{t(help)}</p>}{error && <p id={`${id}-error`} className="field-error">{error}</p>}</div>;
 }
-export function Editor({ action, method = 'post', initial = {}, fields = [], children, submit = 'Save changes', confirm, transform, errorBag, onSuccess, className = '' }) {
+export function Editor({ action, method = 'post', initial = {}, fields = [], children, submit = 'Save changes', confirm, transform, errorBag, onSuccess, onDirtyChange, disabled = false, className = '' }) {
     const form = useForm(initial); const { t } = useWorkspace();
+    const dirtyCallback = useRef(onDirtyChange);
+    dirtyCallback.current = onDirtyChange;
+    useEffect(() => { dirtyCallback.current?.(form.isDirty); }, [form.isDirty]);
     const send = event => {
-        event.preventDefault(); if (form.processing || (confirm && !window.confirm(t(confirm)))) return;
+        event.preventDefault(); if (disabled || form.processing || (confirm && !window.confirm(t(confirm)))) return;
         form.transform(data => transform ? transform(data) : data);
         form.submit(method, action, { preserveScroll: true, errorBag, onSuccess: () => onSuccess?.(form) });
     };
-    return <form className={`grid gap-5 ${className}`} onSubmit={send} aria-busy={form.processing || undefined}><Errors errors={form.errors} />{fields.map(field => <Field key={field.name} form={form} {...field} />)}{typeof children === 'function' ? children(form) : children}{submit && <div><button className="button-primary" disabled={form.processing} type="submit">{form.processing ? t('Saving…') : t(submit)}</button></div>}</form>;
+    return <form className={`grid gap-5 ${className}`} onSubmit={send} aria-busy={form.processing || undefined}><Errors errors={form.errors} />{fields.map(field => <Field key={field.name} form={form} {...field} />)}{typeof children === 'function' ? children(form) : children}{submit && <div><button className="button-primary" disabled={disabled || form.processing} type="submit">{form.processing ? t('Saving…') : t(submit)}</button></div>}</form>;
 }
 export function Action({ href, method = 'post', data = {}, children, confirm, className = 'button-secondary' }) {
     const form = useForm(data); const { t } = useWorkspace();
@@ -53,7 +56,8 @@ export function Pagination({ data }) {
 }
 export function Filters({ fields }) {
     const { filters = {}, t } = useWorkspace(); const { url } = usePage(); const action = url.split('?')[0];
-    return <Panel><Editor action={action} method="get" initial={Object.fromEntries(fields.map(f => [f.name, filters[f.name] ?? '']))} fields={fields} submit="Apply filters" className="md:grid-cols-3"><Link className="text-link" href={action}>{t('Clear filters')}</Link></Editor></Panel>;
+    const active = fields.some(f => filters[f.name] !== undefined && filters[f.name] !== null && String(filters[f.name]) !== '');
+    return <details className="admin-panel workspace-filters" open={active}><summary className="font-semibold">{t('Filter results')}{active && <span className="ms-2 text-sm text-muted">{t('Filters applied')}</span>}</summary><Editor key={url} action={action} method="get" initial={Object.fromEntries(fields.map(f => [f.name, filters[f.name] ?? '']))} fields={fields} submit="Apply filters" className="md:grid-cols-3 mt-5"><Link className="text-link" href={action}>{t('Clear filters')}</Link></Editor></details>;
 }
 export const field = (name, title, type = 'text', extra = {}) => ({ name, label: title, type, ...extra });
 export const options = (items, name = 'name') => rows(items).map(item => ({value: String(item.id), label: item[name] ?? item.original_name ?? item.id}));

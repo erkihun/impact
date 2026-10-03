@@ -1,0 +1,422 @@
+/* Shared public layout with Impact's dark blue and orange brand palette. */
+html .public-glass {
+    --m-font: 'DM Sans Variable', 'Noto Sans Ethiopic Variable', system-ui, sans-serif;
+    --m-orange: #f28c28;
+    --m-orange-strong: #c2550a;
+    --m-orange-ink: #b4500a;
+    --m-navy: #17324d;
+    --m-navy-deep: #0f2438;
+    --m-ink: #17324d;
+    --m-link: var(--m-navy);
+    /* Include utility-based forms and managed content in the public theme. */
+    --color-primary-900: var(--m-navy);
+    --color-primary-700: var(--m-navy);
+    --color-secondary-700: var(--m-orange-strong);
+    --color-accent-600: var(--m-orange);
+    --color-brand: var(--m-navy);
+    --color-brand-dark: var(--m-navy-deep);
+    --color-action: var(--m-orange-strong);
+    --color-action-hover: #a8480a;
+    --color-knowledge: var(--m-navy);
+    --color-gold: var(--m-orange);
+    --color-focus: var(--m-orange-strong);
+    --color-border-focus: var(--m-orange-strong);
+    --color-surface-selected: #fff3e7;
+    --palette-action-50: 255 247 239;
+    --palette-action-100: 255 237 219;
+    --palette-action-200: 251 217 184;
+    --palette-action-300: 248 186 126;
+    --palette-action-400: 245 161 78;
+    --palette-action-500: 242 140 40;
+    --palette-action-600: 194 85 10;
+    --palette-action-700: 180 80 10;
+    --palette-action-800: 148 65 9;
+    --palette-action-900: 119 52 8;
+    --palette-action-950: 67 29 5;
+    --palette-knowledge-50: var(--palette-brand-50);
+    --palette-knowledge-100: var(--palette-brand-100);
+    --palette-knowledge-200: var(--palette-brand-200);
+    --palette-knowledge-300: var(--palette-brand-300);
+    --palette-knowledge-400: var(--palette-brand-400);
+    --palette-knowledge-500: var(--palette-brand-500);
+    --palette-knowledge-600: var(--palette-brand-700);
+    --palette-knowledge-700: var(--palette-brand-800);
+    --palette-knowledge-800: var(--palette-brand-900);
+    --palette-knowledge-900: var(--palette-brand-900);
+    --palette-knowledge-950: var(--palette-brand-950);
+    --palette-gold-50: var(--palette-action-50);
+    --palette-gold-100: var(--palette-action-100);
+    --palette-gold-200: var(--palette-action-200);
+    --palette-gold-300: var(--palette-action-300);
+    --palette-gold-400: var(--palette-action-400);
+    --palette-gold-500: var(--palette-action-500);
+    --palette-gold-600: var(--palette-action-600);
+    --palette-gold-700: var(--palette-action-700);
+    --palette-gold-800: var(--palette-action-800);
+    --palette-gold-900: var(--palette-action-900);
+    --palette-gold-950: var(--palette-action-950);
+    --m-band: #f7f8fa;
+    --m-line: #e3e6eb;
+    --m-header: 4.5rem;
+    background: #ffffff;
+    background-image: none;
+    font-family: var(--m-font);
+}
+
+html[lang='am'] .public-glass {
+    --m-font: 'Noto Sans Ethiopic Variable', 'DM Sans Variable', system-ui, sans-serif;
+}
+
+html:not([lang='am']) .public-glass :is(h1, h2, .m-title, .home-signature-title, .heading-1, .heading-2) {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+}
+
+html .public-glass :is(.m-section, .home-signature-hero-section) {
+    background-image: none;
+}
+
+html .public-glass .public-header {
+    background: #ffffff;
+    backdrop-filter: none;
+}
+
+html .public-glass :is(.m-btn, .button-primary, .button-light) {
+    border-radius: 0.65rem;
+    background: var(--m-orange);
+    color: var(--m-navy-deep);
+}
+
+html .public-glass :is(.m-btn, .button-primary, .button-light):hover {
+    background: #df7815;
+    color: var(--m-navy-deep);
+}
+
+html .public-glass :is(.button-secondary, .button-secondary-dark, .button-tertiary) {
+    border-radius: 0.65rem;
+}
+
+html .public-glass .home-signature-hero-section {
+    padding: 0;
+    background: var(--m-navy-deep);
+}
+
+html .public-glass .home-signature-hero {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    min-height: 43rem;
+    padding: clamp(4rem, 7vw, 7rem) 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+html .public-glass .home-signature-copy {
+    position: relative;
+    z-index: 2;
+    max-width: 40rem;
+}
+
+html .public-glass .home-signature-copy .insight-marker {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    font-size: 0.875rem;
+}
+
+html .public-glass .home-signature-copy .insight-marker svg {
+    color: #ffffff;
+}
+
+html .public-glass .home-signature-title {
+    max-width: 15ch;
+    color: #ffffff;
+    font-size: clamp(3rem, 5.8vw, 5.75rem);
+    line-height: 1.03;
+}
+
+html[lang='am'] .public-glass .home-signature-title {
+    font-family: var(--m-font);
+    font-size: clamp(1.875rem, 3.2vw, 3rem);
+    line-height: 1.35;
+}
+
+html .public-glass .home-signature-summary {
+    color: #e0e5e9;
+    font-size: 1.1875rem;
+    line-height: 1.65;
+}
+
+html .public-glass .home-signature-text-link {
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ffffff70;
+    border-radius: 0.65rem;
+    color: #ffffff;
+}
+
+html .public-glass .home-signature-text-link:hover {
+    border: 1px solid #ffffff;
+    color: #ffffff;
+}
+
+html .public-glass .home-signature-art {
+    position: absolute;
+    z-index: 0;
+    inset: 0 calc(-100vw * 0.05);
+    width: auto;
+    pointer-events: none;
+}
+
+html .public-glass .home-signature-image {
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+    background: var(--m-navy-deep);
+}
+
+html .public-glass .home-signature-image::after {
+    display: block;
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(15 36 56 / 0.88), rgb(23 50 77 / 0.6));
+}
+
+html .public-glass .home-signature-caption {
+    display: none;
+}
+
+html .public-glass .home-hero-evidence {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+html .public-glass .home-hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.75rem;
+    border: 1px solid #ffffff30;
+    border-radius: 1rem;
+    background: #ffffff12;
+    color: #ffffff;
+    backdrop-filter: blur(12px);
+}
+
+html .public-glass .home-hero-stat strong {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1;
+}
+
+html .public-glass .home-hero-stat span {
+    font-size: 0.9375rem;
+    color: #e2e5e9;
+}
+
+html .public-glass .home-hero-stat::after {
+    content: '';
+    width: 2rem;
+    height: 2px;
+    background: var(--m-orange);
+}
+
+html .public-glass .home-hero-slider-controls {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 0.65rem 0.65rem 0 0;
+}
+
+html .public-glass .m-section {
+    padding-block: clamp(3rem, 6vw, 5.5rem);
+}
+
+html .public-glass .m-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+html .public-glass .m-project-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+html .public-glass .m-project-card .m-link {
+    margin-top: auto;
+}
+
+html .public-glass :is(.m-center, .m-intelligence-lead) {
+    align-items: flex-start;
+    text-align: start;
+}
+
+html .public-glass :is(.m-title, .m-lead) {
+    margin-inline: 0;
+    text-align: start;
+}
+
+html .public-glass .m-title::after {
+    display: none;
+}
+
+html .public-glass .m-eyebrow {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    color: var(--m-orange-ink);
+}
+
+html .public-glass .m-services-section .m-split {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+}
+
+html .public-glass .m-services-section .m-split-lead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+html .public-glass .m-services-section .m-split-lead > :is(.m-eyebrow, .m-lead) {
+    grid-column: 1 / -1;
+}
+
+html .public-glass .m-service-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+html .public-glass :is(.m-service-card, .m-card, .m-tile) {
+    padding: 2rem;
+    border: 1px solid var(--m-line);
+    border-radius: 1rem;
+    box-shadow: none;
+    background: #ffffff;
+}
+
+html .public-glass :is(.m-service-card, .m-card, .m-tile):hover {
+    border-color: var(--m-orange);
+    box-shadow: 0 12px 30px -20px rgb(23 50 77 / 0.38);
+}
+
+html .public-glass :is(.m-service-card-top, .m-index, .m-service-card-link, .m-link) {
+    color: var(--m-orange-ink);
+}
+
+html .public-glass .m-page-header {
+    padding-block: 4rem;
+    padding-inline: clamp(1rem, 3vw, 3rem);
+    text-align: start;
+    background: linear-gradient(90deg, rgb(15 36 56 / 0.92), rgb(23 50 77 / 0.7)), url('/images/ethiopia-highlands.jpg') center / cover;
+    color: #ffffff;
+}
+
+html .public-glass .m-page-header :is(h1, .m-lead, .m-meta, .insight-marker) {
+    margin-inline: 0;
+    color: #ffffff;
+}
+
+html .public-glass .m-page-header .m-actions {
+    justify-content: flex-start;
+}
+
+html .public-glass .m-page-header .button-secondary {
+    color: #ffffff;
+    border-color: #ffffff80;
+}
+
+html .public-glass .m-final-cta-section {
+    background: var(--m-navy);
+}
+
+html .public-glass .m-final-cta {
+    padding: 1rem 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+html .public-glass .m-final-cta::before,
+html .public-glass .m-final-cta::after {
+    display: none;
+}
+
+html .public-glass .m-final-cta :is(.m-eyebrow, .m-link, h2, p) {
+    color: #ffffff;
+}
+
+html .public-glass .m-final-cta .m-btn {
+    background: var(--m-orange);
+    color: var(--m-navy-deep);
+}
+
+html .public-glass .m-final-cta .m-btn:hover {
+    background: #df7815;
+}
+
+html .public-glass .m-final-cta .m-eyebrow {
+    color: var(--m-orange);
+}
+
+html .public-glass .public-footer {
+    background: var(--m-navy-deep);
+    background-image: none;
+    color: #b7bec9;
+}
+
+html .public-glass .public-footer :is(.text-white, .footer-heading, .glass-display) {
+    color: #ffffff;
+}
+
+html .public-glass .public-footer :is(.text-slate-300, .text-slate-400, .footer-menu-link, address) {
+    color: #b7bec9;
+}
+
+html .public-glass .public-footer .border-white\/10 {
+    border-color: #ffffff20;
+}
+
+@media (max-width: 63.99rem) {
+    html .public-glass .home-signature-hero {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        min-height: 0;
+        padding-block: 3rem;
+    }
+
+    html .public-glass .m-service-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 47.99rem) {
+    html .public-glass .home-signature-title {
+        font-size: clamp(2.25rem, 9vw, 3.5rem);
+    }
+
+    html[lang='am'] .public-glass .home-signature-title {
+        font-size: 1.875rem;
+    }
+
+    html .public-glass .home-hero-stat {
+        padding: 1.25rem;
+    }
+
+    html .public-glass .m-service-cards,
+    html .public-glass .m-services-section .m-split-lead {
+        grid-template-columns: 1fr;
+    }
+}

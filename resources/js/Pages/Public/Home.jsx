@@ -48,8 +48,8 @@ function Ledger({ items, copy }) {
     );
 }
 
-function ExpertPerspective({ experts, insight, copy }) {
-    if (experts.length === 0 && ! insight) {
+function ExpertPerspective({ experts, copy }) {
+    if (experts.length === 0) {
         return null;
     }
 
@@ -65,18 +65,47 @@ function ExpertPerspective({ experts, insight, copy }) {
                         renderItem={(item, index) => <ExpertCard item={item} copy={copy} index={index} />}
                     />
                 )}
-                {insight && (
-                    <Reveal className="m-insight-feature">
-                        <MotionLink
-                            className="m-tile m-insight-tile"
-                            href={insight.href}
-                            whileHover={{ y: -4 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                        >
-                            <InsightCard item={insight} copy={copy} />
-                        </MotionLink>
-                    </Reveal>
-                )}
+            </div>
+        </section>
+    );
+}
+
+function Portfolio({ projects, copy, links }) {
+    if (! projects.length) return null;
+
+    return (
+        <section className="m-section" aria-labelledby="home-portfolio-title">
+            <div className="content-container">
+                <div className="m-section-heading">
+                    <SectionLead id="home-portfolio-title" eyebrow={copy.caseEyebrow} title={copy.portfolioTitle} />
+                    <AppLink className="m-link" href={links.caseStudies}>{copy.caseStudies}</AppLink>
+                </div>
+                <div className="m-grid m-grid-3 mt-8">
+                    {projects.map((project, index) => (
+                        <Reveal as="article" className="m-card m-project-card" key={project.href} index={index}>
+                            <span className="m-index">{pad(index + 1)}</span>
+                            <h3><AppLink href={project.href}>{project.title}</AppLink></h3>
+                            {project.summary && <p>{project.summary}</p>}
+                            <AppLink className="m-link" href={project.href}>{copy.caseLink}</AppLink>
+                        </Reveal>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function Articles({ articles, copy, links }) {
+    if (! articles.length) return null;
+
+    return (
+        <section className="m-section m-band" aria-labelledby="home-insight-title">
+            <div className="content-container">
+                <div className="m-section-heading">
+                    <SectionLead id="home-insight-title" eyebrow={copy.insight} title={copy.insightsTitle} />
+                    <AppLink className="m-link" href={links.insights}>{copy.allArticles}</AppLink>
+                </div>
+                <Tiles items={articles} renderItem={(item) => <InsightCard item={item} copy={copy} />} />
             </div>
         </section>
     );
@@ -108,7 +137,7 @@ function Services({ services, copy, links }) {
     }
 
     return (
-        <section className="m-section m-band" aria-labelledby="home-services-title">
+        <section className="m-section m-band m-services-section" aria-labelledby="home-services-title">
             <div className="content-container m-split">
                 <Reveal className="m-split-lead">
                     <p className="m-eyebrow">{copy.servicesEyebrow}</p>
@@ -116,18 +145,17 @@ function Services({ services, copy, links }) {
                     <p className="m-lead">{copy.servicesLead}</p>
                     <AppLink className="m-link" href={links.services}>{copy.servicesLink}</AppLink>
                 </Reveal>
-                <ol className="m-rows">
+                <ol className="m-service-cards">
                     {services.map((service, index) => (
                         <Reveal as="li" key={service.href} index={index}>
-                            <MotionLink className="m-row" href={service.href} whileTap={{ scale: 0.99 }}>
-                                <span className="m-row-number" aria-hidden="true">{pad(index + 1)}</span>
-                                <span className="m-row-body">
-                                    <h3>{service.name}</h3>
-                                    <span className="m-row-text">{service.summary}</span>
+                            <MotionLink className="m-service-card" href={service.href} whileTap={{ scale: 0.99 }}>
+                                <span className="m-service-card-top" aria-hidden="true">
+                                    <span className="m-row-number">{pad(index + 1)}</span>
+                                    <Icon name="arrow-up-right" className="size-5" />
                                 </span>
-                                <span className="m-row-arrow" aria-hidden="true">
-                                    <Icon name="arrow-right" className="size-4" strokeWidth={2} />
-                                </span>
+                                <h3>{service.name}</h3>
+                                <p>{service.summary}</p>
+                                <span className="m-service-card-link">{copy.learnMore}</span>
                             </MotionLink>
                         </Reveal>
                     ))}
@@ -146,12 +174,14 @@ function CaseStudy({ caseStudy, copy, links }) {
         <section className="m-section" aria-labelledby="home-case-title">
             <div className="content-container">
                 <Reveal as="article" className="m-feature">
-                    <p className="m-eyebrow">{copy.caseEyebrow}</p>
-                    <h2 id="home-case-title">{caseStudy.title}</h2>
-                    {caseStudy.outcomes && <p>{caseStudy.outcomes}</p>}
-                    <div className="m-links">
-                        <AppLink className="m-link" href={caseStudy.href}>{copy.caseLink}</AppLink>
-                        <AppLink className="m-link" href={links.caseStudies}>{copy.caseStudies}</AppLink>
+                    <div className="m-feature-copy">
+                        <p className="m-eyebrow">{copy.caseEyebrow}</p>
+                        <h2 id="home-case-title">{caseStudy.title}</h2>
+                        {caseStudy.outcomes && <p>{caseStudy.outcomes}</p>}
+                        <div className="m-links">
+                            <AppLink className="m-link" href={caseStudy.href}>{copy.caseLink}</AppLink>
+                            <AppLink className="m-link" href={links.caseStudies}>{copy.caseStudies}</AppLink>
+                        </div>
                     </div>
                     <motion.div
                         className="m-feature-media"
@@ -273,16 +303,17 @@ function InsightCard({ item, copy }) {
     );
 }
 
-export default function Home({ meta, heroSlider, ledger, services, caseStudy, testimonials = [], industries, experts = [], insight, copy, links }) {
+export default function Home({ meta, heroSlider, ledger, services, projects = [], articles = [], testimonials = [], industries, experts = [], copy, links }) {
     return (
         <PublicLayout title={meta?.title}>
-            {heroSlider.slides.length > 0 && <HeroSlider slider={heroSlider} />}
+            {heroSlider.slides.length > 0 && <HeroSlider slider={heroSlider} stats={ledger} statsLabel={copy.ledgerTitle} />}
 
-            <Ledger items={ledger} copy={copy} />
+            {heroSlider.slides.length === 0 && <Ledger items={ledger} copy={copy} />}
             <Services services={services} copy={copy} links={links} />
-            <CaseStudy caseStudy={caseStudy} copy={copy} links={links} />
+            <Portfolio projects={projects} copy={copy} links={links} />
+            <Articles articles={articles} copy={copy} links={links} />
             <Testimonials testimonials={testimonials} copy={copy} />
-            <ExpertPerspective experts={experts} insight={insight} copy={copy} />
+            <ExpertPerspective experts={experts} copy={copy} />
 
             {industries.length > 0 && (
                 <section className="m-section m-band" aria-labelledby="home-industries-title">
