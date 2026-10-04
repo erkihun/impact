@@ -83,7 +83,7 @@ final class ImageVariantGenerator
     private function generateWithGd(MediaAsset $asset, string $bytes): array
     {
         $source = @imagecreatefromstring($bytes);
-        if (! $source instanceof GdImage || imagesx($source) < 1 || imagesy($source) < 1) {
+        if (! $source instanceof GdImage) {
             throw new RuntimeException('The image has invalid dimensions.');
         }
 
