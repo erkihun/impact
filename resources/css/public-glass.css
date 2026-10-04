@@ -2782,3 +2782,63 @@ a.m-tile:hover::after,
         transform: none;
     }
 }
+
+
+/* About page: aligned headings, readable justified copy and compact principles. */
+.m-about-page .m-center {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+}
+
+.m-about-page .m-title {
+    max-width: 24ch;
+}
+
+.m-about-page .m-about-prose,
+.m-about-page [data-section-type="rich_text"] .whitespace-pre-line,
+.m-about-page [data-section-type="image_text"] .reading-width {
+    text-align: justify;
+    text-align-last: start;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    line-height: 1.8;
+}
+
+.m-about-page .m-lead {
+    max-width: 66ch;
+    margin-top: 1.25rem;
+    font-size: clamp(1rem, 1.4vw, 1.125rem);
+}
+
+.m-about-commitments .m-grid {
+    margin-top: 2.5rem;
+}
+
+html .public-glass .m-about-principle {
+    min-height: 0;
+    gap: 1rem;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    border-radius: 1rem;
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.m-about-principle .m-index {
+    margin: 0;
+    color: var(--m-orange-ink);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+}
+
+.m-about-principle h3 {
+    margin: 0;
+    font-size: 1.375rem;
+    line-height: 1.3;
+}
+
+.m-about-principle .m-about-prose {
+    margin: 0;
+    color: var(--m-ink-2);
+    font-size: 1rem;
+}
