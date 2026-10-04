@@ -1670,7 +1670,7 @@ a.m-stat:hover strong {
     object-fit: cover;
 }
 
-/* Homepage expert profiles: generous portraits and an editorial identity panel. */
+/* Homepage expert profiles: compact portraits and clear identity panels. */
 .m-experts-section .m-center,
 .m-experts-section .m-title {
     width: 100%;
@@ -1684,8 +1684,9 @@ a.m-stat:hover strong {
 }
 
 .m-expert-card {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 28%) minmax(0, 1fr);
+    min-height: 11rem;
     width: 100%;
     min-width: 0;
     overflow: hidden;
@@ -1699,7 +1700,7 @@ a.m-stat:hover strong {
 
 .m-expert-card:hover {
     border-color: var(--m-navy);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 .m-expert-card:focus-visible {
@@ -1708,9 +1709,10 @@ a.m-stat:hover strong {
 }
 
 .m-expert-cover {
-    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 11rem;
     overflow: hidden;
-    aspect-ratio: 4 / 3;
     background: #e9edf0;
 }
 
@@ -1733,57 +1735,35 @@ a.m-stat:hover strong {
     color: #ffffff;
 }
 
-.m-expert-cover-initials::before,
-.m-expert-cover-initials::after {
-    content: '';
-    position: absolute;
-    width: 80%;
-    aspect-ratio: 1;
-    border: 1px solid rgb(255 255 255 / 0.15);
-    border-radius: 50%;
-}
-
-.m-expert-cover-initials::after {
-    width: 110%;
-}
-
 .m-expert-initial {
-    font-family: 'DM Serif Display', Georgia, serif;
-    font-size: clamp(5rem, 8vw, 7rem);
+    font-size: 2rem;
+    font-weight: 600;
     line-height: 1;
 }
 
 .m-expert-body {
     display: flex;
-    flex: 1;
     flex-direction: column;
     align-items: flex-start;
-    padding: clamp(1.5rem, 2.5vw, 2rem);
-}
-
-.m-expert-label {
-    margin-bottom: 0.75rem;
-    color: var(--m-orange-ink);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
+    min-width: 0;
+    gap: 0.625rem;
+    padding: 1.25rem;
 }
 
 .m-expert-body h3 {
     margin: 0;
     color: var(--m-navy);
-    font-size: clamp(1.4rem, 2vw, 1.75rem);
+    font-size: 1.125rem;
     line-height: 1.2;
     letter-spacing: -0.035em;
     overflow-wrap: anywhere;
 }
 
 .m-expert-role {
-    margin: 0.75rem 0 1.75rem;
+    margin: 0 0 0.5rem;
     color: var(--m-muted);
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 .m-expert-action {
@@ -1793,7 +1773,7 @@ a.m-stat:hover strong {
     gap: 1rem;
     width: 100%;
     margin-top: auto;
-    padding-top: 1.25rem;
+    padding-top: 0.875rem;
     border-top: 1px solid #e5e9ec;
     font-size: 0.8125rem;
     font-weight: 650;
@@ -1802,8 +1782,8 @@ a.m-stat:hover strong {
 .m-expert-arrow {
     display: grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
     border-radius: 50%;
     background: #edf1f4;
     color: var(--m-navy);

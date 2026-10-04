@@ -284,7 +284,6 @@ function ExpertCard({ item, copy }) {
                 )}
             </div>
             <div className="m-expert-body">
-                <span className="m-expert-label">{copy.perspectivesEyebrow}</span>
                 <h3>{item.name}</h3>
                 {item.title && <p className="m-expert-role">{item.title}</p>}
                 <span className="m-expert-action">
