@@ -54,17 +54,18 @@ function ExpertPerspective({ experts, copy }) {
     }
 
     return (
-        <section className="m-section" aria-labelledby="home-perspectives-title">
+        <section className="m-section m-experts-section" aria-labelledby="home-perspectives-title">
             <div className="content-container">
                 <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
-                {experts.length > 0 && (
-                    <Tiles
-                        items={experts.map((expert) => ({ ...expert, kind: 'expert' }))}
-                        columns={experts.length > 2 ? 3 : 2}
-                        className="m-expert-grid"
-                        renderItem={(item, index) => <ExpertCard item={item} copy={copy} index={index} />}
-                    />
-                )}
+                <div className={`m-grid ${experts.length > 2 ? 'm-grid-3' : 'm-grid-2'} m-expert-grid`}>
+                    {experts.map((expert, index) => (
+                        <Reveal key={expert.href} index={index} className="flex">
+                            <AppLink className="m-expert-card" href={expert.href}>
+                                <ExpertCard item={expert} copy={copy} />
+                            </AppLink>
+                        </Reveal>
+                    ))}
+                </div>
             </div>
         </section>
     );
@@ -272,22 +273,25 @@ function Tiles({ items, renderItem, columns = 3, className = '' }) {
     );
 }
 
-function ExpertCard({ item, copy, index = 0 }) {
+function ExpertCard({ item, copy }) {
     return (
         <>
-            <motion.span
-                className="m-avatar m-expert-avatar"
-                initial={{ opacity: 0, y: 18, scale: 0.88 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-                transition={{ type: 'spring', stiffness: 180, damping: 18, delay: index * 0.08 }}
-            >
-                {item.photo ? <img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async" /> : <span aria-hidden="true">{item.initial}</span>}
-            </motion.span>
-            <span className="m-index">{copy.perspectivesEyebrow}</span>
-            <h3>{item.name}</h3>
-            <p>{item.title}</p>
-            <span className="m-link">{copy.meetTeam}</span>
+            <div className={`m-expert-cover${item.photo ? '' : ' m-expert-cover-initials'}`}>
+                {item.photo ? (
+                    <img src={item.photo} alt={item.photoAlt || item.name} loading="lazy" decoding="async" />
+                ) : (
+                    <span className="m-expert-initial" aria-hidden="true">{item.initial}</span>
+                )}
+            </div>
+            <div className="m-expert-body">
+                <span className="m-expert-label">{copy.perspectivesEyebrow}</span>
+                <h3>{item.name}</h3>
+                {item.title && <p className="m-expert-role">{item.title}</p>}
+                <span className="m-expert-action">
+                    {copy.viewExpert}
+                    <span className="m-expert-arrow" aria-hidden="true">&#8599;</span>
+                </span>
+            </div>
         </>
     );
 }

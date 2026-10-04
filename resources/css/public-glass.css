@@ -1670,47 +1670,164 @@ a.m-stat:hover strong {
     object-fit: cover;
 }
 
+/* Homepage expert profiles: generous portraits and an editorial identity panel. */
+.m-experts-section .m-center,
+.m-experts-section .m-title {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+}
 .m-expert-grid {
+    width: 100%;
+    margin: 3.5rem 0 0;
     align-items: stretch;
 }
 
-.m-expert-grid .m-tile {
-    min-height: 24rem;
-    background:
-        radial-gradient(18rem 12rem at 50% 0%, rgb(242 140 40 / 0.14), transparent 70%),
-        linear-gradient(180deg, #ffffff 0%, #f7f8fa 100%);
+.m-expert-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #dce2e7;
+    border-radius: 1.5rem;
+    background: var(--m-white);
+    color: var(--m-navy);
+    text-decoration: none;
+    transition: border-color 220ms ease, transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.m-expert-avatar {
+.m-expert-card:hover {
+    border-color: var(--m-navy);
+    transform: translateY(-5px);
+}
+
+.m-expert-card:focus-visible {
+    outline: 3px solid var(--m-orange-strong);
+    outline-offset: 5px;
+}
+
+.m-expert-cover {
     position: relative;
-    width: 8rem;
-    height: 8rem;
-    border: 6px solid #ffffff;
-    box-shadow:
-        0 0 0 1px rgb(23 50 77 / 0.1),
-        0 1.25rem 2.5rem -1.75rem rgb(15 36 56 / 0.55);
-    transition:
-        transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
-        box-shadow 0.45s ease;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: #e9edf0;
 }
 
-.m-expert-avatar::after {
+.m-expert-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.m-expert-card:hover .m-expert-cover img {
+    transform: scale(1.045);
+}
+
+.m-expert-cover-initials {
+    display: grid;
+    place-items: center;
+    background: var(--m-navy);
+    color: #ffffff;
+}
+
+.m-expert-cover-initials::before,
+.m-expert-cover-initials::after {
     content: '';
     position: absolute;
-    right: 0.55rem;
-    bottom: 0.55rem;
-    width: 1rem;
-    height: 1rem;
-    border: 3px solid #ffffff;
-    border-radius: 999px;
-    background: var(--m-orange);
+    width: 80%;
+    aspect-ratio: 1;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: 50%;
 }
 
-.m-expert-grid .m-tile:hover .m-expert-avatar {
-    box-shadow:
-        0 0 0 1px rgb(242 140 40 / 0.45),
-        0 1.75rem 3.25rem -1.75rem rgb(15 36 56 / 0.62);
-    transform: translateY(-4px) scale(1.035);
+.m-expert-cover-initials::after {
+    width: 110%;
+}
+
+.m-expert-initial {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(5rem, 8vw, 7rem);
+    line-height: 1;
+}
+
+.m-expert-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.m-expert-label {
+    margin-bottom: 0.75rem;
+    color: var(--m-orange-ink);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.m-expert-body h3 {
+    margin: 0;
+    color: var(--m-navy);
+    font-size: clamp(1.4rem, 2vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+
+.m-expert-role {
+    margin: 0.75rem 0 1.75rem;
+    color: var(--m-muted);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.m-expert-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e5e9ec;
+    font-size: 0.8125rem;
+    font-weight: 650;
+}
+
+.m-expert-arrow {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: #edf1f4;
+    color: var(--m-navy);
+    font-size: 1.25rem;
+    transition: color 220ms ease, background 220ms ease;
+}
+
+.m-expert-card:hover .m-expert-arrow,
+.m-expert-card:focus-visible .m-expert-arrow {
+    background: var(--m-navy);
+    color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .m-expert-card,
+    .m-expert-cover img,
+    .m-expert-arrow {
+        transition: none;
+    }
+
+    .m-expert-card:hover,
+    .m-expert-card:hover .m-expert-cover img {
+        transform: none;
+    }
 }
 
 .m-insight-feature {
@@ -2198,11 +2315,6 @@ a.m-tile:hover::after,
 @media (max-width: 47.99rem) {
     .m-tile {
         min-height: 0;
-    }
-
-    .m-expert-avatar {
-        width: 6.5rem;
-        height: 6.5rem;
     }
 
     .m-tile .m-link {

@@ -380,3 +380,50 @@ it('denies settings changes without permission', function (): void {
         ->put('/admin/settings/general', [])
         ->assertForbidden();
 });
+
+
+it('changes the hero slide count and preserves hidden slide content and images', function (): void {
+    Storage::fake('public');
+    $administrator = settingsAdministrator();
+    $this->actingAs($administrator)->withSession(privilegedSession($administrator));
+
+    $this->get('/admin/settings/homepage')
+        ->assertOk()
+        ->assertSee('Number of slides')
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('groupedDefinitions.Slide 10'));
+
+    $this->put('/admin/settings/homepage', settingsPayloadFor('homepage', [
+        'homepage__hero__slide_count' => '5',
+        'homepage__hero__slide_4__heading_en' => 'An additional managed slide.',
+        'homepage__hero__slide_4__image' => UploadedFile::fake()->image('fourth.webp', 1440, 900),
+    ]))->assertSessionHasNoErrors()->assertRedirect('/admin/settings/homepage');
+
+    $image = Setting::query()->where('key', 'homepage.hero.slide_4.image')->sole()->value;
+    $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page
+        ->has('heroSlider.slides', 5)
+        ->where('heroSlider.slides.3.heading', 'An additional managed slide.')
+        ->where('heroSlider.slides.3.image', $image));
+
+    foreach ([2, 5] as $count) {
+        $this->put('/admin/settings/homepage', settingsPayloadFor('homepage', [
+            'homepage__hero__slide_count' => (string) $count,
+            'homepage__hero__slide_4__heading_en' => 'An additional managed slide.',
+        ]))->assertSessionHasNoErrors()->assertRedirect('/admin/settings/homepage');
+        $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page->has('heroSlider.slides', $count));
+    }
+
+    expect(Setting::query()->where('key', 'homepage.hero.slide_4.image')->sole()->value)->toBe($image);
+    $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('heroSlider.slides.3.heading', 'An additional managed slide.')
+        ->where('heroSlider.slides.3.image', $image));
+});
+
+it('rejects invalid hero slide counts', function (mixed $count): void {
+    $administrator = settingsAdministrator();
+    $this->actingAs($administrator)
+        ->withSession(privilegedSession($administrator))
+        ->put('/admin/settings/homepage', settingsPayloadFor('homepage', [
+            'homepage__hero__slide_count' => $count,
+        ]))
+        ->assertSessionHasErrors('homepage__hero__slide_count');
+})->with([0, 11, '2.5', 'invalid']);

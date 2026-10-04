@@ -169,6 +169,7 @@ final class HomeController extends Controller
                 'perspectivesEyebrow' => __('Expert perspective'),
                 'perspectivesTitle' => __('Meet the people behind the work'),
                 'meetTeam' => __('Meet the advisory team'),
+                'viewExpert' => __('View profile'),
                 'insight' => __('Insight'),
                 'insightsTitle' => __('Ideas that inform better decisions'),
                 'readInsight' => __('Read the insight'),

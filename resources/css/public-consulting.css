@@ -174,7 +174,16 @@ html .public-glass .home-signature-image::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgb(15 36 56 / 0.88), rgb(23 50 77 / 0.6));
+    background: linear-gradient(90deg, rgb(15 36 56 / 0.72) 0%, rgb(15 36 56 / 0.5) 42%, rgb(15 36 56 / 0.16) 100%);
+}
+
+/* Keep the photograph clear with a single overlay and gentle tonal contrast. */
+html .public-glass .home-signature-image::before {
+    display: none;
+}
+
+html .public-glass .home-signature-image img {
+    filter: brightness(1.04) contrast(0.96);
 }
 
 html .public-glass .home-signature-caption {
@@ -196,7 +205,7 @@ html .public-glass .home-hero-stat {
     padding: 1.75rem;
     border: 1px solid #ffffff30;
     border-radius: 1rem;
-    background: #ffffff12;
+    background: rgb(15 36 56 / 0.5);
     color: #ffffff;
     backdrop-filter: blur(12px);
 }

@@ -6,8 +6,6 @@ namespace App\Support\Settings;
 
 final readonly class HomepageHeroSettings
 {
-    private const SLIDE_COUNT = 3;
-
     private const DEFAULT_IMAGE = '/images/impact-hero-clean.svg';
 
     public function __construct(private EffectiveSettings $settings) {}
@@ -34,7 +32,7 @@ final readonly class HomepageHeroSettings
         $locale = 'en';
         $slides = [];
 
-        for ($slot = 1; $slot <= self::SLIDE_COUNT; $slot++) {
+        for ($slot = 1; $slot <= $this->settings->integer('homepage.hero.slide_count'); $slot++) {
             $prefix = "homepage.hero.slide_{$slot}";
 
             if (! $this->settings->boolean("{$prefix}.enabled")) {
