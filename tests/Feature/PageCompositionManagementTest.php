@@ -257,3 +257,66 @@ it('renders managed English public headers and the three-panel editor workspace'
         ->and($composition->refresh()->state)->toBe(PageCompositionState::Archived);
     $this->assertDatabaseHas('page_composition_workflow_events', ['to_state' => 'published']);
 });
+
+
+function quickPublishDraft(User $actor): PageComposition
+{
+    $thisTest = test();
+    $thisTest->seed([PageCompositionSeeder::class]);
+    $source = PageComposition::query()->where('page_key', 'home')->sole();
+
+    return app(\App\Actions\PageComposition\CreatePageCompositionDraftAction::class)
+        ->execute($actor, $source, (string) \Illuminate\Support\Str::uuid());
+}
+
+it('publishes a saved draft in one request with all workflow audit steps', function (): void {
+    $actor = User::factory()->create();
+    $actor->roles()->attach(Role::query()->where('code', 'super_administrator')->sole());
+    $draft = quickPublishDraft($actor);
+
+    $this->actingAs($actor)->withSession(privilegedSession($actor))
+        ->post(route('admin.page-compositions.publish', $draft), ['lock_version' => $draft->lock_version])
+        ->assertSessionHasNoErrors()->assertRedirect(route('admin.page-compositions.edit', $draft));
+
+    expect($draft->refresh()->state)->toBe(PageCompositionState::Published);
+    foreach (['in_review', 'approved', 'published'] as $state) {
+        $this->assertDatabaseHas('page_composition_workflow_events', [
+            'page_composition_id' => $draft->id, 'to_state' => $state,
+        ]);
+    }
+    expect(PageComposition::query()->where('page_key', 'home')->where('state', PageCompositionState::Published)->count())->toBe(1);
+});
+
+it('does not let a publisher skip permissions required for draft approval', function (): void {
+    $admin = User::factory()->create();
+    $admin->roles()->attach(Role::query()->where('code', 'super_administrator')->sole());
+    $draft = quickPublishDraft($admin);
+    $publisher = User::factory()->create();
+    $publisher->roles()->attach(Role::query()->where('code', 'publisher')->sole());
+
+    $this->actingAs($publisher)->withSession(privilegedSession($publisher))
+        ->post(route('admin.page-compositions.publish', $draft), ['lock_version' => $draft->lock_version])
+        ->assertForbidden();
+    expect($draft->refresh()->state)->toBe(PageCompositionState::Draft);
+    $this->assertDatabaseMissing('page_composition_workflow_events', ['page_composition_id' => $draft->id]);
+});
+
+it('keeps invalid pages as drafts when quick publication fails validation', function (): void {
+    $actor = User::factory()->create();
+    $actor->roles()->attach(Role::query()->where('code', 'super_administrator')->sole());
+    $draft = draftComposition($actor);
+    $this->actingAs($actor)->withSession(privilegedSession($actor))
+        ->post(route('admin.page-compositions.publish', $draft), ['lock_version' => $draft->lock_version])
+        ->assertSessionHasErrors('composition');
+    expect($draft->refresh()->state)->toBe(PageCompositionState::Draft);
+});
+
+it('rejects quick publication when saved sections changed after opening the page', function (): void {
+    $actor = User::factory()->create();
+    $actor->roles()->attach(Role::query()->where('code', 'super_administrator')->sole());
+    $draft = quickPublishDraft($actor);
+    $this->actingAs($actor)->withSession(privilegedSession($actor))
+        ->postJson(route('admin.page-compositions.publish', $draft), ['lock_version' => $draft->lock_version + 1])
+        ->assertConflict();
+    expect($draft->refresh()->state)->toBe(PageCompositionState::Draft);
+});

@@ -11,6 +11,7 @@ use App\Actions\PageComposition\RemovePageSectionAction;
 use App\Actions\PageComposition\ReorderPageSectionsAction;
 use App\Actions\PageComposition\RestorePageSectionAction;
 use App\Actions\PageComposition\TransitionPageCompositionAction;
+use App\Actions\PageComposition\PublishPageCompositionAction;
 use App\Actions\PageComposition\UpdatePageSectionAction;
 use App\Data\PageComposition\UpsertSectionData;
 use App\Enums\ContentSelectionMode;
@@ -77,7 +78,7 @@ final class PageComposerController extends Controller
             ->withCount('sections')->orderBy('page_key')->paginate(30)->withQueryString();
         $pages->through(fn (PageComposition $page): array => [
             'page_key' => $page->page_key,
-            'translations' => [$page->only(['id', 'locale', 'version_no', 'state', 'sections_count', 'updated_at'])],
+            'translations' => [$page->only(['id', 'locale', 'version_no', 'state', 'sections_count', 'updated_at', 'lock_version'])],
         ]);
 
         return WorkspacePage::render('admin.page-compositions.index', [
@@ -145,6 +146,18 @@ final class PageComposerController extends Controller
         return redirect()
             ->route('admin.page-compositions.edit', $draft)
             ->with('status', __('Editable draft created from the published version.'));
+    }
+
+    public function publish(
+        Request $request,
+        PageComposition $composition,
+        PublishPageCompositionAction $action,
+        CorrelationContext $correlation,
+    ): RedirectResponse {
+        $validated = $request->validate(['lock_version' => ['required', 'integer', 'min:1']]);
+        $action->execute($request->user(), $composition, $correlation->id(), (int) $validated['lock_version']);
+
+        return $this->back($composition, __('Page published. Your changes are now live.'));
     }
 
     public function transition(

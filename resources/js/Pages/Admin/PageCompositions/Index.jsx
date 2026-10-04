@@ -1,6 +1,8 @@
 import { Link, useForm } from '@inertiajs/react';
 import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
-import { Errors, Pagination, Status, date, label, useWorkspace } from '../../../Components/Workspace/UI';
+import { Action, Errors, Pagination, Status, date, label, useWorkspace } from '../../../Components/Workspace/UI';
+
+export const canPublishPage = (state, can) => can('pages.publish') && (['approved', 'scheduled'].includes(state) || (state === 'in_review' && can('pages.approve')) || (['draft', 'changes_requested'].includes(state) && can('pages.update') && can('pages.approve')));
 
 export const localeLabel = () => 'English';
 
@@ -41,7 +43,7 @@ export default function Index({ compositions, summary, filters = {}, states = []
                         <div className={`pages-row-state pages-row-state-${version.state}`}><Status value={version.state} /><span>Version {version.version_no}</span></div>
                         <div className="pages-row-sections"><strong>{version.sections_count}</strong><span>{version.sections_count === 1 ? 'section' : 'sections'}</span></div>
                         <div className="pages-row-updated"><span>Updated</span><time dateTime={version.updated_at}>{date(version.updated_at)}</time></div>
-                        <Link className="button-secondary pages-row-action" href={href} aria-label={`${can('pages.update') || can('pages.create') ? 'Manage' : 'View'} ${pageTitle(page.page_key)}`}>{can('pages.update') || can('pages.create') ? 'Manage page' : 'View details'} <span aria-hidden="true">→</span></Link>
+                        <div className="pages-row-actions flex flex-wrap items-center gap-2">{canPublishPage(version.state, can) && <Action href={`/admin/page-compositions/${version.id}/publish`} data={{lock_version:version.lock_version}} className="button-primary">Publish now</Action>}<Link className="button-secondary pages-row-action" href={href} aria-label={`${can('pages.update') || can('pages.create') ? 'Manage' : 'View'} ${pageTitle(page.page_key)}`}>{can('pages.update') || can('pages.create') ? 'Manage page' : 'View details'} <span aria-hidden="true">→</span></Link></div>
                     </article>;
                 })}
                 {!compositions.data.length && <div className="pages-empty"><h3 className="heading-3">{filtered ? 'No pages match your filters' : 'No website pages yet'}</h3><p className="form-help">{filtered ? 'Try a shorter page name or choose another status.' : 'Website pages will appear here when they are configured.'}</p>{filtered && <Link className="button-secondary mt-4" href="/admin/page-compositions">Show all pages</Link>}</div>}

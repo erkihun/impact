@@ -151,6 +151,7 @@ details.workspace-nav-group > summary { cursor: pointer; }
     .pages-search { padding: 0 1.1rem 1.1rem; } .pages-search > div:nth-child(2) { flex: 1 1 100%; }
     .pages-row { padding: 1.1rem; grid-template-columns: 1fr auto; gap: 1rem; }
     .pages-row-title { grid-column: 1 / -1; } .pages-row-updated { grid-column: 1; grid-row: auto; padding: 0; }
+    .pages-row-actions { grid-column: 1 / -1; }
     .pages-row-action { grid-column: 2; } .pages-row-sections { align-items: end; }
 }
 .workspace-filters > summary { cursor: pointer; }

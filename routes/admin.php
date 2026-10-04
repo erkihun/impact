@@ -77,6 +77,9 @@ Route::middleware(['auth', 'verified', 'session.current', 'mfa'])->group(functio
     Route::post('/page-compositions/{composition}/drafts', [PageComposerController::class, 'createDraft'])
         ->middleware('permission:pages.create')
         ->name('page-compositions.drafts.store');
+    Route::post('/page-compositions/{composition}/publish', [PageComposerController::class, 'publish'])
+        ->middleware('permission:pages.publish')
+        ->name('page-compositions.publish');
     Route::post('/page-compositions/{composition}/transitions', [PageComposerController::class, 'transition'])
         ->name('page-compositions.transitions.store');
     Route::get('/navigation', [NavigationController::class, 'edit'])
