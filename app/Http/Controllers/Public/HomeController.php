@@ -4,24 +4,45 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\Seo\RobotsDirective;
 use App\Http\Controllers\Controller;
 use App\Models\CaseStudyVersion;
 use App\Models\ExpertVersion;
 use App\Models\IndustryVersion;
 use App\Models\InsightVersion;
 use App\Models\ServiceVersion;
+use App\Services\Seo\MediaImagePresenter;
+use App\Services\Seo\ResponsiveImages;
+use App\Services\Seo\SeoMetadataBuilder;
+use App\Services\Seo\SeoSettings;
+use App\Support\Inertia\PublicContent;
+use App\Support\Inertia\PublicPage;
 use App\Support\Settings\HomepageHeroSettings;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 use Inertia\Response;
 
 final class HomeController extends Controller
 {
     private const FEATURE_IMAGE = 'images/impact-hero-clean.svg';
 
-    public function __invoke(HomepageHeroSettings $heroSettings): Response
-    {
+    public function __invoke(
+        HomepageHeroSettings $heroSettings,
+        ResponsiveImages $images,
+        MediaImagePresenter $media,
+        SeoSettings $seoSettings,
+    ): Response {
         $locale = app()->getLocale();
+        $hero = $heroSettings->viewData($locale);
+        // Default slides use the optimized design image; uploaded slide images
+        // keep their own URL.
+        $heroPicture = $images->attributes('ethiopia-highlands', '100vw', 1440);
+        $hero['slides'] = array_map(static fn (array $slide): array => [
+            ...$slide,
+            'picture' => str_ends_with($slide['image'], 'impact-hero-clean.svg') ? $heroPicture : null,
+        ], $hero['slides']);
+        $preload = ($hero['slides'][0]['picture'] ?? null) !== null && $heroPicture !== null
+            ? [self::preload($heroPicture)]
+            : [];
         $visibleServices = ServiceVersion::query()
             ->where('locale', $locale)->publiclyVisible();
         $visibleIndustries = IndustryVersion::query()
@@ -34,18 +55,23 @@ final class HomeController extends Controller
             ->where('locale', $locale)->publiclyVisible();
 
         $caseStudy = (clone $visibleCaseStudies)->latest('version_no')->first();
-        $experts = (clone $visibleExperts)->with('expert.profileMedia')->orderBy('display_name')->latest('version_no')->get()
+        $experts = (clone $visibleExperts)->with('expert.profileMedia.variants')->orderBy('display_name')->latest('version_no')->get()
             ->unique('expert_id')
             ->values();
         $insight = (clone $visibleInsights)->with('insight')->latest('version_no')->first();
 
-        return Inertia::render('Public/Home', [
-            'meta' => [
-                'title' => __('Impact Consulting — Ideas into measurable change'),
-                'description' => null,
-            ],
+        $seo = SeoMetadataBuilder::make()
+            ->subject('page', 'home')
+            ->home()
+            ->title($seoSettings->siteName())
+            ->description($seoSettings->homeDescription())
+            ->meaningfulQuery([])
+            ->robots(PublicContent::hasTransientQuery() ? RobotsDirective::NoindexFollow : RobotsDirective::IndexFollow)
+            ->listable();
+
+        return PublicPage::render('Public/Home', 'home', [
             'heroSlider' => [
-                ...$heroSettings->viewData($locale),
+                ...$hero,
                 'label' => __('Homepage hero'),
             ],
             'ledger' => collect([
@@ -53,51 +79,51 @@ final class HomeController extends Controller
                     'value' => (clone $visibleServices)->distinct()->count('service_id'),
                     'label' => __('Published services'),
                     'context' => __('Current advisory capabilities'),
-                    'href' => route('services.index', ['locale' => $locale]),
+                    'href' => route('services.index'),
                 ],
                 [
                     'value' => (clone $visibleIndustries)->distinct()->count('industry_id'),
                     'label' => __('Industry contexts'),
                     'context' => __('Current published sector coverage'),
-                    'href' => route('industries.index', ['locale' => $locale]),
+                    'href' => route('industries.index'),
                 ],
                 [
                     'value' => (clone $visibleExperts)->distinct()->count('expert_id'),
                     'label' => __('Published experts'),
                     'context' => __('Named public profiles'),
-                    'href' => route('experts.index', ['locale' => $locale]),
+                    'href' => route('experts.index'),
                 ],
                 [
                     'value' => (clone $visibleInsights)->distinct()->count('insight_id'),
                     'label' => __('Knowledge products'),
                     'context' => __('Current published insights'),
-                    'href' => route('insights.index', ['locale' => $locale]),
+                    'href' => route('insights.index'),
                 ],
             ])->filter(fn (array $item): bool => $item['value'] > 0)->values(),
             'services' => (clone $visibleServices)->latest('version_no')->limit(6)->get()
                 ->map(fn (ServiceVersion $service): array => [
                     'name' => $service->name,
                     'summary' => Str::limit((string) ($service->summary ?: $service->problem_statement), 130),
-                    'href' => route('services.show', ['locale' => $locale, 'slug' => $service->slug]),
+                    'href' => route('services.show', ['slug' => $service->slug]),
                 ]),
             'projects' => (clone $visibleCaseStudies)->latest('version_no')->get()
                 ->unique('case_study_id')->take(3)->values()
                 ->map(fn (CaseStudyVersion $project): array => [
                     'title' => $project->title,
                     'summary' => $project->outcomes ? Str::limit((string) $project->outcomes, 180) : null,
-                    'href' => route('case-studies.show', ['locale' => $locale, 'slug' => $project->slug]),
+                    'href' => route('case-studies.show', ['slug' => $project->slug]),
                 ]),
             'articles' => (clone $visibleInsights)->latest('version_no')->get()
                 ->unique('insight_id')->take(3)->values()
                 ->map(fn (InsightVersion $article): array => [
                     'title' => $article->title,
                     'excerpt' => $article->excerpt ? Str::limit((string) $article->excerpt, 150) : null,
-                    'href' => route('insights.show', ['locale' => $locale, 'slug' => $article->slug]),
+                    'href' => route('insights.show', ['slug' => $article->slug]),
                 ]),
             'caseStudy' => $caseStudy ? [
                 'title' => $caseStudy->title,
                 'outcomes' => $caseStudy->outcomes ? Str::limit((string) $caseStudy->outcomes, 200) : null,
-                'href' => route('case-studies.show', ['locale' => $locale, 'slug' => $caseStudy->slug]),
+                'href' => route('case-studies.show', ['slug' => $caseStudy->slug]),
                 'image' => asset(self::FEATURE_IMAGE),
             ] : null,
             'testimonials' => [
@@ -124,31 +150,35 @@ final class HomeController extends Controller
                 ->map(fn (IndustryVersion $industry): array => [
                     'name' => $industry->name,
                     'summary' => $industry->summary ? Str::limit((string) $industry->summary, 120) : null,
-                    'href' => route('industries.show', ['locale' => $locale, 'slug' => $industry->slug]),
+                    'href' => route('industries.show', ['slug' => $industry->slug]),
                 ]),
-            'experts' => $experts->map(function (ExpertVersion $expert) use ($locale): array {
-                $photo = $expert->expert?->profileMedia;
+            'experts' => $experts->map(function (ExpertVersion $expert) use ($media): array {
+                $photo = $media->attributes($expert->expert?->profileMedia, '(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw', 'sm', (string) $expert->display_name);
 
                 return [
                     'name' => $expert->display_name,
                     'title' => $expert->professional_title,
                     'initial' => Str::upper(Str::substr((string) $expert->display_name, 0, 1)),
-                    'photo' => $photo?->isPubliclyUsable() ? $photo->publicUrl() : null,
-                    'photoAlt' => $photo?->alt_text ?: $expert->display_name,
-                    'href' => route('experts.show', ['locale' => $locale, 'slug' => $expert->slug]),
+                    'photo' => $photo['src'] ?? null,
+                    'photoSrcset' => $photo['srcset'] ?? null,
+                    'photoSizes' => $photo['sizes'] ?? null,
+                    'photoWidth' => $photo['width'] ?? null,
+                    'photoHeight' => $photo['height'] ?? null,
+                    'photoAlt' => $photo['alt'] ?? $expert->display_name,
+                    'href' => route('experts.show', ['slug' => $expert->slug]),
                 ];
             }),
             'insight' => $insight ? [
                 'title' => $insight->title,
                 'excerpt' => $insight->excerpt ? Str::limit((string) $insight->excerpt, 150) : null,
-                'href' => route('insights.show', ['locale' => $locale, 'slug' => $insight->slug]),
+                'href' => route('insights.show', ['slug' => $insight->slug]),
             ] : null,
             'links' => [
-                'services' => route('services.index', ['locale' => $locale]),
-                'caseStudies' => route('case-studies.index', ['locale' => $locale]),
-                'insights' => route('insights.index', ['locale' => $locale]),
-                'consultation' => route('consultation.create', ['locale' => $locale]),
-                'contact' => route('contact.create', ['locale' => $locale]),
+                'services' => route('services.index'),
+                'caseStudies' => route('case-studies.index'),
+                'insights' => route('insights.index'),
+                'consultation' => route('consultation.create'),
+                'contact' => route('contact.create'),
             ],
             'copy' => [
                 'ledgerTitle' => __('Explore our expertise'),
@@ -188,6 +218,19 @@ final class HomeController extends Controller
                 'finalCtaTitle' => __('Let us discuss your next project.'),
                 'finalCtaLead' => __('Tell us what you want to achieve. Our team will help you identify the right expertise and next steps.'),
             ],
-        ]);
+        ], seo: $seo, extraHead: $preload);
+    }
+
+    /**
+     * Preload for the LCP hero image so the browser fetches it before the
+     * script bundle. Limited to AVIF-capable browsers via the type hint.
+     *
+     * @param  array{src: string, srcset: string, avifSrcset: string|null, width: int, height: int, sizes: string}  $picture
+     */
+    private static function preload(array $picture): string
+    {
+        return $picture['avifSrcset'] !== null
+            ? '<link data-inertia="preload-hero" rel="preload" as="image" type="image/avif" imagesrcset="'.e($picture['avifSrcset']).'" imagesizes="'.e($picture['sizes']).'" fetchpriority="high">'
+            : '<link data-inertia="preload-hero" rel="preload" as="image" type="image/webp" imagesrcset="'.e($picture['srcset']).'" imagesizes="'.e($picture['sizes']).'" fetchpriority="high">';
     }
 }

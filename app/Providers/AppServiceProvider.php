@@ -5,17 +5,36 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Contracts\AuditRecorder;
+use App\Contracts\CdnPurger;
 use App\Contracts\Clock;
 use App\Contracts\MalwareScanner;
 use App\Contracts\PublicReferenceGenerator;
 use App\Contracts\SearchIndexer;
+use App\Models\CaseStudy;
+use App\Models\CaseStudyVersion;
+use App\Models\Event;
+use App\Models\Expert;
+use App\Models\ExpertVersion;
+use App\Models\Industry;
+use App\Models\IndustryVersion;
+use App\Models\Insight;
+use App\Models\InsightVersion;
+use App\Models\SeoMetadata;
+use App\Models\Service;
+use App\Models\ServiceVersion;
 use App\Models\User;
+use App\Models\Vacancy;
+use App\Observers\PublicResourceObserver;
+use App\Observers\PublicResourceParentObserver;
 use App\Services\DatabaseAuditRecorder;
 use App\Services\Media\ClamAvMalwareScanner;
 use App\Services\PageComposer;
 use App\Services\PublicNavigation;
 use App\Services\Search\DatabaseSearchIndexer;
 use App\Services\SecurePublicReferenceGenerator;
+use App\Services\Seo\LogCdnPurger;
+use App\Services\Seo\PublicationSeoSync;
+use App\Services\Seo\SeoSettings;
 use App\Services\SystemClock;
 use App\Support\CorrelationContext;
 use App\Support\Settings\PublicUiSettings;
@@ -40,6 +59,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MalwareScanner::class, ClamAvMalwareScanner::class);
         $this->app->bind(PublicReferenceGenerator::class, SecurePublicReferenceGenerator::class);
         $this->app->bind(SearchIndexer::class, DatabaseSearchIndexer::class);
+        // Settings are read once per request/job; scoped keeps Octane safe.
+        $this->app->scoped(SeoSettings::class);
+        $this->app->scoped(PublicationSeoSync::class);
+        $this->app->bind(CdnPurger::class, LogCdnPurger::class);
     }
 
     /**
@@ -49,6 +72,14 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::shouldBeStrict(! app()->isProduction());
         DB::prohibitDestructiveCommands(app()->isProduction());
+
+        // Publication changes keep URLs, sitemaps, search and CDN in step.
+        foreach ([ServiceVersion::class, IndustryVersion::class, ExpertVersion::class, CaseStudyVersion::class, InsightVersion::class, Event::class, Vacancy::class] as $resource) {
+            $resource::observe(PublicResourceObserver::class);
+        }
+        foreach ([Service::class, Industry::class, Expert::class, CaseStudy::class, Insight::class, SeoMetadata::class] as $parent) {
+            $parent::observe(PublicResourceParentObserver::class);
+        }
 
         RateLimiter::for('public-forms', static function (Request $request): array {
             $identity = hash('sha256', (string) $request->ip());
@@ -107,7 +138,7 @@ class AppServiceProvider extends ServiceProvider
             static function ($view): void {
                 $routeName = request()->route()?->getName();
                 $pageKey = match ($routeName) {
-                    'home', 'localized-home' => 'home',
+                    'home' => 'home',
                     'about.show' => 'about',
                     'consultation.create' => 'consultation',
                     'rfp.create' => 'rfp',

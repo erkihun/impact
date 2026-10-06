@@ -8,12 +8,12 @@ const links = [
  ['content.view','Content','/admin/content','rfp'], ['experts.manage','Experts','/admin/experts','experts'],
  ['pages.view','Page compositions','/admin/page-compositions','about'], ['navigation.manage','Navigation and footer','/admin/navigation','menu'],
  ['engagement.view','Engagement','/admin/engagement','contact'], ['applications.view','Applications','/admin/applications','careers'],
- ['media.view','Media library','/admin/media','media'], ['users.view','Users','/admin/users','users'],
+ ['media.view','Media library','/admin/media','media'], ['seo.manage','SEO centre','/admin/seo','search'], ['users.view','Users','/admin/users','users'],
  ['roles.manage','Roles and permissions','/admin/roles','shield'], ['settings.manage','Settings Center','/admin/settings','settings'],
  ['audit.view','Audit log','/admin/audit-events','case-studies'],
 ];
 const groups = [
- { title: 'Website content', paths: ['/admin/page-compositions', '/admin/content', '/admin/experts', '/admin/media', '/admin/navigation'] },
+ { title: 'Website content', paths: ['/admin/page-compositions', '/admin/content', '/admin/experts', '/admin/media', '/admin/navigation', '/admin/seo'] },
  { title: 'Requests and applications', paths: ['/admin/engagement', '/admin/applications'] },
  { title: 'System administration', paths: ['/admin/users', '/admin/roles', '/admin/settings', '/admin/audit-events'], secondary: true },
 ];

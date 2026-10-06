@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Actions\PageComposition\CreatePageCompositionDraftAction;
 use App\Enums\PageCompositionState;
 use App\Enums\PageTemplateType;
 use App\Models\PageComposition;
@@ -15,6 +16,7 @@ use Database\Seeders\RoleSeeder;
 use Database\Seeders\SettingSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
@@ -143,17 +145,17 @@ it('lists each English page once with its newest version and paginates pages', f
     $this->actingAs($editor)->withSession(privilegedSession($editor))
         ->get(route('admin.page-compositions.index'))
         ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('compositions.data', 30)
-            ->where('compositions.total', 31)
-            ->where('compositions.data.0.page_key', 'page.00')
-            ->has('compositions.data.0.translations', 1)
-            ->where('compositions.data.0.translations.0.locale', 'en')
-            ->where('compositions.data.0.translations.0.version_no', 2));
+        ->has('compositions.data', 30)
+        ->where('compositions.total', 31)
+        ->where('compositions.data.0.page_key', 'page.00')
+        ->has('compositions.data.0.translations', 1)
+        ->where('compositions.data.0.translations.0.locale', 'en')
+        ->where('compositions.data.0.translations.0.version_no', 2));
     $this->get(route('admin.page-compositions.index', ['page' => 2]))
         ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('compositions.data', 1)
-            ->where('compositions.data.0.page_key', 'page.30')
-            ->has('compositions.data.0.translations', 1));
+        ->has('compositions.data', 1)
+        ->where('compositions.data.0.page_key', 'page.30')
+        ->has('compositions.data.0.translations', 1));
 });
 
 it('filters the latest page status and searches across all pages', function (): void {
@@ -189,12 +191,12 @@ it('exposes English version history without mixing other pages into the editor',
     $this->actingAs($editor)->withSession(privilegedSession($editor))
         ->get(route('admin.page-compositions.edit', $english))
         ->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('composition.id', $english->id)
-            ->where('composition.locale', 'en')
-            ->has('pageVersions', 2)
-            ->where('pageVersions.0.locale', 'en')
-            ->where('pageVersions.0.version_no', 2)
-            ->where('pageVersions.1.id', $english->id));
+        ->where('composition.id', $english->id)
+        ->where('composition.locale', 'en')
+        ->has('pageVersions', 2)
+        ->where('pageVersions.0.locale', 'en')
+        ->where('pageVersions.0.version_no', 2)
+        ->where('pageVersions.1.id', $english->id));
 });
 
 it('renders managed English public headers and the three-panel editor workspace', function (): void {
@@ -203,13 +205,13 @@ it('renders managed English public headers and the three-panel editor workspace'
     $editor->roles()->attach(Role::query()->where('code', 'editor')->sole());
     $this->seed([SettingSeeder::class, PageCompositionSeeder::class, NavigationConfigurationSeeder::class]);
 
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('Evidence for the decisions that shape institutions.')
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Public/Home')
             ->has('heroSlider.slides', 3));
-    $this->get('/am')->assertRedirect('/en');
+    $this->get('/am')->assertRedirect('/');
 
     $composition = PageComposition::query()
         ->where('page_key', 'home')
@@ -258,15 +260,14 @@ it('renders managed English public headers and the three-panel editor workspace'
     $this->assertDatabaseHas('page_composition_workflow_events', ['to_state' => 'published']);
 });
 
-
 function quickPublishDraft(User $actor): PageComposition
 {
     $thisTest = test();
     $thisTest->seed([PageCompositionSeeder::class]);
     $source = PageComposition::query()->where('page_key', 'home')->sole();
 
-    return app(\App\Actions\PageComposition\CreatePageCompositionDraftAction::class)
-        ->execute($actor, $source, (string) \Illuminate\Support\Str::uuid());
+    return app(CreatePageCompositionDraftAction::class)
+        ->execute($actor, $source, (string) Str::uuid());
 }
 
 it('publishes a saved draft in one request with all workflow audit steps', function (): void {

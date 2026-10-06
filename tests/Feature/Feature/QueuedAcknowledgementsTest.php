@@ -15,7 +15,7 @@ it('queues localized on-demand acknowledgements after committed public submissio
     Notification::fake();
     Storage::fake('local');
 
-    $this->post('/en/consultation-requests', [
+    $this->post('/consultation-requests', [
         'type' => 'consultation',
         'contact_name' => 'Aster Bekele',
         'email' => 'aster@example.com',
@@ -36,7 +36,7 @@ it('queues localized on-demand acknowledgements after committed public submissio
         'timezone' => 'Africa/Addis_Ababa',
         'capacity' => 20,
     ]);
-    $this->post("/en/events/{$event->slug}/registrations", [
+    $this->post("/events/{$event->slug}/registrations", [
         'name' => 'Aster Bekele',
         'email' => 'aster@example.com',
         'privacy_acknowledged' => '1',
@@ -54,7 +54,7 @@ it('queues localized on-demand acknowledgements after committed public submissio
         'opens_at' => now()->subDay(),
         'closes_at' => now()->addWeek(),
     ]);
-    $this->post("/en/careers/{$vacancy->slug}/applications", [
+    $this->post("/careers/{$vacancy->slug}/applications", [
         'applicant_name' => 'Aster Bekele',
         'email' => 'aster@example.com',
         'cv' => UploadedFile::fake()->create('cv.pdf', 100, 'application/pdf'),

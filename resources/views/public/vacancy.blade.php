@@ -4,8 +4,8 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => app()->getLocale()]),
-        __('Careers') => route('careers.index', ['locale' => app()->getLocale()]),
+        __('Home') => route('home'),
+        __('Careers') => route('careers.index'),
         $vacancy->title => null,
     ]" />
 @endsection
@@ -46,7 +46,7 @@
                     <h2 id="application-heading" class="heading-3 mt-3">{{ __('Apply') }}</h2>
                     <p class="mt-3 text-sm leading-6 text-muted">{{ __('An application is received only when the confirmation page displays a reference.') }}</p>
 
-                    <form method="POST" enctype="multipart/form-data" action="{{ route('careers.applications.store', ['locale' => app()->getLocale(), 'slug' => $vacancy->slug]) }}" class="mt-7 grid gap-5" data-prevent-duplicate>
+                    <form method="POST" enctype="multipart/form-data" action="{{ route('careers.applications.store', ['slug' => $vacancy->slug]) }}" class="mt-7 grid gap-5" data-prevent-duplicate>
                         @csrf
                         <div class="hidden" aria-hidden="true"><label>Website<input name="website" tabindex="-1"></label></div>
                         <x-ui.error-summary :errors="$errors" />
@@ -90,7 +90,7 @@
                     <p class="status-badge status-badge-neutral">{{ __('Application unavailable') }}</p>
                     <h2 id="application-heading" class="heading-3 mt-4">{{ __('Applications closed') }}</h2>
                     <p class="mt-3 text-sm leading-6 text-muted">{{ __('This opportunity is no longer accepting applications.') }}</p>
-                    <a class="text-link mt-5" href="{{ route('careers.index', ['locale' => app()->getLocale()]) }}">{{ __('View current opportunities') }} →</a>
+                    <a class="text-link mt-5" href="{{ route('careers.index') }}">{{ __('View current opportunities') }} →</a>
                 @endif
             </aside>
         </div>

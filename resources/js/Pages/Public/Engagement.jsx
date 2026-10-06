@@ -69,7 +69,7 @@ function ContextPanel({ context }) {
     );
 }
 
-export default function Engagement({ meta, breadcrumbs, composition, header, form: schema, context, copy }) {
+export default function Engagement({ breadcrumbs, composition, header, form: schema, context, copy }) {
     const { errors } = usePage().props;
     const form = useForm(initialData(schema));
     const steps = schema.steps;
@@ -153,7 +153,7 @@ export default function Engagement({ meta, breadcrumbs, composition, header, for
     const fields = useMemo(() => current.fields ?? [], [current]);
 
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <PageIntro composition={composition} header={header} />
 
             <section className="public-section impact-editorial-surface">

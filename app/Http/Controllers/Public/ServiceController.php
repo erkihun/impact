@@ -4,36 +4,29 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\Seo\PublicResourceType;
 use App\Http\Controllers\Controller;
-use App\Models\ServiceVersion;
+use App\Queries\Seo\PublicResourceQuery;
 use App\Support\Inertia\PublicContent;
+use App\Support\Inertia\PublicResourcePage;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 
 final class ServiceController extends Controller
 {
-    public function index(): Response
+    public function index(PublicResourceQuery $resources): Response
     {
         return PublicContent::collection([
+            'type' => PublicResourceType::Service,
             'eyebrow' => __('What we do'),
             'title' => __('Consulting services'),
-            'items' => ServiceVersion::query()
-                ->where('locale', app()->getLocale())
-                ->publiclyVisible()
-                ->orderBy('name')
-                ->paginate(12),
-            'routePrefix' => 'services.show',
-            'nameField' => 'name',
+            'items' => $resources->listing(PublicResourceType::Service)->orderBy('name')->paginate(12),
             'description' => __('Explore advisory services organized around client challenges, delivery needs and measurable outcomes.'),
         ]);
     }
 
-    public function show(string $locale, string $slug): Response
+    public function show(string $slug): Response|RedirectResponse
     {
-        $version = ServiceVersion::query()
-            ->where(compact('locale', 'slug'))
-            ->publiclyVisible()
-            ->firstOrFail();
-
-        return PublicContent::detail(['item' => $version, 'titleField' => 'name']);
+        return PublicResourcePage::show(PublicResourceType::Service, $slug);
     }
 }

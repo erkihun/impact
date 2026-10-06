@@ -75,7 +75,7 @@ it('returns React conflicts to Inertia and preserves the JSON API contract', fun
 });
 
 it('returns a React not-found page and retains its HTTP status', function (): void {
-    $this->get('/en/page-that-does-not-exist')->assertNotFound()
+    $this->get('/page-that-does-not-exist')->assertNotFound()
         ->assertInertia(fn (Assert $page) => $page->component('Error')->where('status', 404));
 });
 
@@ -85,7 +85,7 @@ it('inserts the public SSR body and head but never sends authentication pages to
         'head' => ['<title data-inertia="">Rendered public page</title>'],
         'body' => '<div id="app"><h1>Server rendered public content</h1></div>',
     ])]);
-    $this->get('/en')->assertOk()->assertSee('<h1>Server rendered public content</h1>', false)
+    $this->get('/')->assertOk()->assertSee('<h1>Server rendered public content</h1>', false)
         ->assertSee('<title data-inertia="">Rendered public page</title>', false);
     Http::assertSentCount(1);
     Http::assertSent(fn ($request): bool => str_starts_with($request['component'], 'Public/') && $request['props']['workspace'] === null);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ContentType;
+use App\Services\Seo\ContentSeoValidator;
 use App\Support\Settings\EffectiveSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -27,7 +28,9 @@ final class StoreContentRequest extends FormRequest
                 $settings->boolean('content.auto_generate_slugs') ? 'nullable' : 'required',
                 'string',
                 'max:200',
-                'alpha_dash:ascii',
+                // Lowercase words joined by single hyphens; never a reserved path.
+                'regex:'.ContentSeoValidator::SLUG_PATTERN,
+                Rule::notIn(ContentSeoValidator::RESERVED_SLUGS),
                 Rule::unique('content_slugs')->where('locale', $this->input('locale')),
             ],
             'title' => ['required', 'string', 'max:220'],
@@ -42,6 +45,9 @@ final class StoreContentRequest extends FormRequest
             && blank($this->input('slug'))
             && filled($this->input('title'))) {
             $this->merge(['slug' => Str::slug((string) $this->input('title'))]);
+        } elseif (filled($this->input('slug'))) {
+            // "Our Quality_Commitment" → "our-quality-commitment"
+            $this->merge(['slug' => ContentSeoValidator::normalizeSlug((string) $this->input('slug'))]);
         }
     }
 }

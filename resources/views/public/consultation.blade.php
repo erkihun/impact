@@ -3,7 +3,7 @@
 @section('title', __('Request a consultation — Impact Consulting'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Request a consultation') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Request a consultation') => null]" />
 @endsection
 
 @section('content')
@@ -50,7 +50,7 @@
             <form
                 x-ref="form"
                 method="POST"
-                action="{{ route('consultation-requests.store', ['locale' => app()->getLocale()]) }}"
+                action="{{ route('consultation-requests.store') }}"
                 class="engagement-form-canvas"
                 data-prevent-duplicate
             >

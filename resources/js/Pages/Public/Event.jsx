@@ -1,10 +1,11 @@
 import Reveal from '../../Components/Reveal';
 import { ClosedNotice, TaskForm } from '../../Components/Public/TaskPanel';
+import { RelatedContent } from '../../Components/Public/Common';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 
-export default function Event({ meta, breadcrumbs, composition, header, event, copy }) {
+export default function Event({ breadcrumbs, composition, header, event, related = [], copy }) {
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <article>
                 <PageIntro composition={composition} header={header} />
 
@@ -53,6 +54,7 @@ export default function Event({ meta, breadcrumbs, composition, header, event, c
                     </div>
                 </div>
             </article>
+            <RelatedContent groups={related} title={copy.related} />
         </PublicLayout>
     );
 }

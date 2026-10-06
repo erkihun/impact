@@ -108,3 +108,52 @@ export function Pagination({ pagination, copy }) {
         </nav>
     );
 }
+
+// Server-prepared responsive image: optimized derivatives, intrinsic size to
+// prevent layout shift, lazy unless it is the page's main image.
+export function ResponsiveImage({ src, srcSet, sizes, width, height, alt, eager = false, className }) {
+    return (
+        <img
+            className={className}
+            src={src}
+            srcSet={srcSet ?? undefined}
+            sizes={srcSet ? sizes : undefined}
+            width={width ?? undefined}
+            height={height ?? undefined}
+            alt={alt ?? ''}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+        />
+    );
+}
+
+// Contextual links to related, published content. Groups and items are
+// chosen on the server from real relationships only.
+export function RelatedContent({ groups, title }) {
+    if (! groups?.length) {
+        return null;
+    }
+
+    return (
+        <section className="m-section" aria-labelledby="related-content-title">
+            <div className="content-container">
+                <h2 id="related-content-title" className="sr-only">{title}</h2>
+                <div className="grid gap-10">
+                    {groups.map((group) => (
+                        <div key={group.type}>
+                            <h3 className="m-eyebrow">{group.heading}</h3>
+                            <ul className="m-collection mt-4">
+                                {group.items.map((item) => (
+                                    <li key={item.href} className="m-card">
+                                        <h4><AppLink href={item.href}>{item.name}</AppLink></h4>
+                                        {item.summary && <p>{item.summary}</p>}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}

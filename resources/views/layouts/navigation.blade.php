@@ -116,7 +116,7 @@
                 <x-admin.icon name="profile" class="size-5 shrink-0" />
                 <span class="admin-nav-label" x-show="expanded" x-cloak>{{ __('Profile and security') }}</span>
             </a>
-            <a class="admin-nav-link" href="{{ route('localized-home', ['locale' => $currentLocale]) }}" title="{{ __('View public website') }}">
+            <a class="admin-nav-link" href="{{ route('home') }}" title="{{ __('View public website') }}">
                 <span class="admin-nav-marker" aria-hidden="true"></span>
                 <x-admin.icon name="external" class="size-5 shrink-0" />
                 <span class="admin-nav-label" x-show="expanded" x-cloak>{{ __('View public website') }}</span>
@@ -166,7 +166,7 @@
             <a class="mobile-link gap-3" href="{{ route('profile.edit') }}">
                 <x-admin.icon name="profile" class="size-5 shrink-0" />{{ __('Profile and security') }}
             </a>
-            <a class="mobile-link gap-3" href="{{ route('localized-home', ['locale' => $currentLocale]) }}">
+            <a class="mobile-link gap-3" href="{{ route('home') }}">
                 <x-admin.icon name="external" class="size-5 shrink-0" />{{ __('View public website') }}
             </a>
         </nav>
@@ -182,7 +182,7 @@
 
         <div class="flex items-center gap-2">
 
-            <a class="button-tertiary hidden sm:inline-flex" href="{{ route('localized-home', ['locale' => $currentLocale]) }}">{{ __('View website') }}</a>
+            <a class="button-tertiary hidden sm:inline-flex" href="{{ route('home') }}">{{ __('View website') }}</a>
 
             <x-dropdown align="right" width="56">
                 <x-slot name="trigger">

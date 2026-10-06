@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\EngagementSubmission;
 
 it('accepts a privacy-acknowledged consultation and records consent and audit evidence', function (): void {
-    $response = $this->post('/en/consultation-requests', [
+    $response = $this->post('/consultation-requests', [
         'type' => 'consultation',
         'contact_name' => 'Aster Bekele',
         'organization_name' => 'Example Institution',
@@ -26,10 +26,10 @@ it('accepts a privacy-acknowledged consultation and records consent and audit ev
 });
 
 it('does not accept a consultation without privacy acknowledgement', function (): void {
-    $this->from('/en/consultation')->post('/en/consultation-requests', [
+    $this->from('/consultation')->post('/consultation-requests', [
         'type' => 'consultation',
         'contact_name' => 'Aster Bekele',
         'email' => 'aster@example.com',
         'description' => 'This description is long enough for the validation contract.',
-    ])->assertRedirect('/en/consultation')->assertSessionHasErrors('privacy_acknowledged');
+    ])->assertRedirect('/consultation')->assertSessionHasErrors('privacy_acknowledged');
 });

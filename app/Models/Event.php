@@ -9,7 +9,11 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
-/** @property CarbonImmutable $starts_at */
+/**
+ * @property CarbonImmutable $starts_at
+ * @property CarbonImmutable $ends_at
+ * @property CarbonImmutable|null $registration_closes_at
+ */
 final class Event extends BaseModel
 {
     protected function casts(): array

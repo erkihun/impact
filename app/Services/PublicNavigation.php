@@ -14,7 +14,7 @@ final readonly class PublicNavigation
     /** @var array<string, list<array{string, string, string}>> */
     private const FALLBACK_LOCATIONS = [
         'primary' => [
-            ['Home', 'localized-home', 'home'],
+            ['Home', 'home', 'home'],
             ['About', 'about.show', 'about'],
             ['Services', 'services.index', 'services'],
             ['Industries', 'industries.index', 'industries'],
@@ -101,7 +101,7 @@ final readonly class PublicNavigation
             'icon' => $item[2],
             'route' => $item[1],
             'url' => Route::has($item[1])
-                ? route($item[1], ['locale' => $locale])
+                ? route($item[1])
                 : '#',
             'children' => collect(),
         ];
@@ -110,16 +110,18 @@ final readonly class PublicNavigation
     /** @return array<string, mixed> */
     private function item(PageNavigationConfiguration $item, string $locale): array
     {
-        $parameters = $item->route_parameters ?? [];
-        $parameters = ['locale' => $locale, ...$parameters];
+        // Records saved before the English-only URL change may still carry a
+        // locale parameter or the retired localized-home route name.
+        $parameters = collect($item->route_parameters ?? [])->except('locale')->all();
+        $routeName = $item->route_name === 'localized-home' ? 'home' : (string) $item->route_name;
 
         return [
             'id' => (string) $item->getKey(),
             'label' => $item->label,
             'description' => $item->description,
             'icon' => $item->icon,
-            'route' => $item->route_name,
-            'url' => Route::has($item->route_name) ? route($item->route_name, $parameters) : '#',
+            'route' => $routeName,
+            'url' => Route::has($routeName) ? route($routeName, $parameters) : '#',
             'children' => $item->children
                 ->map(fn (PageNavigationConfiguration $child): array => $this->item($child, $locale))
                 ->values(),

@@ -56,6 +56,10 @@ function Media({ media, className = '' }) {
             <img
                 className="aspect-[3/2] w-full rounded-[var(--m-radius)] object-cover"
                 src={media.src}
+                srcSet={media.srcset ?? undefined}
+                sizes={media.srcset ? media.sizes : undefined}
+                width={media.width ?? undefined}
+                height={media.height ?? undefined}
                 alt={media.alt}
                 aria-hidden={media.decorative || undefined}
                 loading="lazy"

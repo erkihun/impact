@@ -4,7 +4,7 @@
 @section('meta_description', __('How Impact Consulting collects, uses, shares and protects personal information, and the rights available to you.'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Privacy notice') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Privacy notice') => null]" />
 @endsection
 
 @section('content')

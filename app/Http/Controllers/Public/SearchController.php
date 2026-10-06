@@ -6,8 +6,11 @@ namespace App\Http\Controllers\Public;
 
 use App\Actions\Search\RecordSearchQueryAction;
 use App\Data\Search\RecordSearchQueryData;
+use App\Enums\Seo\RobotsDirective;
 use App\Http\Controllers\Controller;
 use App\Models\SearchDocument;
+use App\Services\Seo\SeoMetadataBuilder;
+use App\Services\Seo\SeoSettings;
 use App\Support\Inertia\PublicPage;
 use App\Support\Settings\SearchSettings;
 use Illuminate\Http\Request;
@@ -20,6 +23,7 @@ final class SearchController extends Controller
         Request $request,
         RecordSearchQueryAction $recordSearch,
         SearchSettings $settings,
+        SeoSettings $seoSettings,
     ): Response {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:200'],
@@ -48,10 +52,17 @@ final class SearchController extends Controller
             resultCount: $results->total(),
         ));
 
-        $locale = app()->getLocale();
+        // Internal search helps visitors but is never an indexable landing
+        // page: noindex, follow, a query-free canonical and no sitemap entry.
+        $seo = SeoMetadataBuilder::make()
+            ->subject('page', 'search')
+            ->title(__('Search'))
+            ->description(__('Search published services, sector experience, experts, case studies, insights, events and opportunities from Impact Consulting.'))
+            ->type('website', 'SearchResultsPage')
+            ->meaningfulQuery([])
+            ->robots($seoSettings->searchResultsNoindex() ? RobotsDirective::NoindexFollow : RobotsDirective::IndexFollow);
 
         return PublicPage::render('Public/Search', 'search', [
-            'meta' => ['title' => __('Search — Impact Consulting'), 'description' => null, 'robots' => 'noindex,follow'],
             'breadcrumbs' => PublicPage::breadcrumbs([__('Search') => null]),
             'header' => [
                 'eyebrow' => __('Knowledge discovery'),
@@ -59,7 +70,7 @@ final class SearchController extends Controller
                 'summary' => __('Find published services, sector experience, experts, evidence, insights, events and opportunities.'),
             ],
             'query' => $query,
-            'action' => route('search', ['locale' => $locale]),
+            'action' => route('search'),
             'total' => $results->total(),
             'results' => collect($results->items())->values()->map(fn (SearchDocument $result, int $index): array => [
                 'number' => str_pad((string) ($results->firstItem() + $index), 2, '0', STR_PAD_LEFT),
@@ -89,9 +100,9 @@ final class SearchController extends Controller
                 'pagination' => __('Pagination'),
             ],
             'links' => [
-                'services' => route('services.index', ['locale' => $locale]),
-                'insights' => route('insights.index', ['locale' => $locale]),
+                'services' => route('services.index'),
+                'insights' => route('insights.index'),
             ],
-        ]);
+        ], seo: $seo);
     }
 }

@@ -14,10 +14,10 @@
             @include('public.sections.partials.actions', ['actions' => $section->actions])
         @else
             <div class="home-signature-actions">
-                <a class="button-primary" href="{{ route('consultation.create', ['locale' => app()->getLocale()]) }}">
+                <a class="button-primary" href="{{ route('consultation.create') }}">
                     {{ __('Request a consultation') }} <span aria-hidden="true">&rarr;</span>
                 </a>
-                <a class="home-signature-text-link" href="{{ route('case-studies.index', ['locale' => app()->getLocale()]) }}">
+                <a class="home-signature-text-link" href="{{ route('case-studies.index') }}">
                     {{ __('Examine our work') }} <x-ui.icon name="arrow-up-right" class="size-4" />
                 </a>
             </div>

@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\URL;
 it('requires marketing consent and confirms a subscription through a signed single-use link', function (): void {
     Notification::fake();
 
-    $this->post(route('newsletter.subscribe', ['locale' => 'en']), [
+    $this->post(route('newsletter.subscribe'), [
         'email' => 'Reader@Example.com',
         'policy_version' => config('impact.privacy.policy_version'),
     ])->assertSessionHasErrors('marketing_consent');
 
-    $this->post(route('newsletter.subscribe', ['locale' => 'en']), [
+    $this->post(route('newsletter.subscribe'), [
         'email' => 'Reader@Example.com',
         'marketing_consent' => '1',
         'policy_version' => config('impact.privacy.policy_version'),
@@ -49,7 +49,7 @@ it('requires marketing consent and confirms a subscription through a signed sing
     );
 
     $this->get($confirmationUrl)
-        ->assertRedirect(route('localized-home', ['locale' => 'en']));
+        ->assertRedirect(route('home'));
 
     expect($subscription->refresh()->status)->toBe(NewsletterStatus::Confirmed)
         ->and($subscription->confirmation_token_hash)->toBeNull()
@@ -77,9 +77,9 @@ it('supports idempotent one-click unsubscribe and suppresses future marketing', 
     );
 
     $this->get($unsubscribeUrl)
-        ->assertRedirect(route('localized-home', ['locale' => 'en']));
+        ->assertRedirect(route('home'));
     $this->get($unsubscribeUrl)
-        ->assertRedirect(route('localized-home', ['locale' => 'en']));
+        ->assertRedirect(route('home'));
 
     expect($subscription->refresh()->status)->toBe(NewsletterStatus::Unsubscribed)
         ->and($subscription->unsubscribed_at)->not->toBeNull()

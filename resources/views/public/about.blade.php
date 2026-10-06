@@ -4,7 +4,7 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => app()->getLocale()]),
+        __('Home') => route('home'),
         __('About') => null,
     ]" />
 @endsection
@@ -18,8 +18,8 @@
             :title="__('Independent thinking, rooted in context.')"
             :description="__('Impact Consulting brings together strategy, sector expertise and implementation discipline to help institutions make better decisions and sustain better results.')"
         >
-            <a class="button-primary" href="{{ route('experts.index', ['locale' => app()->getLocale()]) }}">{{ __('Meet our experts') }}</a>
-            <a class="button-secondary" href="{{ route('case-studies.index', ['locale' => app()->getLocale()]) }}">{{ __('Review our work') }}</a>
+            <a class="button-primary" href="{{ route('experts.index') }}">{{ __('Meet our experts') }}</a>
+            <a class="button-secondary" href="{{ route('case-studies.index') }}">{{ __('Review our work') }}</a>
         </x-ui.page-header>
     @endif
 
@@ -52,8 +52,8 @@
             <div class="m-center" data-reveal>
                 <h2 id="about-next-title" class="m-title">{{ __('Bring the question. We will help structure the next move.') }}</h2>
                 <div class="m-links">
-                    <a class="m-btn" href="{{ route('consultation.create', ['locale' => app()->getLocale()]) }}">{{ __('Request a consultation') }}</a>
-                    <a class="m-link" href="{{ route('experts.index', ['locale' => app()->getLocale()]) }}">{{ __('Meet our experts') }}</a>
+                    <a class="m-btn" href="{{ route('consultation.create') }}">{{ __('Request a consultation') }}</a>
+                    <a class="m-link" href="{{ route('experts.index') }}">{{ __('Meet our experts') }}</a>
                 </div>
             </div>
         </div>

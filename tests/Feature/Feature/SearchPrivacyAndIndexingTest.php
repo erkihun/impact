@@ -10,7 +10,7 @@ use App\Models\SearchDocument;
 use App\Models\SearchQueryLog;
 use App\Models\User;
 
-it('indexes only a currently published content version and removes it immediately when archived', function (): void {
+it('never indexes generic CMS records that have no public page, so search cannot link to a missing URL', function (): void {
     $user = User::factory()->create();
     $content = ContentItem::query()->create([
         'type' => 'page',
@@ -32,12 +32,13 @@ it('indexes only a currently published content version and removes it immediatel
     ]);
     $content->update(['current_version_id' => $version->id]);
 
-    SyncContentSearchDocumentJob::dispatchSync($content->id);
-    $this->assertDatabaseHas('search_documents', [
-        'searchable_type' => 'content_page',
-        'searchable_id' => $content->id,
-        'locale' => 'en',
+    // A stale document from the old /{locale}/{slug} scheme is removed.
+    SearchDocument::query()->create([
+        'searchable_type' => 'content_page', 'searchable_id' => $content->id, 'locale' => 'en',
+        'title' => 'Quality commitment', 'body' => 'x', 'url' => '/en/quality-commitment',
     ]);
+    SyncContentSearchDocumentJob::dispatchSync($content->id);
+    expect(SearchDocument::query()->count())->toBe(0);
 
     $content->update(['status' => ContentWorkflowState::Archived]);
     $version->update(['workflow_state' => ContentWorkflowState::Archived]);
@@ -54,12 +55,12 @@ it('logs only a keyed query hash and ranks an exact title first', function (): v
             'title' => $title,
             'summary' => 'Evidence-led guidance.',
             'body' => 'Evidence-led guidance.',
-            'url' => '/en/insights/result-'.$index,
+            'url' => '/insights/result-'.$index,
             'published_at' => now('UTC')->subMinutes($index),
         ]);
     }
 
-    $this->get('/en/search?q=Impact%20strategy')
+    $this->get('/search?q=Impact%20strategy')
         ->assertOk()
         ->assertSeeInOrder(['Impact strategy', 'Impact strategy for institutions']);
 

@@ -1,6 +1,6 @@
 import Reveal from '../../Components/Reveal';
 import AppLink from '../../Components/AppLink';
-import { EmptyState, Pagination } from '../../Components/Public/Common';
+import { EmptyState, Pagination, ResponsiveImage } from '../../Components/Public/Common';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 
 function Card({ item, copy, index }) {
@@ -22,7 +22,7 @@ function Person({ item, copy, index }) {
         <Reveal as="article" index={index % 4} className="m-card m-person">
             <div className="m-person-photo">
                 {item.photo
-                    ? <img src={item.photo} alt={item.photoAlt} loading="lazy" decoding="async" />
+                    ? <ResponsiveImage src={item.photo} srcSet={item.photoSrcset} sizes={item.photoSizes} width={item.photoWidth} height={item.photoHeight} alt={item.photoAlt} />
                     : <span aria-hidden="true">{item.initial}</span>}
             </div>
             <div className="m-person-body">
@@ -34,11 +34,11 @@ function Person({ item, copy, index }) {
     );
 }
 
-export default function Collection({ meta, breadcrumbs, composition, header, people, items, pagination, copy }) {
+export default function Collection({ breadcrumbs, composition, header, people, items, pagination, copy }) {
     const Item = people ? Person : Card;
 
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <PageIntro composition={composition} header={header} />
 
             <section className="m-section m-band" aria-label={header.title}>

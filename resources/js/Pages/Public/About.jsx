@@ -3,9 +3,9 @@ import AppLink from '../../Components/AppLink';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 import { pad } from '../../lib/format';
 
-export default function About({ meta, breadcrumbs, composition, header, principles, links, copy }) {
+export default function About({ breadcrumbs, composition, header, principles, links, copy }) {
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <div className="m-about-page">
             <PageIntro composition={composition} header={header}>
                 <AppLink className="button-primary" href={links.experts}>{copy.meetExperts}</AppLink>

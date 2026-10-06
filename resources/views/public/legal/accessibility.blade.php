@@ -4,7 +4,7 @@
 @section('meta_description', __('Our accessibility commitment, the standard we work to, known limitations and how to report a barrier you encounter.'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Accessibility statement') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Accessibility statement') => null]" />
 @endsection
 
 @section('content')
@@ -63,7 +63,7 @@
         <section id="report-a-barrier" class="mt-12 scroll-mt-28 border-t border-slate-300 pt-8">
             <h2 class="heading-3">{{ __('Report an accessibility issue') }}</h2>
             <p class="mt-4 text-base leading-8 text-slate-700">{{ __('Tell us what happened, which page you were on and what you were trying to do. If you can, include the browser and any assistive technology you were using. We will acknowledge your report and tell you what we intend to do about it.') }}</p>
-            <a class="button-primary mt-5" href="{{ route('contact.create', ['locale' => app()->getLocale()]) }}">{{ __('Report an accessibility issue') }}</a>
+            <a class="button-primary mt-5" href="{{ route('contact.create') }}">{{ __('Report an accessibility issue') }}</a>
         </section>
     </x-ui.legal-page>
 @endsection

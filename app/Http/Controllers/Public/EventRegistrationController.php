@@ -16,18 +16,17 @@ final class EventRegistrationController extends Controller
 {
     public function store(
         RegisterForEventRequest $request,
-        string $locale,
         string $slug,
         RegisterForEventAction $action,
         CorrelationContext $correlation,
     ): RedirectResponse {
-        $event = Event::query()->where(compact('locale', 'slug'))->firstOrFail();
+        $event = Event::query()->where('locale', app()->getLocale())->where('slug', $slug)->firstOrFail();
         $validated = $request->validated();
         $registration = $action->execute(new RegisterForEventData(
             eventId: (string) $event->id,
             name: $validated['name'],
             email: $validated['email'],
-            locale: $locale,
+            locale: app()->getLocale(),
             policyVersion: (string) config('impact.privacy.policy_version'),
             correlationId: $correlation->id(),
             ipHash: hash_hmac('sha256', (string) $request->ip(), (string) config('app.key')),

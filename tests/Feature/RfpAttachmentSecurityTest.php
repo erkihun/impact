@@ -20,15 +20,15 @@ beforeEach(function (): void {
 });
 
 it('renders localized public RFP and contact intake pages', function (): void {
-    $this->get('/en/request-for-proposal')
+    $this->get('/request-for-proposal')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Engagement')
             ->where('form.multipart', true)
             ->where('form.hidden.type', 'rfp')
-            ->where('form.action', route('rfp-requests.store', ['locale' => 'en'])));
-    $this->get('/am/request-for-proposal')->assertRedirect('/en/request-for-proposal');
-    $this->get('/en/contact')
+            ->where('form.action', route('rfp-requests.store')));
+    $this->get('/am/request-for-proposal')->assertRedirect('/request-for-proposal');
+    $this->get('/contact')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Engagement')
@@ -39,7 +39,7 @@ it('renders localized public RFP and contact intake pages', function (): void {
 });
 
 it('quarantines an RFP attachment under a random object key and appends initial history', function (): void {
-    $this->post('/en/rfp-requests', [
+    $this->post('/rfp-requests', [
         'type' => 'rfp',
         'contact_name' => 'Aster Bekele',
         'organization_name' => 'Example Institution',

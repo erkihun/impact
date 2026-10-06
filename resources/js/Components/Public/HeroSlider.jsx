@@ -103,15 +103,25 @@ export default function HeroSlider({ slider, stats = [], statsLabel }) {
                                 transition={{ duration: 0.8, ease: EASE, delay: 0.1 }}
                             >
                                 <div className="home-signature-image">
-                                    <img
-                                        src={slide.image.includes('impact-hero-clean.svg') ? '/images/ethiopia-highlands.jpg' : slide.image}
-                                        alt=""
-                                        aria-hidden="true"
-                                        width="1536"
-                                        height="1024"
-                                        fetchPriority={current === 0 ? 'high' : 'auto'}
-                                        decoding="async"
-                                    />
+                                    {/* Decorative backdrop: responsive AVIF/WebP derivatives, eager and
+                                        high priority only for the first (LCP) slide. */}
+                                    <picture>
+                                        {slide.picture?.avifSrcset && (
+                                            <source type="image/avif" srcSet={slide.picture.avifSrcset} sizes={slide.picture.sizes} />
+                                        )}
+                                        <img
+                                            src={slide.picture?.src ?? slide.image}
+                                            srcSet={slide.picture?.srcset ?? undefined}
+                                            sizes={slide.picture?.sizes ?? undefined}
+                                            alt=""
+                                            aria-hidden="true"
+                                            width={slide.picture?.width ?? 1536}
+                                            height={slide.picture?.height ?? 1024}
+                                            fetchPriority={current === 0 ? 'high' : 'auto'}
+                                            loading={current === 0 ? 'eager' : 'lazy'}
+                                            decoding="async"
+                                        />
+                                    </picture>
                                 </div>
                                 <div className="home-signature-caption" aria-hidden="true">
                                     <span>{slide.eyebrow}</span>

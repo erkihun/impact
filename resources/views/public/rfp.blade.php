@@ -5,7 +5,7 @@
 @section('meta_description', __('Request a confidential proposal from Impact Consulting.'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Submit an RFP') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Submit an RFP') => null]" />
 @endsection
 
 @section('content')
@@ -54,7 +54,7 @@
                 x-ref="form"
                 method="POST"
                 enctype="multipart/form-data"
-                action="{{ route('rfp-requests.store', ['locale' => app()->getLocale()]) }}"
+                action="{{ route('rfp-requests.store') }}"
                 class="engagement-form-canvas"
                 data-prevent-duplicate
             >

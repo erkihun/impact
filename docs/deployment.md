@@ -8,8 +8,22 @@ Deploy immutable artifacts built on PHP 8.4. Required order:
 4. run `php artisan migrate --force`;
 5. run `php artisan optimize`;
 6. restart workers;
-7. check `/ready`, public localized pages and authenticated admin access;
+7. check `/ready`, public pages and authenticated admin access;
 8. retain the previous artifact for rollback.
+
+## SEO
+
+- Set `SEO_CANONICAL_URL=https://<production-host>` (no trailing slash) and keep
+  `SEO_INDEXING_ENABLED=true` only on production. Staging must keep a non-production
+  `APP_ENV`: it then sends `noindex, nofollow` everywhere and robots.txt disallows all.
+- Never deploy a static `public/robots.txt`; it would shadow the environment-aware route.
+- Workers must consume the `search` and `default` queues (sitemap and search refresh
+  after publication).
+- After migrating, run `php artisan seo:sitemap-generate`, then
+  `php artisan seo:audit --strict` and `php artisan seo:redirects-validate` as release
+  gates. Review the legacy language redirects in SEO centre → Redirects.
+- Run `php artisan seo:images-optimize` only when a design source image in
+  `resources/images/source` changes; commit the regenerated `public/images/optimized`.
 
 For Plesk, select the project directory containing `artisan` and `composer.json`
 as the Composer application directory, and its `public` subdirectory as the web

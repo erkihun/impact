@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 final class PageCompositionSeeder extends Seeder
 {
-    /** @var array<string, array{PageTemplateType, string, string, string, string}> */
+    /** @var array<string, array{0: PageTemplateType, 1: string, 2: string, 3?: string, 4?: string}> */
     private const PAGES = [
         'home' => [PageTemplateType::Homepage, 'Evidence for the decisions that shape institutions.', 'We turn complex questions into focused strategy, stronger delivery and lasting capability.'],
         'about' => [PageTemplateType::Institutional, 'Independent thinking, rooted in context.', 'Strategy, sector expertise and implementation discipline for sustained results.'],

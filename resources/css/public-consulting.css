@@ -320,8 +320,16 @@ html .public-glass .m-page-header {
     padding-block: 4rem;
     padding-inline: clamp(1rem, 3vw, 3rem);
     text-align: start;
-    background: linear-gradient(90deg, rgb(15 36 56 / 0.92), rgb(23 50 77 / 0.7)), url('/images/ethiopia-highlands.jpg') center / cover;
+    /* Optimized derivatives (seo:images-optimize); the 6 MB source is never served. */
+    background: linear-gradient(90deg, rgb(15 36 56 / 0.92), rgb(23 50 77 / 0.7)), url('/images/optimized/ethiopia-highlands-960.webp') center / cover;
+    background-image: linear-gradient(90deg, rgb(15 36 56 / 0.92), rgb(23 50 77 / 0.7)), image-set(url('/images/optimized/ethiopia-highlands-960.avif') type('image/avif'), url('/images/optimized/ethiopia-highlands-960.webp') type('image/webp'));
     color: #ffffff;
+}
+
+@media (min-width: 1100px) {
+    html .public-glass .m-page-header {
+        background-image: linear-gradient(90deg, rgb(15 36 56 / 0.92), rgb(23 50 77 / 0.7)), image-set(url('/images/optimized/ethiopia-highlands-1440.avif') type('image/avif'), url('/images/optimized/ethiopia-highlands-1440.webp') type('image/webp'));
+    }
 }
 
 html .public-glass .m-page-header :is(h1, .m-lead, .m-meta, .insight-marker) {

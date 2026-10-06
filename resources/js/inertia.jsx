@@ -5,6 +5,9 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 const pages = import.meta.glob('./Pages/**/*.jsx');
 
 createInertiaApp({
+    // SEO head elements are resolved on the server (props.seo.head) and kept
+    // in sync on every visit by the head manager.
+    serverHead: (page) => page.props.seo?.head ?? [],
     resolve: async (name) => {
         const page = pages[`./Pages/${name}.jsx`];
 

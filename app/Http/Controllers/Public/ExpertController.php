@@ -4,35 +4,32 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\Seo\PublicResourceType;
 use App\Http\Controllers\Controller;
-use App\Models\ExpertVersion;
+use App\Queries\Seo\PublicResourceQuery;
 use App\Support\Inertia\PublicContent;
+use App\Support\Inertia\PublicResourcePage;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 
 final class ExpertController extends Controller
 {
-    public function index(): Response
+    public function index(PublicResourceQuery $resources): Response
     {
         return PublicContent::collection([
+            'type' => PublicResourceType::Expert,
             'eyebrow' => __('Our people'),
             'title' => __('Experts'),
-            'items' => ExpertVersion::query()->where('locale', app()->getLocale())
-                ->with('expert.profileMedia')
-                ->publiclyVisible()
-                ->orderBy('display_name')->paginate(4),
-            'routePrefix' => 'experts.show',
-            'nameField' => 'display_name',
+            'items' => $resources->listing(PublicResourceType::Expert)
+                ->with('expert.profileMedia.variants')
+                ->orderBy('display_name')
+                ->paginate(12),
             'description' => __('Find approved specialist profiles by name, role or area of experience.'),
         ]);
     }
 
-    public function show(string $locale, string $slug): Response
+    public function show(string $slug): Response|RedirectResponse
     {
-        return PublicContent::detail([
-            'item' => ExpertVersion::query()->where(compact('locale', 'slug'))
-                ->with('expert.profileMedia')
-                ->publiclyVisible()->firstOrFail(),
-            'titleField' => 'display_name',
-        ]);
+        return PublicResourcePage::show(PublicResourceType::Expert, $slug);
     }
 }

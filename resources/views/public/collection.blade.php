@@ -9,7 +9,7 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => $locale]),
+        __('Home') => route('home'),
         $title => null,
     ]" />
 @endsection
@@ -32,7 +32,7 @@
                             ?? data_get($item, 'description')
                             ?? data_get($item, 'overview')
                             ?? data_get($item, 'biography');
-                        $href = route($routePrefix, ['locale' => $locale, 'slug' => $item->slug]);
+                        $href = route($routePrefix, ['slug' => $item->slug]);
                         $expertPhoto = $isExpertCollection ? $item->expert?->profileMedia : null;
                         // A double-width lead card only when it leaves the three-column grid without gaps.
                         $featured = $loop->first && ! $isExpertCollection && $items->onFirstPage() && $items->count() >= 5 && ($items->count() - 2) % 3 === 0;
@@ -76,7 +76,7 @@
                         :title="__('No records are available yet.')"
                         :description="__('Contact our team if you need help finding the right information.')"
                     >
-                        <a class="button-primary" href="{{ route('contact.create', ['locale' => $locale]) }}">{{ __('Choose a contact route') }}</a>
+                        <a class="button-primary" href="{{ route('contact.create') }}">{{ __('Choose a contact route') }}</a>
                     </x-ui.empty-state>
                 @endforelse
             </div>

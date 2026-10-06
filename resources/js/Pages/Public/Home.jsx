@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import HeroSlider from '../../Components/Public/HeroSlider';
+import { ResponsiveImage } from '../../Components/Public/Common';
 import AppLink from '../../Components/AppLink';
 import Icon from '../../Components/Icon';
 import Reveal from '../../Components/Reveal';
@@ -278,7 +279,7 @@ function ExpertCard({ item, copy }) {
         <>
             <div className={`m-expert-cover${item.photo ? '' : ' m-expert-cover-initials'}`}>
                 {item.photo ? (
-                    <img src={item.photo} alt={item.photoAlt || item.name} loading="lazy" decoding="async" />
+                    <ResponsiveImage src={item.photo} srcSet={item.photoSrcset} sizes={item.photoSizes} width={item.photoWidth} height={item.photoHeight} alt={item.photoAlt || item.name} />
                 ) : (
                     <span className="m-expert-initial" aria-hidden="true">{item.initial}</span>
                 )}
@@ -306,9 +307,9 @@ function InsightCard({ item, copy }) {
     );
 }
 
-export default function Home({ meta, heroSlider, ledger, services, projects = [], articles = [], testimonials = [], industries, experts = [], copy, links }) {
+export default function Home({ heroSlider, ledger, services, projects = [], articles = [], testimonials = [], industries, experts = [], copy, links }) {
     return (
-        <PublicLayout title={meta?.title}>
+        <PublicLayout>
             {heroSlider.slides.length > 0 && <HeroSlider slider={heroSlider} stats={ledger} statsLabel={copy.ledgerTitle} />}
 
             {heroSlider.slides.length === 0 && <Ledger items={ledger} copy={copy} />}

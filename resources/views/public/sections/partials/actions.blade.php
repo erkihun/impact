@@ -4,7 +4,7 @@
             @php
                 $href = $action->external_url;
                 if ($action->internal_route && \Illuminate\Support\Facades\Route::has($action->internal_route)) {
-                    $href = route($action->internal_route, ['locale' => app()->getLocale()]);
+                    $href = route($action->internal_route);
                 }
             @endphp
             @if ($href)

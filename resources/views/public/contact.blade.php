@@ -3,7 +3,7 @@
 @section('title', __('Contact — Impact Consulting'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Contact') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Contact') => null]" />
 @endsection
 
 @section('content')
@@ -19,7 +19,7 @@
 
     <section class="public-section impact-editorial-surface">
         <div class="public-engagement-layout content-container">
-        <form method="POST" action="{{ route('contact.store', ['locale' => app()->getLocale()]) }}" class="engagement-form-canvas" data-prevent-duplicate>
+        <form method="POST" action="{{ route('contact.store') }}" class="engagement-form-canvas" data-prevent-duplicate>
             @csrf
             <input type="hidden" name="policy_version" value="{{ $publicExperience['privacy']['policy_version'] }}">
             <div class="hidden" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
@@ -67,10 +67,10 @@
             <p class="mt-4 text-sm leading-7 text-slate-300">{{ __('Use this form for general, partnership or media inquiries. Consultation and proposal requests have dedicated secure pathways.') }}</p>
             <div class="mt-7 grid gap-3 border-t border-white/20 pt-6">
                 @if ($publicExperience['features']['consultation'])
-                    <a class="button-light w-full" href="{{ route('consultation.create', ['locale' => app()->getLocale()]) }}">{{ __('Request a consultation') }}</a>
+                    <a class="button-light w-full" href="{{ route('consultation.create') }}">{{ __('Request a consultation') }}</a>
                 @endif
                 @if ($publicExperience['features']['rfp'])
-                    <a class="button-secondary-dark w-full" href="{{ route('rfp.create', ['locale' => app()->getLocale()]) }}">{{ __('Submit an RFP') }}</a>
+                    <a class="button-secondary-dark w-full" href="{{ route('rfp.create') }}">{{ __('Submit an RFP') }}</a>
                 @endif
             </div>
         </aside>

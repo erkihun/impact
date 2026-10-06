@@ -7,6 +7,7 @@ namespace App\Services\Search;
 use App\Contracts\SearchIndexer;
 use App\Data\Search\SearchReconciliationResult;
 use App\Enums\ContentWorkflowState;
+use App\Enums\Seo\PublicResourceType;
 use App\Models\CaseStudyVersion;
 use App\Models\ContentItem;
 use App\Models\Event;
@@ -16,12 +17,16 @@ use App\Models\InsightVersion;
 use App\Models\SearchDocument;
 use App\Models\ServiceVersion;
 use App\Models\Vacancy;
+use App\Services\Seo\PublicUrlGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\LazyCollection;
 
 final readonly class SearchIndexReconciler
 {
-    public function __construct(private SearchIndexer $indexer) {}
+    public function __construct(
+        private SearchIndexer $indexer,
+        private PublicUrlGenerator $paths,
+    ) {}
 
     public function reconcile(): SearchReconciliationResult
     {
@@ -36,7 +41,9 @@ final readonly class SearchIndexReconciler
             ->chunkById(200, function ($items) use (&$expected, &$upserted): void {
                 foreach ($items as $content) {
                     $version = $content->currentVersion;
+                    $url = $version === null ? null : $this->paths->contentItemPath($content, $version);
                     if ($version === null
+                        || $url === null
                         || $version->getRawOriginal('workflow_state') !== ContentWorkflowState::Published->value) {
                         continue;
                     }
@@ -46,7 +53,7 @@ final readonly class SearchIndexReconciler
                         'title' => $version->title,
                         'summary' => $version->summary,
                         'body' => $this->searchableText($version->body),
-                        'url' => "/{$version->locale}/{$version->slug}",
+                        'url' => $url,
                         'filters' => [$content->getRawOriginal('type')],
                         'published_at' => $content->getRawOriginal('published_at'),
                     ]);
@@ -56,7 +63,7 @@ final readonly class SearchIndexReconciler
             });
 
         $this->reconcileVersionStream(
-            ServiceVersion::query()->publiclyVisible()
+            ServiceVersion::query()->where('locale', 'en')->publiclyVisible()
                 ->orderBy('service_id')->orderBy('locale')->orderByDesc('version_no')->cursor(),
             'service',
             'service_id',
@@ -69,7 +76,7 @@ final readonly class SearchIndexReconciler
                     $version->deliverables,
                     $version->benefits,
                 ]),
-                'url' => "/{$version->locale}/services/{$version->slug}",
+                'url' => $this->paths->path(PublicResourceType::Service, (string) $version->slug),
                 'filters' => ['service'],
                 'published_at' => $version->created_at,
             ],
@@ -77,7 +84,7 @@ final readonly class SearchIndexReconciler
             $upserted,
         );
         $this->reconcileVersionStream(
-            IndustryVersion::query()->publiclyVisible()
+            IndustryVersion::query()->where('locale', 'en')->publiclyVisible()
                 ->orderBy('industry_id')->orderBy('locale')->orderByDesc('version_no')->cursor(),
             'industry',
             'industry_id',
@@ -85,7 +92,7 @@ final readonly class SearchIndexReconciler
                 'title' => $version->name,
                 'summary' => $version->summary,
                 'body' => $this->searchableText([$version->overview, $version->challenges]),
-                'url' => "/{$version->locale}/industries/{$version->slug}",
+                'url' => $this->paths->path(PublicResourceType::Industry, (string) $version->slug),
                 'filters' => ['industry'],
                 'published_at' => $version->created_at,
             ],
@@ -93,7 +100,7 @@ final readonly class SearchIndexReconciler
             $upserted,
         );
         $this->reconcileVersionStream(
-            ExpertVersion::query()->publiclyVisible()
+            ExpertVersion::query()->where('locale', 'en')->publiclyVisible()
                 ->orderBy('expert_id')->orderBy('locale')->orderByDesc('version_no')->cursor(),
             'expert',
             'expert_id',
@@ -105,7 +112,7 @@ final readonly class SearchIndexReconciler
                     $version->qualifications,
                     $version->languages,
                 ]),
-                'url' => "/{$version->locale}/experts/{$version->slug}",
+                'url' => $this->paths->path(PublicResourceType::Expert, (string) $version->slug),
                 'filters' => ['expert'],
                 'published_at' => $version->created_at,
             ],
@@ -113,7 +120,7 @@ final readonly class SearchIndexReconciler
             $upserted,
         );
         $this->reconcileVersionStream(
-            CaseStudyVersion::query()->publiclyVisible()
+            CaseStudyVersion::query()->where('locale', 'en')->publiclyVisible()
                 ->orderBy('case_study_id')->orderBy('locale')->orderByDesc('version_no')->cursor(),
             'case_study',
             'case_study_id',
@@ -129,7 +136,7 @@ final readonly class SearchIndexReconciler
                     $version->value_created,
                     $version->metrics,
                 ]),
-                'url' => "/{$version->locale}/case-studies/{$version->slug}",
+                'url' => $this->paths->path(PublicResourceType::CaseStudy, (string) $version->slug),
                 'filters' => ['case_study'],
                 'published_at' => $version->created_at,
             ],
@@ -137,7 +144,7 @@ final readonly class SearchIndexReconciler
             $upserted,
         );
         $this->reconcileVersionStream(
-            InsightVersion::query()->publiclyVisible()
+            InsightVersion::query()->where('locale', 'en')->publiclyVisible()
                 ->orderBy('insight_id')->orderBy('locale')->orderByDesc('version_no')->cursor(),
             'insight',
             'insight_id',
@@ -145,7 +152,7 @@ final readonly class SearchIndexReconciler
                 'title' => $version->title,
                 'summary' => $version->excerpt,
                 'body' => $version->body ?? '',
-                'url' => "/{$version->locale}/insights/{$version->slug}",
+                'url' => $this->paths->path(PublicResourceType::Insight, (string) $version->slug),
                 'filters' => ['insight'],
                 'published_at' => $version->created_at,
             ],
@@ -154,25 +161,26 @@ final readonly class SearchIndexReconciler
         );
 
         foreach (Event::query()
+            ->where('locale', 'en')
             ->whereIn('status', ['published', 'registration_open', 'registration_closed', 'completed'])
             ->cursor() as $event) {
             $this->indexer->upsert('event', $event->id, $event->locale, [
                 'title' => $event->title,
                 'summary' => str($event->description)->limit(300)->toString(),
                 'body' => $event->description,
-                'url' => "/{$event->locale}/events/{$event->slug}",
+                'url' => $this->paths->path(PublicResourceType::Event, (string) $event->slug),
                 'filters' => ['event', $event->getRawOriginal('format')],
                 'published_at' => $event->created_at,
             ]);
             $expected[$this->key('event', $event->id, $event->locale)] = true;
             $upserted++;
         }
-        foreach (Vacancy::query()->where('status', 'published')->cursor() as $vacancy) {
+        foreach (Vacancy::query()->where('locale', 'en')->where('status', 'published')->cursor() as $vacancy) {
             $this->indexer->upsert('vacancy', $vacancy->id, $vacancy->locale, [
                 'title' => $vacancy->title,
                 'summary' => str($vacancy->description)->limit(300)->toString(),
                 'body' => $this->searchableText([$vacancy->description, $vacancy->requirements]),
-                'url' => "/{$vacancy->locale}/careers/{$vacancy->slug}",
+                'url' => $this->paths->path(PublicResourceType::Vacancy, (string) $vacancy->slug),
                 'filters' => ['vacancy', $vacancy->type],
                 'published_at' => $vacancy->created_at,
             ]);

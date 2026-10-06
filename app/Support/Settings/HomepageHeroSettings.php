@@ -80,31 +80,31 @@ final readonly class HomepageHeroSettings
         return match ($destination) {
             'consultation' => [
                 'label' => __('Request a consultation'),
-                'href' => route('consultation.create', ['locale' => $locale]),
+                'href' => route('consultation.create'),
             ],
             'services' => [
                 'label' => __('Services'),
-                'href' => route('services.index', ['locale' => $locale]),
+                'href' => route('services.index'),
             ],
             'case_studies' => [
                 'label' => __('Examine our work'),
-                'href' => route('case-studies.index', ['locale' => $locale]),
+                'href' => route('case-studies.index'),
             ],
             'industries' => [
                 'label' => __('Industries'),
-                'href' => route('industries.index', ['locale' => $locale]),
+                'href' => route('industries.index'),
             ],
             'experts' => [
                 'label' => __('Experts'),
-                'href' => route('experts.index', ['locale' => $locale]),
+                'href' => route('experts.index'),
             ],
             'insights' => [
                 'label' => __('Insights'),
-                'href' => route('insights.index', ['locale' => $locale]),
+                'href' => route('insights.index'),
             ],
             'contact' => [
                 'label' => __('Contact'),
-                'href' => route('contact.create', ['locale' => $locale]),
+                'href' => route('contact.create'),
             ],
             default => null,
         };

@@ -5,7 +5,7 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => app()->getLocale()]),
+        __('Home') => route('home'),
         __('Search') => null,
     ]" />
 @endsection
@@ -22,7 +22,7 @@
         <div class="content-container">
             <x-ui.search-form
                 class="public-filter-panel"
-                :action="route('search', ['locale' => app()->getLocale()])"
+                :action="route('search')"
                 :query="$query"
                 id="site-search-query"
             />
@@ -48,10 +48,10 @@
                                 :description="__('Try fewer words or use one of the trusted routes below to continue.')"
                             >
                                 @if (filled($query))
-                                    <a class="button-secondary" href="{{ route('search', ['locale' => app()->getLocale()]) }}">{{ __('Clear search') }}</a>
+                                    <a class="button-secondary" href="{{ route('search') }}">{{ __('Clear search') }}</a>
                                 @endif
-                                <a class="button-primary" href="{{ route('services.index', ['locale' => app()->getLocale()]) }}">{{ __('Explore services') }}</a>
-                                <a class="button-secondary" href="{{ route('insights.index', ['locale' => app()->getLocale()]) }}">{{ __('Browse insights') }}</a>
+                                <a class="button-primary" href="{{ route('services.index') }}">{{ __('Explore services') }}</a>
+                                <a class="button-secondary" href="{{ route('insights.index') }}">{{ __('Browse insights') }}</a>
                             </x-ui.empty-state>
                         @endforelse
                     </div>

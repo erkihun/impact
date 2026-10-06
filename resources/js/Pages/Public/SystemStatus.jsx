@@ -1,9 +1,9 @@
 import { PageHeader } from '../../Components/Public/Common';
 import PublicLayout from '../../Layouts/PublicLayout';
 
-export default function SystemStatus({ meta, header, bannerActive, statusMessage, supportUrl, copy }) {
+export default function SystemStatus({ header, bannerActive, statusMessage, supportUrl, copy }) {
     return (
-        <PublicLayout title={meta.title}>
+        <PublicLayout>
             <PageHeader {...header} />
             <section className="public-section impact-editorial-surface">
                 <div className="content-container">

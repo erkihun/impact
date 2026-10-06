@@ -25,11 +25,9 @@ final class LegalPageController extends Controller
             'legal.cookies' => 'cookies',
             default => 'accessibility',
         };
-        $locale = app()->getLocale();
         $content = $this->{$page}();
 
         return PublicPage::render('Public/Legal', 'legal.'.$page, [
-            'meta' => ['title' => $content['title'], 'description' => $content['description']],
             'breadcrumbs' => PublicPage::breadcrumbs([$content['title'] => null]),
             'page' => $page,
             'header' => [
@@ -53,7 +51,7 @@ final class LegalPageController extends Controller
                     'id' => 'report-a-barrier',
                     'heading' => __('Report an accessibility issue'),
                     'body' => __('Tell us what happened, which page you were on and what you were trying to do. If you can, include the browser and any assistive technology you were using. We will acknowledge your report and tell you what we intend to do about it.'),
-                    'action' => ['type' => 'link', 'label' => __('Report an accessibility issue'), 'href' => route('contact.create', ['locale' => $locale])],
+                    'action' => ['type' => 'link', 'label' => __('Report an accessibility issue'), 'href' => route('contact.create')],
                     'note' => null,
                 ],
                 default => null,
@@ -63,9 +61,9 @@ final class LegalPageController extends Controller
                 'questionsTitle' => __('Questions about this page?'),
                 'questionsBody' => __('If anything here is unclear, or you want to exercise a right described above, contact us and we will respond.'),
                 'contact' => __('Contact us'),
-                'contactHref' => route('contact.create', ['locale' => $locale]),
+                'contactHref' => route('contact.create'),
             ],
-        ]);
+        ], seo: PublicPage::seo('legal.'.$page, $content['title'], $content['description'] ?? $content['summary']));
     }
 
     /** @return array<string, mixed> */

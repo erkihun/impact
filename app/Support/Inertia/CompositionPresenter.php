@@ -6,6 +6,7 @@ namespace App\Support\Inertia;
 
 use App\Data\PageComposition\CompositionViewData;
 use App\Data\PageComposition\SectionViewData;
+use App\Services\Seo\MediaImagePresenter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -59,7 +60,7 @@ final class CompositionPresenter
             'media' => self::media($section->media),
             'relations' => collect($section->relations)->map(fn ($relation): array => [
                 'type' => Str::headline((string) $relation->relation_type),
-                'title' => $relation->related?->currentVersion?->title ?? __('Published item'),
+                'title' => $relation->related->currentVersion->title ?? __('Published item'),
             ])->values()->all(),
         ];
     }
@@ -70,7 +71,7 @@ final class CompositionPresenter
         $href = $action->external_url;
 
         if ($action->internal_route && Route::has($action->internal_route)) {
-            $href = route($action->internal_route, ['locale' => app()->getLocale()]);
+            $href = route($action->internal_route);
         }
 
         if (! $href) {
@@ -98,8 +99,15 @@ final class CompositionPresenter
             return null;
         }
 
+        // Optimized WebP derivatives with intrinsic size, never the original upload.
+        $image = app(MediaImagePresenter::class)->attributes($usage->asset, '(min-width: 1024px) 50vw, 100vw', 'md');
+
         return [
-            'src' => $usage->asset->publicUrl(),
+            'src' => $image['src'] ?? $usage->asset->publicUrl(),
+            'srcset' => $image['srcset'] ?? null,
+            'sizes' => $image['sizes'] ?? null,
+            'width' => $image['width'] ?? null,
+            'height' => $image['height'] ?? null,
             'alt' => $usage->decorative ? '' : ($usage->asset->alt_text ?? ''),
             'decorative' => (bool) $usage->decorative,
             'caption' => $usage->caption,

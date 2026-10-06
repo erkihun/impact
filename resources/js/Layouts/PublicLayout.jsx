@@ -1,6 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect } from 'react';
 import { Breadcrumbs, PageHeader } from '../Components/Public/Common';
 import ConsentBanner from '../Components/Public/ConsentBanner';
 import PageComposition from '../Components/Public/PageComposition';
@@ -33,40 +32,38 @@ function FlashMessage({ flash, ui }) {
     );
 }
 
+// Section types that render the page's single <h1>.
+const HEADING_SECTIONS = ['page_header', 'form_introduction', 'homepage_hero'];
+
 // A managed composition replaces the page's built-in header, as in Blade.
+// The built-in header stays whenever the composition has no heading section,
+// so every page keeps exactly one meaningful <h1>.
 export function PageIntro({ composition, header, children }) {
     const { ui } = usePage().props;
+    const sections = composition?.sections ?? [];
+    const ownHeading = sections.some((section) => HEADING_SECTIONS.includes(section.type));
+    const builtIn = header && ! ownHeading ? <PageHeader {...header}>{children}</PageHeader> : null;
 
-    if (composition) {
-        return <PageComposition composition={composition} emptyTitle={ui.nothingPublished} />;
+    if (sections.length) {
+        return (
+            <>
+                {builtIn}
+                <PageComposition composition={composition} emptyTitle={ui.nothingPublished} />
+            </>
+        );
     }
 
-    return header ? <PageHeader {...header}>{children}</PageHeader> : null;
+    return builtIn;
 }
 
-export default function PublicLayout({ title, description, breadcrumbs, children }) {
-    const { site, flash, ui, meta = {} } = usePage().props;
-    const pageTitle = title ? `${title} - ${site.seo.titleSuffix}` : site.seo.defaultTitle;
-    const pageDescription = description ?? site.seo.defaultDescription;
-
-    // Client-side visits keep the document language in step with the page.
-    useEffect(() => {
-        document.documentElement.lang = site.locale.current;
-    }, [site.locale.current]);
+// Title, description, canonical, robots, social and structured-data tags are
+// resolved on the server (props.seo.head) and managed by Inertia's head
+// manager, so this layout renders none of them.
+export default function PublicLayout({ breadcrumbs, children }) {
+    const { site, flash, ui } = usePage().props;
 
     return (
         <>
-            <Head>
-                <title>{pageTitle}</title>
-                <meta head-key="description" name="description" content={pageDescription} />
-                <meta head-key="robots" name="robots" content={meta.robots ?? site.seo.robots} />
-                <meta head-key="og:title" property="og:title" content={pageTitle} />
-                <meta head-key="og:description" property="og:description" content={pageDescription} />
-                <meta head-key="og:url" property="og:url" content={site.seo.canonicalUrl} />
-                <link head-key="canonical" rel="canonical" href={site.seo.canonicalUrl} />
-                <link head-key="alternate-current" rel="alternate" hrefLang={site.locale.current} href={site.seo.canonicalUrl} />
-                <link head-key="alternate-default" rel="alternate" hrefLang="x-default" href={site.seo.defaultLocaleUrl} />
-            </Head>
             <a href="#main-content" className="skip-link">{ui.skip}</a>
 
             {site.maintenance.banner_enabled && (

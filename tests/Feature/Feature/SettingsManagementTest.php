@@ -117,7 +117,7 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
         'action' => 'settings.updated',
     ]);
 
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('Managed English hero statement.')
         ->assertSee($storedImage, false)
@@ -127,7 +127,7 @@ it('manages bilingual homepage hero slides, ordering, rotation, and browsed imag
             ->where('heroSlider.autoplay', false)
             ->where('heroSlider.interval_ms', 9000));
 
-    $this->get('/am')->assertRedirect('/en');
+    $this->get('/am')->assertRedirect('/');
 });
 
 it('rejects invalid homepage hero rotation settings', function (): void {
@@ -199,7 +199,7 @@ it('updates one non-sensitive category, records reasons and updates real public 
 
     $this->assertDatabaseHas('audit_events', ['action' => 'settings.updated']);
 
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('Impact Advisory Group PLC');
 });
@@ -381,7 +381,6 @@ it('denies settings changes without permission', function (): void {
         ->assertForbidden();
 });
 
-
 it('changes the hero slide count and preserves hidden slide content and images', function (): void {
     Storage::fake('public');
     $administrator = settingsAdministrator();
@@ -399,7 +398,7 @@ it('changes the hero slide count and preserves hidden slide content and images',
     ]))->assertSessionHasNoErrors()->assertRedirect('/admin/settings/homepage');
 
     $image = Setting::query()->where('key', 'homepage.hero.slide_4.image')->sole()->value;
-    $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page
+    $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
         ->has('heroSlider.slides', 5)
         ->where('heroSlider.slides.3.heading', 'An additional managed slide.')
         ->where('heroSlider.slides.3.image', $image));
@@ -409,11 +408,11 @@ it('changes the hero slide count and preserves hidden slide content and images',
             'homepage__hero__slide_count' => (string) $count,
             'homepage__hero__slide_4__heading_en' => 'An additional managed slide.',
         ]))->assertSessionHasNoErrors()->assertRedirect('/admin/settings/homepage');
-        $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page->has('heroSlider.slides', $count));
+        $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page->has('heroSlider.slides', $count));
     }
 
     expect(Setting::query()->where('key', 'homepage.hero.slide_4.image')->sole()->value)->toBe($image);
-    $this->get('/en')->assertInertia(fn (AssertableInertia $page) => $page
+    $this->get('/')->assertInertia(fn (AssertableInertia $page) => $page
         ->where('heroSlider.slides.3.heading', 'An additional managed slide.')
         ->where('heroSlider.slides.3.image', $image));
 });

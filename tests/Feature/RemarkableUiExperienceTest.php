@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('renders the impact intelligence homepage with its signature visual language', function (): void {
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('Impact Intelligence')
         ->assertSee('Evidence for the decisions that shape institutions.')
@@ -39,8 +39,8 @@ it('renders trustworthy two-column consultation and proposal intake', function (
     expect(File::get(resource_path('js/Pages/Public/Engagement.jsx')))
         ->toContain('lg:grid-cols-[minmax(0,1fr)_20rem]', 'form-context-panel', 'disabled={form.processing}');
 })->with([
-    ['/en/consultation', 'The clearest requests start with the decision.'],
-    ['/en/request-for-proposal', 'A useful brief makes the evaluation criteria visible.'],
+    ['/consultation', 'The clearest requests start with the decision.'],
+    ['/request-for-proposal', 'A useful brief makes the evaluation criteria visible.'],
 ]);
 
 it('defines reusable impact intelligence components and restrained motion', function (): void {

@@ -23,7 +23,7 @@ function isInternal(href, origin) {
 
 const AppLink = forwardRef(function AppLink({ href, target, download, children, ...props }, ref) {
     const { site } = usePage().props;
-    if (target || (download !== undefined && download !== false) || ! isInternal(href, site.seo.canonicalUrl)) {
+    if (target || (download !== undefined && download !== false) || ! isInternal(href, site.origin)) {
         return (
             <a ref={ref} href={href} target={target} download={download} {...props}>
                 {children}

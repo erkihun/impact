@@ -30,7 +30,7 @@ it('renders changed branding, identity, appearance, and SEO settings on the real
     setRuntimeSetting('appearance.card_radius', 'medium');
     setRuntimeSetting('seo.default_title_suffix', 'Verified suffix');
 
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('Runtime Integrated PLC')
         ->assertSee('--color-primary-900:#112233', false)
@@ -42,11 +42,11 @@ it('renders changed branding, identity, appearance, and SEO settings on the real
 
 it('blocks disabled public forms, search, sitemap, and maintenance status routes', function (): void {
     setRuntimeSetting('engagement.consultation_form_enabled', false);
-    $this->get('/en/consultation')->assertNotFound();
-    $this->post('/en/consultation-requests')->assertNotFound();
+    $this->get('/consultation')->assertNotFound();
+    $this->post('/consultation-requests')->assertNotFound();
 
     setRuntimeSetting('search.enabled', false);
-    $this->get('/en/search')->assertNotFound();
+    $this->get('/search')->assertNotFound();
 
     setRuntimeSetting('seo.sitemap_enabled', false);
     $this->get('/sitemap.xml')->assertNotFound();

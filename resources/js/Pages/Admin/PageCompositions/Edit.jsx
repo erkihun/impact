@@ -17,7 +17,7 @@ function SectionEditor({composition:c,section,registry,eligibleMedia,newType,onD
 const transitions={draft:['pages.update',['in_review']],changes_requested:['pages.update',['in_review']],in_review:['pages.approve',['changes_requested','approved']],approved:['pages.publish',['scheduled','published']],scheduled:['pages.publish',['published','archived']],published:['pages.publish',['archived']]};
 const workflowLabels={in_review:'Submit for review',changes_requested:'Request changes',approved:'Approve page',scheduled:'Schedule publication',published:'Publish now',archived:'Archive page'};
 export default function Edit(props) {return <CompositionEditor key={props.composition.id} {...props}/>;}
-function CompositionEditor({composition:c,registry,previewUrl,eligibleMedia,archivedSections=[],pageVersions=[]}) {
+function CompositionEditor({composition:c,registry,previewUrl,eligibleMedia,archivedSections=[]}) {
  const {t,can}=useWorkspace();
  const [type,setType]=useState(Object.keys(registry)[0]);
  const [dirty,setDirty]=useState({}), [pendingHref,setPendingHref]=useState(null);
@@ -25,7 +25,6 @@ function CompositionEditor({composition:c,registry,previewUrl,eligibleMedia,arch
  const unsavedSections=Object.entries(dirty).some(([key,value])=>key!=='workflow'&&value);
  const reportDirty=(key,value)=>setDirty(current=>current[key]===value?current:{...current,[key]:value});
  const leave=visit=>{if(!Object.values(dirty).some(Boolean))return true;setPendingHref(visit.url.href);return false;};
- const versions=pageVersions.filter(version=>version.locale===c.locale);
  const transition=transitions[c.state], destinations=transition&&can(transition[0])?transition[1]:[];
  const reorder=(index,offset)=>{const ids=c.sections.map(s=>s.id);[ids[index],ids[index+offset]]=[ids[index+offset],ids[index]];return {lock_version:c.lock_version,section_ids:ids};};
  return <WorkspaceLayout title={label(c.page_key)} description="Open a section, then save your changes." actions={<><a className="button-secondary" href={previewUrl} target="_blank" rel="noreferrer">{t('Preview page')}</a>{!c.editable&&can('pages.create')&&<Action href={`/admin/page-compositions/${c.id}/drafts`} className="button-primary">{t('Edit this page')}</Action>}</>}>
@@ -43,8 +42,7 @@ function CompositionEditor({composition:c,registry,previewUrl,eligibleMedia,arch
   </div></section>
   {editable&&<details className="admin-panel"><summary className="font-semibold">{t('Add a section')}</summary><label className="form-label mt-4" htmlFor="new-section-type">{t('Section type')}</label><select id="new-section-type" className="form-input mb-5" value={type} onChange={e=>setType(e.target.value)}>{Object.entries(registry).map(([value,d])=><option key={value} value={value}>{t(d.name)}</option>)}</select><SectionEditor key={`${type}-${c.lock_version}`} composition={c} registry={registry} eligibleMedia={eligibleMedia} newType={type} onDirtyChange={value=>reportDirty('new',value)}/></details>}
   {destinations.length>0&&<details className="admin-panel"><summary className="font-semibold">{t('Review, scheduling and archive options')}</summary><p className="text-sm text-muted mb-5">{t('Save your sections before sending this page to the next step.')}</p><Editor key={c.state} disabled={unsavedSections} action={`/admin/page-compositions/${c.id}/transitions`} initial={{to:destinations[0],comment:''}} onDirtyChange={value=>reportDirty('workflow',value)} fields={[field('to','Next step','select',{options:destinations.map(value=>({value,label:workflowLabels[value]}))}),field('comment','Review comment','textarea')]} submit="Continue">{unsavedSections&&<p className="status-warning" role="status">{t('Save your sections before sending this page to the next step.')}</p>}</Editor></details>}
-  {(versions.length>1||archivedSections.length>0)&&<details className="admin-panel"><summary className="font-semibold">{t('History and archived sections')}</summary><div className="grid gap-5 mt-5">
-   {versions.length>1&&<div><h2 className="font-semibold mb-3">{t('Version history')}</h2><div className="flex flex-wrap gap-3">{versions.map(version=><Link key={version.id} className={version.id===c.id?'button-primary':'button-secondary'} href={`/admin/page-compositions/${version.id}`} aria-current={version.id===c.id?'page':undefined} onBefore={leave}>v{version.version_no} / {t(label(version.state))}</Link>)}</div></div>}
+  {editable&&archivedSections.length>0&&<details className="admin-panel"><summary className="font-semibold">{t('Archived sections')}</summary><div className="grid gap-5 mt-5">
    {editable&&archivedSections.length>0&&<div><h2 className="font-semibold mb-3">{t('Archived sections')}</h2>{archivedSections.map(s=><div key={s.id} className="flex items-center gap-4 py-3"><span>{s.editor_label}</span><Action href={`/admin/page-compositions/${c.id}/sections/${s.id}/restore`} data={{lock_version:c.lock_version}}>{t('Restore')}</Action></div>)}</div>}
   </div></details>}
  </WorkspaceLayout>;

@@ -23,7 +23,7 @@ it('accepts an application while keeping the CV quarantined and private', functi
         'closes_at' => now()->addWeek(),
     ]);
 
-    $this->post("/en/careers/{$vacancy->slug}/applications", [
+    $this->post("/careers/{$vacancy->slug}/applications", [
         'applicant_name' => 'Aster Bekele',
         'email' => 'aster@example.com',
         'phone' => '+251900000000',
@@ -59,14 +59,14 @@ it('rejects an expired vacancy and removes the orphaned quarantine upload', func
         'closes_at' => now()->subDay(),
     ]);
 
-    $this->from("/en/careers/{$vacancy->slug}")
-        ->post("/en/careers/{$vacancy->slug}/applications", [
+    $this->from("/careers/{$vacancy->slug}")
+        ->post("/careers/{$vacancy->slug}/applications", [
             'applicant_name' => 'Aster Bekele',
             'email' => 'aster@example.com',
             'cv' => UploadedFile::fake()->create('cv.pdf', 100, 'application/pdf'),
             'privacy_acknowledged' => '1',
         ])
-        ->assertRedirect("/en/careers/{$vacancy->slug}")
+        ->assertRedirect("/careers/{$vacancy->slug}")
         ->assertSessionHasErrors('vacancy');
 
     $this->assertDatabaseCount('applications', 0);

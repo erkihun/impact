@@ -18,14 +18,13 @@ final class ApplicationController extends Controller
 {
     public function store(
         SubmitApplicationRequest $request,
-        string $locale,
         string $slug,
         QuarantineUploadAction $uploads,
         SubmitApplicationAction $applications,
         CorrelationContext $correlation,
     ): RedirectResponse {
         $vacancy = Vacancy::query()
-            ->where(compact('locale', 'slug'))
+            ->where('locale', app()->getLocale())->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
         $validated = $request->validated();
@@ -39,7 +38,7 @@ final class ApplicationController extends Controller
                 'application/pdf',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ],
-            locale: $locale,
+            locale: app()->getLocale(),
             retentionUntil: $retentionUntil,
             fieldName: 'cv',
         ));

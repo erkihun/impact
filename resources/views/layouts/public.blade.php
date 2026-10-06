@@ -32,7 +32,7 @@
     @endif
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="alternate" hreflang="{{ $currentLocale }}" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="x-default" href="{{ route('localized-home', ['locale' => $publicExperience['localization']['default']]) }}">
+    <link rel="alternate" hreflang="x-default" href="{{ route('home') }}">
     <title>@hasSection('title')@yield('title') - {{ $publicExperience['seo']['title_suffix'] }}@else{{ $publicExperience['seo']['default_title'] }}@endif</title>
     @stack('structured_data')
     @vite(['resources/css/app.css', 'resources/css/public-glass.css', 'resources/js/app.js'])
@@ -67,7 +67,7 @@
     >
         <div class="content-container">
         <div class="glass-nav-bar">
-            <a href="{{ route('localized-home', ['locale' => $currentLocale]) }}" class="glass-brand" aria-label="{{ __(':name home', ['name' => $publicBrandFull]) }}">
+            <a href="{{ route('home') }}" class="glass-brand" aria-label="{{ __(':name home', ['name' => $publicBrandFull]) }}">
                 @if ($identity['logo'])
                     <img class="h-10 w-auto max-w-44 object-contain" src="{{ $identity['logo'] }}" alt="{{ $identity['logo_alt'] }}">
                 @else
@@ -83,12 +83,12 @@
                 <div class="flex">
                     <a
                         class="nav-link"
-                        href="{{ route('localized-home', ['locale' => $currentLocale]) }}"
+                        href="{{ route('home') }}"
                         data-nav-item="home"
-                        @if (request()->routeIs('home', 'localized-home')) aria-current="page" @endif
+                        @if (request()->routeIs('home')) aria-current="page" @endif
                     >
                         <x-ui.icon name="home" class="nav-menu-icon" />
-                        {{ $managedPrimaryLabels['localized-home'] ?? __('Home') }}
+                        {{ $managedPrimaryLabels['home'] ?? __('Home') }}
                     </a>
                     <button
                         class="mega-trigger"
@@ -112,20 +112,20 @@
                                 <p class="mt-3 text-sm leading-6 text-muted">{{ __('Understand our purpose, working approach and institutional commitments.') }}</p>
                             </div>
                             <div class="grid gap-2 sm:grid-cols-2">
-                                <a class="mega-link" href="{{ route('about.show', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('about.show') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="about" /></span>
                                     <span><strong class="block text-white">{{ __('Who we are') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Purpose, values and the way we work') }}</span></span>
                                 </a>
-                                <a class="mega-link" href="{{ route('experts.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('experts.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="experts" /></span>
                                     <span><strong class="block text-white">{{ __('Our experts') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Experience, credentials and selected work') }}</span></span>
                                 </a>
-                                <a class="mega-link" href="{{ route('careers.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('careers.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="careers" /></span>
                                     <span><strong class="block text-white">{{ __('Careers') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Current opportunities and application routes') }}</span></span>
                                 </a>
                                 @if ($contactEnabled)
-                                    <a class="mega-link" href="{{ route('contact.create', ['locale' => $currentLocale]) }}">
+                                    <a class="mega-link" href="{{ route('contact.create') }}">
                                         <span class="mega-link-icon"><x-ui.icon name="contact" /></span>
                                         <span><strong class="block text-white">{{ __('Contact') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find the right route for your request') }}</span></span>
                                     </a>
@@ -134,7 +134,7 @@
                             <div class="glass-promo">
                                 <p class="text-sm font-bold">{{ __('Have a specific assignment?') }}</p>
                                 <p class="mt-2 text-sm leading-6 text-slate-300">{{ __('Share a structured brief through our secure proposal route.') }}</p>
-                                @if ($rfpEnabled)<a class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href="{{ route('rfp.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="rfp" class="size-4" />{{ __('Submit an RFP') }} →</a>@endif
+                                @if ($rfpEnabled)<a class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href="{{ route('rfp.create') }}"><x-ui.icon name="rfp" class="size-4" />{{ __('Submit an RFP') }} →</a>@endif
                             </div>
                         </div>
                     </div>
@@ -163,11 +163,11 @@
                                 <p class="mt-3 text-sm leading-6 text-muted">{{ __('Focused advice that connects diagnosis, strategy, delivery and learning.') }}</p>
                             </div>
                             <div class="grid gap-2 sm:grid-cols-2">
-                                <a class="mega-link" href="{{ route('services.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('services.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="services" /></span>
                                     <span><strong class="block text-white">{{ __('Explore all services') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse current published capabilities') }}</span></span>
                                 </a>
-                                <a class="mega-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('case-studies.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="case-studies" /></span>
                                     <span><strong class="block text-white">{{ __('Evidence and outcomes') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('See related work and measurable results') }}</span></span>
                                 </a>
@@ -175,7 +175,7 @@
                             <div class="glass-promo">
                                 <p class="text-sm font-bold text-brand-900">{{ __('Not sure which service fits?') }}</p>
                                 <p class="mt-2 text-sm leading-6 text-muted">{{ __('Describe the outcome you need and we will route your request.') }}</p>
-                                @if ($consultationEnabled)<a class="text-link mt-3 gap-2" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="consultation" class="size-4" />{{ __('Request a consultation') }} →</a>@endif
+                                @if ($consultationEnabled)<a class="text-link mt-3 gap-2" href="{{ route('consultation.create') }}"><x-ui.icon name="consultation" class="size-4" />{{ __('Request a consultation') }} →</a>@endif
                             </div>
                         </div>
                     </div>
@@ -204,11 +204,11 @@
                                 <p class="mt-3 text-sm leading-6 text-muted">{{ __('Explore sector context, relevant services and approved evidence.') }}</p>
                             </div>
                             <div class="grid gap-2 sm:grid-cols-2">
-                                <a class="mega-link" href="{{ route('industries.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('industries.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="industries" /></span>
                                     <span><strong class="block text-white">{{ __('Browse industries') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Find advice grounded in your operating context') }}</span></span>
                                 </a>
-                                <a class="mega-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('case-studies.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="case-studies" /></span>
                                     <span><strong class="block text-white">{{ __('Related case studies') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Review authorized examples and outcomes') }}</span></span>
                                 </a>
@@ -217,11 +217,11 @@
                     </div>
                 </div>
 
-                <a class="nav-link" href="{{ route('experts.index', ['locale' => $currentLocale]) }}" @if (request()->routeIs('experts.*')) aria-current="page" @endif>
+                <a class="nav-link" href="{{ route('experts.index') }}" @if (request()->routeIs('experts.*')) aria-current="page" @endif>
                     <x-ui.icon name="experts" class="nav-menu-icon" />
                     {{ $managedPrimaryLabels['experts.index'] ?? __('Experts') }}
                 </a>
-                <a class="nav-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}" @if (request()->routeIs('case-studies.*')) aria-current="page" @endif>
+                <a class="nav-link" href="{{ route('case-studies.index') }}" @if (request()->routeIs('case-studies.*')) aria-current="page" @endif>
                     <x-ui.icon name="case-studies" class="nav-menu-icon" />
                     {{ $managedPrimaryLabels['case-studies.index'] ?? __('Case studies') }}
                 </a>
@@ -249,11 +249,11 @@
                                 <p class="mt-3 text-sm leading-6 text-muted">{{ __('Evidence, analysis and practical learning from our current published work.') }}</p>
                             </div>
                             <div class="grid gap-2 sm:grid-cols-2">
-                                <a class="mega-link" href="{{ route('insights.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('insights.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="insights" /></span>
                                     <span><strong class="block text-white">{{ __('Articles and reports') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Browse published knowledge content') }}</span></span>
                                 </a>
-                                <a class="mega-link" href="{{ route('events.index', ['locale' => $currentLocale]) }}">
+                                <a class="mega-link" href="{{ route('events.index') }}">
                                     <span class="mega-link-icon"><x-ui.icon name="events" /></span>
                                     <span><strong class="block text-white">{{ __('Events') }}</strong><span class="mt-1 block text-sm text-muted">{{ __('Upcoming learning and registration opportunities') }}</span></span>
                                 </a>
@@ -265,12 +265,12 @@
 
             <div class="flex items-center gap-1">
                 @if ($searchEnabled)
-                    <a href="{{ route('search', ['locale' => $currentLocale]) }}" class="icon-link" aria-label="{{ __('Search') }}">
+                    <a href="{{ route('search') }}" class="icon-link" aria-label="{{ __('Search') }}">
                         <svg aria-hidden="true" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
                     </a>
                 @endif
                 @if ($consultationEnabled)
-                    <a class="button-primary ms-1 hidden xl:inline-flex" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}">
+                    <a class="button-primary ms-1 hidden xl:inline-flex" href="{{ route('consultation.create') }}">
                         {{ __('Consultation') }}
                     </a>
                 @endif
@@ -301,20 +301,20 @@
             </div>
             <div class="content-container grid gap-6 py-6">
                 <div class="grid grid-cols-2 gap-3">
-                    @if ($searchEnabled)<a class="button-secondary" href="{{ route('search', ['locale' => $currentLocale]) }}"><x-ui.icon name="search" class="size-4" />{{ __('Search') }}</a>@endif
+                    @if ($searchEnabled)<a class="button-secondary" href="{{ route('search') }}"><x-ui.icon name="search" class="size-4" />{{ __('Search') }}</a>@endif
                 </div>
-                @if ($consultationEnabled)<a class="button-primary w-full" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="consultation" />{{ __('Request a consultation') }}</a>@endif
+                @if ($consultationEnabled)<a class="button-primary w-full" href="{{ route('consultation.create') }}"><x-ui.icon name="consultation" />{{ __('Request a consultation') }}</a>@endif
                 <nav aria-label="{{ __('Mobile navigation') }}" class="grid gap-2">
-                    <a class="mobile-link" href="{{ route('localized-home', ['locale' => $currentLocale]) }}" data-nav-item="home"><x-ui.icon name="home" class="mobile-menu-icon" />{{ $managedPrimaryLabels['localized-home'] ?? __('Home') }}</a>
-                    <a class="mobile-link" href="{{ route('about.show', ['locale' => $currentLocale]) }}"><x-ui.icon name="about" class="mobile-menu-icon" />{{ $managedPrimaryLabels['about.show'] ?? __('About') }}</a>
-                    <a class="mobile-link" href="{{ route('services.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="services" class="mobile-menu-icon" />{{ $managedPrimaryLabels['services.index'] ?? __('Services') }}</a>
-                    <a class="mobile-link" href="{{ route('industries.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="industries" class="mobile-menu-icon" />{{ $managedPrimaryLabels['industries.index'] ?? __('Industries') }}</a>
-                    <a class="mobile-link" href="{{ route('experts.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="experts" class="mobile-menu-icon" />{{ $managedPrimaryLabels['experts.index'] ?? __('Experts') }}</a>
-                    <a class="mobile-link" href="{{ route('case-studies.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="case-studies" class="mobile-menu-icon" />{{ $managedPrimaryLabels['case-studies.index'] ?? __('Case studies') }}</a>
-                    <a class="mobile-link" href="{{ route('insights.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="insights" class="mobile-menu-icon" />{{ $managedPrimaryLabels['insights.index'] ?? __('Insights') }}</a>
-                    <a class="mobile-link" href="{{ route('events.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="events" class="mobile-menu-icon" />{{ __('Events') }}</a>
-                    <a class="mobile-link" href="{{ route('careers.index', ['locale' => $currentLocale]) }}"><x-ui.icon name="careers" class="mobile-menu-icon" />{{ __('Careers') }}</a>
-                    @if ($contactEnabled)<a class="mobile-link" href="{{ route('contact.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="contact" class="mobile-menu-icon" />{{ __('Contact') }}</a>@endif
+                    <a class="mobile-link" href="{{ route('home') }}" data-nav-item="home"><x-ui.icon name="home" class="mobile-menu-icon" />{{ $managedPrimaryLabels['home'] ?? __('Home') }}</a>
+                    <a class="mobile-link" href="{{ route('about.show') }}"><x-ui.icon name="about" class="mobile-menu-icon" />{{ $managedPrimaryLabels['about.show'] ?? __('About') }}</a>
+                    <a class="mobile-link" href="{{ route('services.index') }}"><x-ui.icon name="services" class="mobile-menu-icon" />{{ $managedPrimaryLabels['services.index'] ?? __('Services') }}</a>
+                    <a class="mobile-link" href="{{ route('industries.index') }}"><x-ui.icon name="industries" class="mobile-menu-icon" />{{ $managedPrimaryLabels['industries.index'] ?? __('Industries') }}</a>
+                    <a class="mobile-link" href="{{ route('experts.index') }}"><x-ui.icon name="experts" class="mobile-menu-icon" />{{ $managedPrimaryLabels['experts.index'] ?? __('Experts') }}</a>
+                    <a class="mobile-link" href="{{ route('case-studies.index') }}"><x-ui.icon name="case-studies" class="mobile-menu-icon" />{{ $managedPrimaryLabels['case-studies.index'] ?? __('Case studies') }}</a>
+                    <a class="mobile-link" href="{{ route('insights.index') }}"><x-ui.icon name="insights" class="mobile-menu-icon" />{{ $managedPrimaryLabels['insights.index'] ?? __('Insights') }}</a>
+                    <a class="mobile-link" href="{{ route('events.index') }}"><x-ui.icon name="events" class="mobile-menu-icon" />{{ __('Events') }}</a>
+                    <a class="mobile-link" href="{{ route('careers.index') }}"><x-ui.icon name="careers" class="mobile-menu-icon" />{{ __('Careers') }}</a>
+                    @if ($contactEnabled)<a class="mobile-link" href="{{ route('contact.create') }}"><x-ui.icon name="contact" class="mobile-menu-icon" />{{ __('Contact') }}</a>@endif
                 </nav>
             </div>
         </div>
@@ -356,7 +356,7 @@
                     @if ($identity['email'])<a class="hover:text-white hover:underline" href="mailto:{{ $identity['email'] }}">{{ $identity['email'] }}</a>@endif
                     @if ($identity['working_hours'])<span>{{ $identity['working_hours'] }}</span>@endif
                 </address>
-                @if ($consultationEnabled)<a class="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href="{{ route('consultation.create', ['locale' => $currentLocale]) }}"><x-ui.icon name="consultation" class="size-4" />{{ __('Request a consultation') }} →</a>@endif
+                @if ($consultationEnabled)<a class="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-action-100 hover:text-white" href="{{ route('consultation.create') }}"><x-ui.icon name="consultation" class="size-4" />{{ __('Request a consultation') }} →</a>@endif
             </div>
             <nav aria-labelledby="footer-explore-heading">
                 <h2 id="footer-explore-heading" class="footer-heading">{{ __('Explore') }}</h2>
@@ -376,7 +376,7 @@
             </nav>
             <div>
                 <h2 class="footer-heading">{{ __('Practical insight, periodically') }}</h2>
-                <form id="newsletter-form" method="POST" action="{{ route('newsletter.subscribe', ['locale' => $currentLocale]) }}" class="mt-4 grid gap-3" data-prevent-duplicate>
+                <form id="newsletter-form" method="POST" action="{{ route('newsletter.subscribe') }}" class="mt-4 grid gap-3" data-prevent-duplicate>
                     @csrf
                     <input type="hidden" name="policy_version" value="{{ $publicExperience['privacy']['policy_version'] }}">
                     <label class="text-sm font-bold text-white" for="newsletter-email">{{ __('Email address') }}</label>

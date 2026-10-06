@@ -5,7 +5,7 @@ import Reveal from '../../Components/Reveal';
 import { EmptyState, Pagination } from '../../Components/Public/Common';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 
-export default function Search({ meta, breadcrumbs, composition, header, query, action, results, pagination, links, copy }) {
+export default function Search({ breadcrumbs, composition, header, query, action, results, pagination, links, copy }) {
     const [value, setValue] = useState(query ?? '');
 
     const submit = (event) => {
@@ -14,7 +14,7 @@ export default function Search({ meta, breadcrumbs, composition, header, query, 
     };
 
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <PageIntro composition={composition} header={header} />
 
             <section className="public-section impact-editorial-surface" aria-labelledby="search-results-heading">

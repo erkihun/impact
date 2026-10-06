@@ -6,47 +6,47 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Redirect;
+use App\Services\Seo\CanonicalUrlBuilder;
+use App\Services\Seo\RedirectResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Fallback for every unmatched URL: governed redirects (single hop, local
+ * destinations only), 410 Gone decisions, and case normalization. Anything
+ * else is a 404.
+ */
 final class RedirectController extends Controller
 {
-    public function __invoke(Request $request): RedirectResponse
+    public function __invoke(Request $request, RedirectResolver $resolver, CanonicalUrlBuilder $urls): RedirectResponse
     {
-        $source = '/'.ltrim($request->path(), '/');
-        $redirect = Redirect::query()
-            ->where('source_path', $source)
-            ->where('enabled', true)
-            ->first();
-        abort_if($redirect === null, 404);
+        abort_unless($request->isMethod('GET') || $request->isMethod('HEAD'), 404);
 
-        $destination = (string) $redirect->destination_url;
-        abort_if(! str_starts_with($destination, '/') || str_starts_with($destination, '//'), 404);
-        abort_if(parse_url($destination, PHP_URL_PATH) === $source, 508);
-
-        $visited = [$source];
-        $probe = (string) parse_url($destination, PHP_URL_PATH);
-        for ($depth = 0; $depth < 5; $depth++) {
-            abort_if(in_array($probe, $visited, true), 508);
-            $visited[] = $probe;
-            $next = Redirect::query()
-                ->where('source_path', $probe)
-                ->where('enabled', true)
-                ->first();
-            if ($next === null) {
-                break;
+        $raw = '/'.ltrim(rawurldecode($request->getPathInfo()), '/');
+        $resolution = $resolver->resolve($raw);
+        if ($resolution !== null) {
+            if ($resolution->redirectId !== null) {
+                Redirect::query()->whereKey($resolution->redirectId)->update(['last_hit_at' => now('UTC')]);
+                Redirect::query()->whereKey($resolution->redirectId)->increment('hit_count');
             }
-            $destination = (string) $next->destination_url;
-            abort_if(! str_starts_with($destination, '/') || str_starts_with($destination, '//'), 404);
-            $probe = (string) parse_url($destination, PHP_URL_PATH);
+            abort_if($resolution->isGone() || $resolution->destination === null, 410);
+
+            return $this->redirect($request, $resolution->destination, $resolution->status);
         }
-        abort_if(count($visited) > 5, 508);
 
-        $redirect->increment('hit_count');
-        $status = in_array($redirect->status_code, [301, 302, 307, 308], true)
-            ? $redirect->status_code
-            : 301;
+        // /Services/Strategy → /services/strategy, only when that URL exists.
+        $normalized = $urls->normalizePath($raw);
+        if ($normalized !== $raw && $resolver->servesContent($normalized)) {
+            return $this->redirect($request, $normalized, 301);
+        }
 
-        return redirect()->to($destination, $status);
+        abort(404);
+    }
+
+    private function redirect(Request $request, string $destination, int $status): RedirectResponse
+    {
+        $query = $request->getQueryString();
+
+        return redirect()->to($destination.($query ? '?'.$query : ''), $status);
     }
 }

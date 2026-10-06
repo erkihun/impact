@@ -1,5 +1,6 @@
 import Reveal from '../../Components/Reveal';
 import AppLink from '../../Components/AppLink';
+import { RelatedContent, ResponsiveImage } from '../../Components/Public/Common';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 import { pad } from '../../lib/format';
 
@@ -10,7 +11,7 @@ function Section({ section }) {
                 <Reveal as="section">
                     <div className="m-portrait">
                         {section.photo
-                            ? <img src={section.photo} alt={section.photoAlt} decoding="async" />
+                            ? <ResponsiveImage src={section.photo} srcSet={section.photoSrcset} sizes={section.photoSizes} width={section.photoWidth} height={section.photoHeight} alt={section.photoAlt} eager />
                             : <span aria-hidden="true">{section.initial}</span>}
                     </div>
                     {section.body && <p className="m-quote">{section.body}</p>}
@@ -48,9 +49,9 @@ function Section({ section }) {
     }
 }
 
-export default function Detail({ meta, breadcrumbs, composition, header, facts, sections, actions, copy }) {
+export default function Detail({ breadcrumbs, composition, header, facts, sections, related = [], actions, copy }) {
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <PageIntro composition={composition} header={header}>
                 <AppLink className="button-primary" href={actions.consultation.href}>{actions.consultation.label}</AppLink>
                 {actions.index && <AppLink className="button-secondary" href={actions.index.href}>{actions.index.label}</AppLink>}
@@ -72,6 +73,8 @@ export default function Detail({ meta, breadcrumbs, composition, header, facts, 
                     {sections.map((section, index) => <Section key={`${section.kind}-${index}`} section={section} />)}
                 </div>
             </article>
+
+            <RelatedContent groups={related} title={copy.related} />
 
             <section className="m-section m-band" aria-labelledby="detail-next-title">
                 <div className="content-container">

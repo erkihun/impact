@@ -43,7 +43,7 @@
                     <h2 id="consent-banner-title" class="text-base font-bold text-brand-950">{{ __('Your choices about cookies and storage') }}</h2>
                     <p class="mt-2 max-w-3xl text-sm leading-6 text-muted">
                         {{ __('We use necessary storage to keep this site secure and working. Optional storage for preferences, analytics and marketing is used only if you agree. You can change your choice at any time.') }}
-                        <a class="font-semibold text-action-700 underline underline-offset-4 hover:text-action-900" href="{{ route('legal.privacy', ['locale' => $locale]) }}">{{ __('Read the privacy notice') }}</a>
+                        <a class="font-semibold text-action-700 underline underline-offset-4 hover:text-action-900" href="{{ route('legal.privacy') }}">{{ __('Read the privacy notice') }}</a>
                     </p>
                     <p x-cloak x-show="failed" class="mt-3 text-sm font-medium text-danger" role="alert">
                         {{ __('Your choice was not saved. Check your connection and try again.') }}

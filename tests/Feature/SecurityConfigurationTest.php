@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 it('applies browser security headers and prevents privileged response caching', function (): void {
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Frame-Options', 'DENY')
@@ -19,8 +19,8 @@ it('applies browser security headers and prevents privileged response caching', 
 });
 
 it('emits HSTS only for secure requests', function (): void {
-    $this->get('/en')->assertHeaderMissing('Strict-Transport-Security');
-    $this->get('https://localhost/en')
+    $this->get('/')->assertHeaderMissing('Strict-Transport-Security');
+    $this->get('https://localhost/')
         ->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 });
 

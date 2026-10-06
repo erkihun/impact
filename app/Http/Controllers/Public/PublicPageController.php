@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Services\Seo\SeoMetadataBuilder;
 use App\Support\Inertia\PublicPage;
 use App\Support\Settings\PublicUiSettings;
 use Illuminate\Http\Request;
@@ -18,10 +19,8 @@ final class PublicPageController extends Controller
 {
     public function about(): Response
     {
-        $locale = app()->getLocale();
 
         return PublicPage::render('Public/About', 'about', [
-            'meta' => ['title' => __('About Impact Consulting'), 'description' => null],
             'breadcrumbs' => PublicPage::breadcrumbs([__('About') => null]),
             'header' => [
                 'eyebrow' => __('About us'),
@@ -34,9 +33,9 @@ final class PublicPageController extends Controller
                 ['title' => __('Our standard'), 'text' => __('Evidence-led, inclusive, accountable and uncompromising on ethics and confidentiality.')],
             ],
             'links' => [
-                'experts' => route('experts.index', ['locale' => $locale]),
-                'caseStudies' => route('case-studies.index', ['locale' => $locale]),
-                'consultation' => route('consultation.create', ['locale' => $locale]),
+                'experts' => route('experts.index'),
+                'caseStudies' => route('case-studies.index'),
+                'consultation' => route('consultation.create'),
             ],
             'copy' => [
                 'meetExperts' => __('Meet our experts'),
@@ -47,16 +46,24 @@ final class PublicPageController extends Controller
                 'nextTitle' => __('Bring the question. We will help structure the next move.'),
                 'requestConsultation' => __('Request a consultation'),
             ],
-        ]);
+        ], seo: PublicPage::seo(
+            'about',
+            __('About Impact Consulting'),
+            __('Impact Consulting brings together strategy, sector expertise and implementation discipline to help institutions make better decisions and sustain better results.'),
+            'AboutPage',
+        ));
     }
 
     public function consultation(Request $request): Response
     {
-        $locale = app()->getLocale();
         $hasContext = $request->filled('service_id') || $request->filled('industry_id');
 
-        return $this->engagement('consultation', [
-            'meta' => ['title' => __('Request a consultation — Impact Consulting'), 'description' => null],
+        return $this->engagement('consultation', PublicPage::seo(
+            'consultation',
+            __('Request a consultation'),
+            __('Describe the outcome you need, your context and timing. Impact Consulting reviews each request and connects you with the relevant advisory expertise.'),
+            'ContactPage',
+        ), [
             'breadcrumbs' => PublicPage::breadcrumbs([__('Request a consultation') => null]),
             'header' => [
                 'eyebrow' => __('Start a conversation'),
@@ -65,7 +72,7 @@ final class PublicPageController extends Controller
             ],
             'form' => [
                 'id' => 'consultation',
-                'action' => route('consultation-requests.store', ['locale' => $locale]),
+                'action' => route('consultation-requests.store'),
                 'multipart' => false,
                 'hidden' => array_filter([
                     'type' => 'consultation',
@@ -125,10 +132,13 @@ final class PublicPageController extends Controller
 
     public function rfp(): Response
     {
-        $locale = app()->getLocale();
 
-        return $this->engagement('rfp', [
-            'meta' => ['title' => __('Submit an RFP — Impact Consulting'), 'description' => __('Request a confidential proposal from Impact Consulting.')],
+        return $this->engagement('rfp', PublicPage::seo(
+            'rfp',
+            __('Submit a request for proposal'),
+            __('Share a confidential request for proposal with Impact Consulting. Describe the assignment, expected outcomes and timing; supporting files stay private.'),
+            'ContactPage',
+        ), [
             'breadcrumbs' => PublicPage::breadcrumbs([__('Submit an RFP') => null]),
             'header' => [
                 'eyebrow' => __('Request for proposal'),
@@ -137,7 +147,7 @@ final class PublicPageController extends Controller
             ],
             'form' => [
                 'id' => 'rfp',
-                'action' => route('rfp-requests.store', ['locale' => $locale]),
+                'action' => route('rfp-requests.store'),
                 'multipart' => true,
                 'hidden' => ['type' => 'rfp', 'policy_version' => $this->policyVersion()],
                 'intro' => __('Fields marked required must be completed. Do not include credentials, passwords or unnecessary personal data.'),
@@ -197,11 +207,14 @@ final class PublicPageController extends Controller
 
     public function contact(): Response
     {
-        $locale = app()->getLocale();
         $features = app(PublicUiSettings::class)->viewData()['features'];
 
-        return $this->engagement('contact', [
-            'meta' => ['title' => __('Contact — Impact Consulting'), 'description' => null],
+        return $this->engagement('contact', PublicPage::seo(
+            'contact',
+            __('Contact us'),
+            __('Contact Impact Consulting for general, partnership or media inquiries, or choose the dedicated consultation and proposal routes.'),
+            'ContactPage',
+        ), [
             'breadcrumbs' => PublicPage::breadcrumbs([__('Contact') => null]),
             'header' => [
                 'eyebrow' => __('Contact'),
@@ -210,7 +223,7 @@ final class PublicPageController extends Controller
             ],
             'form' => [
                 'id' => 'contact',
-                'action' => route('contact.store', ['locale' => $locale]),
+                'action' => route('contact.store'),
                 'multipart' => false,
                 'hidden' => ['policy_version' => $this->policyVersion()],
                 'intro' => null,
@@ -247,15 +260,15 @@ final class PublicPageController extends Controller
                 'footerTitle' => null,
                 'footerText' => null,
                 'links' => array_values(array_filter([
-                    $features['consultation'] ? ['label' => __('Request a consultation'), 'href' => route('consultation.create', ['locale' => $locale]), 'primary' => true] : null,
-                    $features['rfp'] ? ['label' => __('Submit an RFP'), 'href' => route('rfp.create', ['locale' => $locale]), 'primary' => false] : null,
+                    $features['consultation'] ? ['label' => __('Request a consultation'), 'href' => route('consultation.create'), 'primary' => true] : null,
+                    $features['rfp'] ? ['label' => __('Submit an RFP'), 'href' => route('rfp.create'), 'primary' => false] : null,
                 ])),
             ],
         ]);
     }
 
     /** @param  array<string, mixed>  $props */
-    private function engagement(string $pageKey, array $props): Response
+    private function engagement(string $pageKey, SeoMetadataBuilder $seo, array $props): Response
     {
         return PublicPage::render('Public/Engagement', $pageKey, [
             ...$props,
@@ -267,7 +280,7 @@ final class PublicPageController extends Controller
                 'notProvided' => __('Not provided'),
                 'chooseFiles' => __('Choose files'),
             ],
-        ]);
+        ], seo: $seo);
     }
 
     /** @return array<int, array<string, mixed>> */

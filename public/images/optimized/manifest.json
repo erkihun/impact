@@ -1,0 +1,73 @@
+{
+    "ethiopia-highlands": {
+        "source": "resources/images/source/ethiopia-highlands.jpg",
+        "source_bytes": 6440513,
+        "width": 5596,
+        "height": 3607,
+        "variants": [
+            {
+                "path": "images/optimized/ethiopia-highlands-480.webp",
+                "format": "webp",
+                "width": 480,
+                "height": 309,
+                "bytes": 45614
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-480.avif",
+                "format": "avif",
+                "width": 480,
+                "height": 309,
+                "bytes": 32681
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-960.webp",
+                "format": "webp",
+                "width": 960,
+                "height": 619,
+                "bytes": 172180
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-960.avif",
+                "format": "avif",
+                "width": 960,
+                "height": 619,
+                "bytes": 120183
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-1440.webp",
+                "format": "webp",
+                "width": 1440,
+                "height": 928,
+                "bytes": 363688
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-1440.avif",
+                "format": "avif",
+                "width": 1440,
+                "height": 928,
+                "bytes": 247301
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-1920.webp",
+                "format": "webp",
+                "width": 1920,
+                "height": 1238,
+                "bytes": 512242
+            },
+            {
+                "path": "images/optimized/ethiopia-highlands-1920.avif",
+                "format": "avif",
+                "width": 1920,
+                "height": 1238,
+                "bytes": 335525
+            }
+        ],
+        "social": {
+            "path": "images/optimized/ethiopia-highlands-social.jpg",
+            "format": "jpeg",
+            "width": 1200,
+            "height": 630,
+            "bytes": 272829
+        }
+    }
+}

@@ -7,6 +7,7 @@ namespace App\Jobs\Search;
 use App\Contracts\SearchIndexer;
 use App\Enums\ContentWorkflowState;
 use App\Models\ContentItem;
+use App\Services\Seo\PublicUrlGenerator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -26,7 +27,7 @@ final class SyncContentSearchDocumentJob implements ShouldQueue
         $this->onQueue('search');
     }
 
-    public function handle(SearchIndexer $indexer): void
+    public function handle(SearchIndexer $indexer, PublicUrlGenerator $paths): void
     {
         $content = ContentItem::query()->with('currentVersion')->findOrFail($this->contentItemId);
         $version = $content->currentVersion;
@@ -34,7 +35,11 @@ final class SyncContentSearchDocumentJob implements ShouldQueue
             return;
         }
         $type = 'content_'.$content->getRawOriginal('type');
-        if ($content->getRawOriginal('status') !== ContentWorkflowState::Published->value
+        // Only content with a real public page is searchable; a result must
+        // never link to a URL that does not exist.
+        $url = $paths->contentItemPath($content, $version);
+        if ($url === null
+            || $content->getRawOriginal('status') !== ContentWorkflowState::Published->value
             || $version->getRawOriginal('workflow_state') !== ContentWorkflowState::Published->value) {
             $indexer->delete($type, $content->id, $version->locale);
 
@@ -48,7 +53,7 @@ final class SyncContentSearchDocumentJob implements ShouldQueue
             'title' => $version->title,
             'summary' => $version->summary,
             'body' => $body,
-            'url' => "/{$version->locale}/{$version->slug}",
+            'url' => $url,
             'filters' => [$content->getRawOriginal('type')],
             'published_at' => $content->getRawOriginal('published_at'),
         ]);

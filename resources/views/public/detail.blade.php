@@ -19,7 +19,7 @@
         'InsightVersion' => 'insights.index',
         default => null,
     };
-    $consultationParameters = ['locale' => app()->getLocale()];
+    $consultationParameters = [];
     if ($type === 'ServiceVersion') {
         $consultationParameters['service_id'] = $item->service_id;
     } elseif ($type === 'IndustryVersion') {
@@ -33,8 +33,8 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => app()->getLocale()]),
-        $typeLabel => $indexRoute ? route($indexRoute, ['locale' => app()->getLocale()]) : null,
+        __('Home') => route('home'),
+        $typeLabel => $indexRoute ? route($indexRoute) : null,
         $pageTitle => null,
     ]" />
 @endsection
@@ -50,7 +50,7 @@
         <x-ui.page-header :eyebrow="$typeLabel" :title="$pageTitle" :description="$summary">
             <a class="button-primary" href="{{ route('consultation.create', $consultationParameters) }}">{{ __('Request advice') }}</a>
             @if ($indexRoute)
-                <a class="button-secondary" href="{{ route($indexRoute, ['locale' => app()->getLocale()]) }}">{{ __('Browse all :type', ['type' => str($typeLabel)->lower()]) }}</a>
+                <a class="button-secondary" href="{{ route($indexRoute) }}">{{ __('Browse all :type', ['type' => str($typeLabel)->lower()]) }}</a>
             @endif
         </x-ui.page-header>
     @endif
@@ -186,7 +186,7 @@
                 <div class="m-links">
                     <a class="m-btn" href="{{ route('consultation.create', $consultationParameters) }}">{{ __('Request advice') }}</a>
                     @if ($indexRoute)
-                        <a class="m-link" href="{{ route($indexRoute, ['locale' => app()->getLocale()]) }}">{{ __('Browse all :type', ['type' => str($typeLabel)->lower()]) }}</a>
+                        <a class="m-link" href="{{ route($indexRoute) }}">{{ __('Browse all :type', ['type' => str($typeLabel)->lower()]) }}</a>
                     @endif
                 </div>
             </div>

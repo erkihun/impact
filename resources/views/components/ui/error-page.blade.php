@@ -10,10 +10,10 @@
 @php
     $locale = app()->getLocale();
     $recoveryRoutes = [
-        ['label' => __('Search the site'), 'description' => __('Find a page, report or expert by keyword.'), 'url' => route('search', ['locale' => $locale])],
-        ['label' => __('Browse services'), 'description' => __('See how we help organizations solve complex problems.'), 'url' => route('services.index', ['locale' => $locale])],
-        ['label' => __('Read insights'), 'description' => __('Articles, reports and analysis from our published work.'), 'url' => route('insights.index', ['locale' => $locale])],
-        ['label' => __('Contact us'), 'description' => __('Reach the right team and we will respond.'), 'url' => route('contact.create', ['locale' => $locale])],
+        ['label' => __('Search the site'), 'description' => __('Find a page, report or expert by keyword.'), 'url' => route('search')],
+        ['label' => __('Browse services'), 'description' => __('See how we help organizations solve complex problems.'), 'url' => route('services.index')],
+        ['label' => __('Read insights'), 'description' => __('Articles, reports and analysis from our published work.'), 'url' => route('insights.index')],
+        ['label' => __('Contact us'), 'description' => __('Reach the right team and we will respond.'), 'url' => route('contact.create')],
     ];
 @endphp
 
@@ -23,10 +23,10 @@
         <h1 class="heading-1 mt-4 text-brand-950">{{ $title }}</h1>
         <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-muted sm:text-lg">{{ $description }}</p>
         <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <a class="button-primary" href="{{ $actionUrl ?? route('localized-home', ['locale' => $locale]) }}">
+            <a class="button-primary" href="{{ $actionUrl ?? route('home') }}">
                 {{ $actionLabel ?? __('Return to the homepage') }}
             </a>
-            <a class="button-secondary" href="{{ route('contact.create', ['locale' => $locale]) }}">{{ __('Contact us') }}</a>
+            <a class="button-secondary" href="{{ route('contact.create') }}">{{ __('Contact us') }}</a>
         </div>
     </div>
 

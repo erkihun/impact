@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreExpertRequest;
-use App\Http\Requests\Admin\UpdateExpertRequest;
 use App\Enums\ContentWorkflowState;
 use App\Enums\MediaStatus;
 use App\Enums\MediaVisibility;
+use App\Enums\Seo\SeoIssueSeverity;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreExpertRequest;
+use App\Http\Requests\Admin\UpdateExpertRequest;
 use App\Models\Expert;
 use App\Models\ExpertVersion;
 use App\Models\MediaAsset;
 use App\Models\User;
-use App\Support\Settings\EffectiveSettings;
-use Inertia\Response as View;
+use App\Services\Seo\ContentSeoValidator;
 use App\Support\Inertia\WorkspacePage;
+use App\Support\Settings\EffectiveSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -24,6 +25,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Inertia\Response as View;
 
 final class ExpertController extends Controller
 {
@@ -65,6 +68,7 @@ final class ExpertController extends Controller
     public function store(StoreExpertRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $this->assertSeoReady($validated);
         $profileMediaId = $this->profileMediaIdFromRequest($request, $validated);
 
         $expert = DB::transaction(function () use ($validated, $profileMediaId): Expert {
@@ -113,9 +117,9 @@ final class ExpertController extends Controller
     public function update(
         UpdateExpertRequest $request,
         Expert $expert,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $validated = $request->validated();
+        $this->assertSeoReady($validated);
         $profileMediaId = $this->profileMediaIdFromRequest($request, $validated);
 
         DB::transaction(function () use ($validated, $expert, $profileMediaId): void {
@@ -166,6 +170,38 @@ final class ExpertController extends Controller
         return redirect()
             ->route('admin.experts.index')
             ->with('status', __('Expert profile deleted.'));
+    }
+
+    /**
+     * Publication gate: a profile cannot go live with SEO blocking issues
+     * (missing heading or title, invalid or reserved slug).
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function assertSeoReady(array $validated): void
+    {
+        if (($validated['status'] ?? null) !== 'published'
+            || ! app(EffectiveSettings::class)->boolean('content.seo_checks_required')) {
+            return;
+        }
+
+        $result = app(ContentSeoValidator::class)->validate([
+            'title' => $validated['display_name'] ?? null,
+            'description' => $validated['biography'] ?? null,
+            'slug' => (string) ($validated['slug'] ?? ''),
+            'h1' => $validated['display_name'] ?? null,
+        ]);
+        if (! $result->hasBlocking()) {
+            return;
+        }
+
+        $messages = [];
+        foreach ($result->issues(SeoIssueSeverity::Blocking) as $issue) {
+            $field = str_starts_with($issue->code, 'slug') ? 'slug' : 'display_name';
+            $messages[$field][] = __($issue->message);
+        }
+
+        throw ValidationException::withMessages($messages);
     }
 
     /** @return array<string, mixed> */
@@ -259,7 +295,7 @@ final class ExpertController extends Controller
         array $validated,
     ): ?string {
         $photo = $request->file('profile_photo');
-        if (!$photo instanceof UploadedFile) {
+        if (! $photo instanceof UploadedFile) {
             return $validated['profile_media_id'] ?? null;
         }
 

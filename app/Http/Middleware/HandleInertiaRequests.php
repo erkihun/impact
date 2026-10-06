@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Services\PublicNavigation;
+use App\Services\Seo\SeoHeadRenderer;
+use App\Support\Inertia\WorkspaceShell;
 use App\Support\Settings\PublicUiSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -40,8 +42,11 @@ final class HandleInertiaRequests extends Middleware
                 'submission' => $request->session()->get('submission'),
             ],
             'ui' => fn (): array => $this->uiStrings(),
+            // Public pages replace this with their resolved metadata. Every
+            // other Inertia response (admin, auth, errors, previews) is noindex.
+            'seo' => fn (): array => ['head' => app(SeoHeadRenderer::class)->privateHead()],
             'workspace' => fn (): ?array => $request->is('admin', 'admin/*', 'login', 'forgot-password', 'reset-password*', 'reset-password/*', 'invitations/*', 'mfa', 'mfa/*', 'verify-email', 'confirm-password', 'profile', 'dashboard')
-                ? \App\Support\Inertia\WorkspaceShell::data($request) : null,
+                ? WorkspaceShell::data($request) : null,
         ];
     }
 
@@ -49,37 +54,25 @@ final class HandleInertiaRequests extends Middleware
     private function site(Request $request): array
     {
         $experience = app(PublicUiSettings::class)->viewData();
-        $current = $experience['localization']['current'];
 
         return [
             'identity' => $experience['identity'],
-            'seo' => [
-                'defaultTitle' => $experience['seo']['default_title'],
-                'titleSuffix' => $experience['seo']['title_suffix'],
-                'defaultDescription' => $experience['seo']['default_description'],
-                'robots' => $experience['seo']['robots'],
-                'canonicalUrl' => $request->url(),
-                'defaultLocaleUrl' => route('localized-home', ['locale' => $experience['localization']['default']]),
-            ],
+            // Used only to tell internal links from external ones. SEO tags
+            // come from the page-level `seo` prop.
+            'origin' => $request->getSchemeAndHttpHost(),
             'features' => $experience['features'],
             'privacy' => $experience['privacy'],
             'maintenance' => $experience['maintenance'],
-            'locale' => [
-                'current' => $current,
-                'alternate' => null,
-                'alternateUrl' => null,
-                'alternateLabel' => null,
-            ],
             'csrfToken' => csrf_token(),
             'routes' => [
-                'home' => route('localized-home', ['locale' => $current]),
-                'search' => route('search', ['locale' => $current]),
-                'consultation' => route('consultation.create', ['locale' => $current]),
-                'rfp' => route('rfp.create', ['locale' => $current]),
-                'contact' => route('contact.create', ['locale' => $current]),
-                'newsletter' => route('newsletter.subscribe', ['locale' => $current]),
+                'home' => route('home'),
+                'search' => route('search'),
+                'consultation' => route('consultation.create'),
+                'rfp' => route('rfp.create'),
+                'contact' => route('contact.create'),
+                'newsletter' => route('newsletter.subscribe'),
                 'consent' => route('consent.update'),
-                'privacy' => route('legal.privacy', ['locale' => $current]),
+                'privacy' => route('legal.privacy'),
                 'status' => route('system-status'),
             ],
         ];
@@ -91,9 +84,9 @@ final class HandleInertiaRequests extends Middleware
         $locale = app()->getLocale();
         $navigation = app(PublicNavigation::class);
         $labels = $navigation->location('primary', $locale)->pluck('label', 'route');
-        $url = static fn (string $name): string => route($name, ['locale' => $locale]);
+        $url = static fn (string $name): string => route($name);
         $link = static fn (string $route, string $title, string $description, string $icon): array => [
-            'href' => route($route, ['locale' => $locale]),
+            'href' => route($route),
             'title' => $title,
             'description' => $description,
             'icon' => $icon,
@@ -104,7 +97,7 @@ final class HandleInertiaRequests extends Middleware
 
         return [
             'primary' => [
-                ['type' => 'link', 'id' => 'home', 'label' => $labels['localized-home'] ?? __('Home'), 'href' => $url('localized-home'), 'active' => $active('home', 'localized-home')],
+                ['type' => 'link', 'id' => 'home', 'label' => $labels['home'] ?? __('Home'), 'href' => $url('home'), 'active' => $active('home')],
                 ['type' => 'menu', 'id' => 'about', 'label' => $labels['about.show'] ?? __('About'), 'active' => $active('about.*'),
                     'eyebrow' => __('About Impact Consulting'),
                     'intro' => __('Understand our purpose, working approach and institutional commitments.'),
@@ -147,7 +140,7 @@ final class HandleInertiaRequests extends Middleware
                 ],
             ],
             'mobile' => [
-                ['label' => $labels['localized-home'] ?? __('Home'), 'href' => $url('localized-home')],
+                ['label' => $labels['home'] ?? __('Home'), 'href' => $url('home')],
                 ['label' => $labels['about.show'] ?? __('About'), 'href' => $url('about.show')],
                 ['label' => $labels['services.index'] ?? __('Services'), 'href' => $url('services.index')],
                 ['label' => $labels['industries.index'] ?? __('Industries'), 'href' => $url('industries.index')],

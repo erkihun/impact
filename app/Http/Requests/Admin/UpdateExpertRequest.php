@@ -6,6 +6,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Enums\ContentWorkflowState;
 use App\Models\Expert;
+use App\Services\Seo\ContentSeoValidator;
 use App\Support\Settings\EffectiveSettings;
 use App\Support\Settings\MediaSettings;
 use Illuminate\Foundation\Http\FormRequest;
@@ -50,7 +51,9 @@ final class UpdateExpertRequest extends FormRequest
                 'required',
                 'string',
                 'max:200',
-                'alpha_dash:ascii',
+                // Lowercase words joined by single hyphens; never a reserved path.
+                'regex:'.ContentSeoValidator::SLUG_PATTERN,
+                Rule::notIn(ContentSeoValidator::RESERVED_SLUGS),
                 Rule::unique('expert_versions', 'slug')
                     ->where('locale', $this->input('locale'))
                     ->ignore(is_string($versionId) ? $versionId : null),
@@ -68,6 +71,8 @@ final class UpdateExpertRequest extends FormRequest
     {
         if (blank($this->input('slug')) && filled($this->input('display_name'))) {
             $this->merge(['slug' => Str::slug((string) $this->input('display_name'))]);
+        } elseif (filled($this->input('slug'))) {
+            $this->merge(['slug' => ContentSeoValidator::normalizeSlug((string) $this->input('slug'))]);
         }
 
         $this->merge([

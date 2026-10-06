@@ -69,7 +69,7 @@
         <aside class="mt-12 border-t-4 border-t-knowledge-600 bg-quiet p-6">
             <h2 class="heading-3">{{ __('Questions about this page?') }}</h2>
             <p class="mt-3 text-base leading-8 text-slate-700">{{ __('If anything here is unclear, or you want to exercise a right described above, contact us and we will respond.') }}</p>
-            <a class="button-primary mt-5" href="{{ route('contact.create', ['locale' => $locale]) }}">{{ __('Contact us') }}</a>
+            <a class="button-primary mt-5" href="{{ route('contact.create') }}">{{ __('Contact us') }}</a>
         </aside>
     </article>
 </div>

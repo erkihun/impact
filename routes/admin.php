@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\PageComposerController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SeoCenterController;
+use App\Http\Controllers\Admin\SeoPageController;
+use App\Http\Controllers\Admin\SeoRedirectController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SettingHistoryController;
 use App\Http\Controllers\Admin\SettingsDiagnosticsController;
@@ -106,6 +109,24 @@ Route::middleware(['auth', 'verified', 'session.current', 'mfa'])->group(functio
     Route::post('/page-compositions/{composition}/sections/{section}/restore', [PageComposerController::class, 'restoreSection'])
         ->middleware('permission:pages.update')
         ->name('page-compositions.sections.restore');
+
+    Route::middleware('permission:seo.manage')->prefix('seo')->name('seo.')->group(function (): void {
+        Route::get('/', [SeoCenterController::class, 'index'])->name('index');
+        Route::post('/audit', [SeoCenterController::class, 'audit'])->name('audit');
+        Route::post('/sitemap', [SeoCenterController::class, 'sitemap'])->name('sitemap');
+        Route::post('/links', [SeoCenterController::class, 'links'])->name('links');
+        Route::patch('/links/{link}', [SeoCenterController::class, 'resolveLink'])->name('links.update');
+        Route::post('/redirects', [SeoRedirectController::class, 'store'])->name('redirects.store');
+        Route::post('/redirects/flatten', [SeoRedirectController::class, 'flatten'])->name('redirects.flatten');
+        Route::patch('/redirects/{redirect}', [SeoRedirectController::class, 'update'])->name('redirects.update');
+        Route::delete('/redirects/{redirect}', [SeoRedirectController::class, 'destroy'])->name('redirects.destroy');
+        Route::get('/pages/{type}/{key}', [SeoPageController::class, 'edit'])
+            ->where(['type' => '[a-z_]+', 'key' => '[A-Za-z0-9.\-]+'])
+            ->name('pages.edit');
+        Route::put('/pages/{type}/{key}', [SeoPageController::class, 'update'])
+            ->where(['type' => '[a-z_]+', 'key' => '[A-Za-z0-9.\-]+'])
+            ->name('pages.update');
+    });
 
     Route::get('/engagement', [EngagementSubmissionController::class, 'index'])
         ->middleware('permission:engagement.view')

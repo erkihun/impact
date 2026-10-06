@@ -4,7 +4,7 @@
 @section('meta_description', __('The terms that apply when you use the Impact Consulting website, including acceptable use, intellectual property and liability.'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Terms of use') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Terms of use') => null]" />
 @endsection
 
 @section('content')

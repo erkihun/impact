@@ -19,6 +19,34 @@ return [
         'default' => 'en',
         'supported' => ['en'],
     ],
+    'seo' => [
+        // Scheme and host for canonical URLs, sitemaps and structured data.
+        // Falls back to APP_URL; must be HTTPS in production.
+        'canonical_url' => env('SEO_CANONICAL_URL'),
+        // Production-only switch. Non-production environments never index.
+        'indexing_enabled' => (bool) env('SEO_INDEXING_ENABLED', true),
+        // Hosts outside the canonical host that canonical overrides may use.
+        'allowed_canonical_hosts' => array_values(array_filter(array_map(
+            static fn (string $host): string => strtolower(trim($host)),
+            explode(',', (string) env('SEO_ALLOWED_CANONICAL_HOSTS', '')),
+        ))),
+        // Generic CMS item types that have a public page: type => route name.
+        'content_item_routes' => [],
+        'sitemap_disk' => env('SEO_SITEMAP_DISK', 'local'),
+        'sitemap_directory' => 'seo/sitemaps',
+        'link_check' => [
+            'external_enabled' => (bool) env('SEO_EXTERNAL_LINK_CHECK', false),
+            'external_limit' => (int) env('SEO_EXTERNAL_LINK_LIMIT', 50),
+            'timeout_seconds' => (int) env('SEO_LINK_CHECK_TIMEOUT', 5),
+            'delay_milliseconds' => (int) env('SEO_LINK_CHECK_DELAY_MS', 250),
+        ],
+        'image_budgets_kb' => [
+            'hero' => 500,
+            'hero_hard_limit' => 1024,
+            'card' => 250,
+            'thumbnail' => 150,
+        ],
+    ],
     'privacy' => [
         'policy_version' => env('PRIVACY_POLICY_VERSION', '2026-07-26'),
         'search_query_log_days' => (int) env('SEARCH_QUERY_LOG_DAYS', 90),

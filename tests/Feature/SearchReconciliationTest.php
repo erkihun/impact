@@ -24,7 +24,7 @@ it('indexes only the latest publicly visible version and deletes stale search do
         'locale' => 'en',
         'title' => 'Stale version',
         'body' => 'Stale',
-        'url' => '/en/services/old-service-version',
+        'url' => '/services/old-service-version',
         'published_at' => now(),
     ]);
     SearchDocument::query()->create([
@@ -33,7 +33,7 @@ it('indexes only the latest publicly visible version and deletes stale search do
         'locale' => 'en',
         'title' => 'Deleted vacancy',
         'body' => 'Stale',
-        'url' => '/en/careers/deleted',
+        'url' => '/careers/deleted',
         'published_at' => now(),
     ]);
 
@@ -74,8 +74,8 @@ it('prevents parent-state and consent bypass on public detail routes and reconci
         'workflow_state' => 'published',
     ]);
 
-    $this->get('/en/services/'.$serviceVersion->slug)->assertNotFound();
-    $this->get('/en/experts/'.$expertVersion->slug)->assertNotFound();
+    $this->get('/services/'.$serviceVersion->slug)->assertNotFound();
+    $this->get('/experts/'.$expertVersion->slug)->assertNotFound();
     $this->artisan('impact:search:reconcile')->assertSuccessful();
 
     $this->assertDatabaseMissing('search_documents', ['searchable_id' => $serviceVersion->id]);

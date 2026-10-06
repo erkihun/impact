@@ -4,8 +4,8 @@
 
 @section('breadcrumbs')
     <x-ui.breadcrumbs :items="[
-        __('Home') => route('localized-home', ['locale' => app()->getLocale()]),
-        __('Events') => route('events.index', ['locale' => app()->getLocale()]),
+        __('Home') => route('home'),
+        __('Events') => route('events.index'),
         $event->title => null,
     ]" />
 @endsection
@@ -40,7 +40,7 @@
                     <h2 id="registration-heading" class="heading-3 mt-3">{{ __('Register') }}</h2>
                     <p class="mt-3 text-sm leading-6 text-muted">{{ __('Registration is confirmed only after the confirmation page displays a reference.') }}</p>
 
-                    <form method="POST" action="{{ route('events.registrations.store', ['locale' => app()->getLocale(), 'slug' => $event->slug]) }}" class="mt-7 grid gap-5" data-prevent-duplicate>
+                    <form method="POST" action="{{ route('events.registrations.store', ['slug' => $event->slug]) }}" class="mt-7 grid gap-5" data-prevent-duplicate>
                         @csrf
                         <div class="hidden" aria-hidden="true"><label>Website<input name="website" tabindex="-1"></label></div>
                         <x-ui.error-summary :errors="$errors" />
@@ -69,7 +69,7 @@
                     <p class="status-badge status-badge-neutral">{{ __('Registration unavailable') }}</p>
                     <h2 id="registration-heading" class="heading-3 mt-4">{{ __('Registration closed') }}</h2>
                     <p class="mt-3 text-sm leading-6 text-muted">{{ __('This event is full or no longer accepting registrations.') }}</p>
-                    <a class="text-link mt-5" href="{{ route('events.index', ['locale' => app()->getLocale()]) }}">{{ __('View upcoming events') }} →</a>
+                    <a class="text-link mt-5" href="{{ route('events.index') }}">{{ __('View upcoming events') }} →</a>
                 @endif
             </aside>
         </div>

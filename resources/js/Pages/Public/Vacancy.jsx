@@ -2,9 +2,9 @@ import Reveal from '../../Components/Reveal';
 import { ClosedNotice, TaskForm } from '../../Components/Public/TaskPanel';
 import PublicLayout, { PageIntro } from '../../Layouts/PublicLayout';
 
-export default function Vacancy({ meta, breadcrumbs, composition, header, vacancy, copy }) {
+export default function Vacancy({ breadcrumbs, composition, header, vacancy, copy }) {
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <article>
                 <PageIntro composition={composition} header={header} />
 

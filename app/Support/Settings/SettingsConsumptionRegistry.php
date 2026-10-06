@@ -6,9 +6,9 @@ namespace App\Support\Settings;
 
 use App\Actions\Privacy\ExecuteRetentionAction;
 use App\Actions\Workflow\TransitionContentWorkflowAction;
-use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\SystemStatusController;
 use App\Http\Middleware\SetLocale;
+use App\Services\Seo\SeoSettings;
 use App\Support\SettingCatalog;
 
 final class SettingsConsumptionRegistry
@@ -67,9 +67,9 @@ final class SettingsConsumptionRegistry
                 'behavior' => 'Controls slugs, publication reason/default locale, previews, stale review, and pagination.',
             ],
             'seo' => [
-                'consumer' => SitemapController::class,
-                'file' => 'resources/views/layouts/public.blade.php',
-                'behavior' => 'Controls rendered metadata, social cards, robots output, and sitemap availability.',
+                'consumer' => SeoSettings::class,
+                'file' => 'app/Services/Seo/SeoMetadataBuilder.php',
+                'behavior' => 'Controls titles, descriptions, canonical host, robots and X-Robots-Tag, Open Graph and Twitter/X cards, Organization structured data, verification tags, redirects of changed slugs, archived-content status and the XML sitemap.',
             ],
             'engagement' => [
                 'consumer' => EngagementSettings::class,

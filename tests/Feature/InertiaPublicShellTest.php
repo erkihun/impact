@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('serves the homepage as a React page inside the shared public shell', function (): void {
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertSee('<script data-page="app" type="application/json">', false)
         ->assertSee('<div id="app"></div>', false)
@@ -18,8 +18,7 @@ it('serves the homepage as a React page inside the shared public shell', functio
             ->has('navigation.primary.2.links', 2)
             ->has('navigation.mobile', 10)
             ->has('navigation.footer.footer_legal')
-            ->where('site.locale.current', 'en')
-            ->where('site.locale.alternate', null)
+            ->missing('site.locale')
             ->where('ui.skip', 'Skip to content')
             ->where('ui.acceptOptional', 'Accept optional')
             ->where('ui.rejectOptional', 'Reject optional')
@@ -27,17 +26,17 @@ it('serves the homepage as a React page inside the shared public shell', functio
 });
 
 it('localizes the React shell on the server so the client never loads the dictionary', function (): void {
-    $this->withSession(['locale' => 'am'])->get('/en')
+    $this->withSession(['locale' => 'am'])->get('/')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
-            ->where('site.locale.current', 'en')
+            ->missing('site.locale')
             ->where('ui.skip', 'Skip to content')
             ->missing('translations'));
 });
 
 it('keeps the strict CSP and lets only nonce-bearing inline scripts run', function (): void {
-    $policy = $this->get('/en')->assertOk()->headers->get('Content-Security-Policy');
+    $policy = $this->get('/')->assertOk()->headers->get('Content-Security-Policy');
 
     expect($policy)
         ->toContain("default-src 'self'")

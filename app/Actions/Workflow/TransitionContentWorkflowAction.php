@@ -9,12 +9,14 @@ use App\Contracts\Clock;
 use App\Data\Audit\AuditData;
 use App\Data\Workflow\TransitionContentData;
 use App\Enums\ContentWorkflowState;
+use App\Enums\Seo\SeoIssueSeverity;
 use App\Jobs\Search\SyncContentSearchDocumentJob;
 use App\Models\ContentItem;
 use App\Models\ContentVersion;
 use App\Models\PublicationSchedule;
 use App\Models\User;
 use App\Models\WorkflowEvent;
+use App\Services\Seo\ContentSeoValidator;
 use App\Services\Workflow\ContentWorkflow;
 use App\Support\Settings\EffectiveSettings;
 use Carbon\CarbonImmutable;
@@ -30,6 +32,7 @@ final readonly class TransitionContentWorkflowAction
         private AuditRecorder $audit,
         private Clock $clock,
         private EffectiveSettings $settings,
+        private ContentSeoValidator $seo,
     ) {}
 
     /**
@@ -72,6 +75,21 @@ final readonly class TransitionContentWorkflowAction
                 throw ValidationException::withMessages([
                     'to' => __('A default-language version is required before publication.'),
                 ]);
+            }
+
+            if (in_array($data->to, [ContentWorkflowState::Scheduled, ContentWorkflowState::Published], true)
+                && $this->settings->boolean('content.seo_checks_required')) {
+                $seo = $this->seo->validate([
+                    'title' => $version->title,
+                    'description' => $version->summary,
+                    'slug' => $version->slug,
+                    'h1' => $version->title,
+                ]);
+                if ($seo->hasBlocking()) {
+                    throw ValidationException::withMessages([
+                        'to' => array_map(static fn ($issue): string => __($issue->message), $seo->issues(SeoIssueSeverity::Blocking)),
+                    ]);
+                }
             }
 
             $beforeHash = hash('sha256', $lockedContent->toJson());

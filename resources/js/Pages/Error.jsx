@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 const messages = {
     403: ['Access denied', 'You do not have permission to open this page.'],
     404: ['Page not found', 'The page you requested could not be found.'],
+    410: ['Page removed', 'This page has been permanently removed. Use the links below to continue.'],
     409: ['Changes could not be saved', 'Reload the page to get the latest version before trying again.'],
     419: ['Session expired', 'Reload the page and try again.'],
     429: ['Too many requests', 'Please wait a moment before trying again.'],

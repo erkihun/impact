@@ -14,7 +14,7 @@ final class NavigationConfigurationSeeder extends Seeder
     /** @var array<string, list<array{string, string, string}>> */
     private const LOCATIONS = [
         'primary' => [
-            ['Home', 'localized-home', 'home'],
+            ['Home', 'home', 'home'],
             ['About', 'about.show', 'about'],
             ['Services', 'services.index', 'services'],
             ['Industries', 'industries.index', 'industries'],

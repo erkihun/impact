@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\File;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('renders the public editorial shell with accessible desktop and mobile navigation', function (): void {
-    $this->get('/en/about')
+    $this->get('/about')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/About')
             ->where('ui.skip', 'Skip to content')
             ->where('ui.primaryNavigation', 'Primary navigation')
             ->where('ui.requestConsultation', 'Request a consultation')
-            ->where('site.locale.alternate', null)
-            ->where('site.locale.alternateUrl', null)
+            ->missing('site.locale')
             ->has('navigation.mobile', 10));
 });
 
 it('provides active navigation state and decorative submenu icons', function (): void {
-    $this->get('/en/about')
+    $this->get('/about')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/About')
@@ -35,7 +34,7 @@ it('provides active navigation state and decorative submenu icons', function ():
 });
 
 it('renders the consultation and proposal task flows in the required sequence', function (): void {
-    foreach (['/en/consultation', '/en/request-for-proposal'] as $url) {
+    foreach (['/consultation', '/request-for-proposal'] as $url) {
         $this->get($url)
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
@@ -48,7 +47,7 @@ it('renders the consultation and proposal task flows in the required sequence', 
                 ->where('form.hidden.policy_version', config('impact.privacy.policy_version')));
     }
 
-    $this->get('/en/request-for-proposal')
+    $this->get('/request-for-proposal')
         ->assertSee('does not mean it has been approved')
         ->assertSee('security processing is complete');
 });
@@ -68,12 +67,10 @@ it('renders localized error states without exposing implementation details', fun
     ['errors.503', '503'],
 ]);
 
-it('publishes the legal, cookie and accessibility pages in both locales', function (string $path, string $heading): void {
-    foreach (['en'] as $locale) {
-        $this->get("/{$locale}/{$path}")->assertOk();
-    }
+it('publishes the legal, cookie and accessibility pages at one English URL', function (string $path, string $heading): void {
+    $this->get("/en/{$path}")->assertMovedPermanently()->assertRedirect("/{$path}");
 
-    $this->get("/en/{$path}")
+    $this->get("/{$path}")
         ->assertOk()
         ->assertSee($heading)
         ->assertSee('Contact us');
@@ -85,28 +82,28 @@ it('publishes the legal, cookie and accessibility pages in both locales', functi
 ]);
 
 it('keeps privacy, cookie and accessibility routes reachable from the footer', function (): void {
-    $this->get('/en/about')
+    $this->get('/about')
         ->assertOk()
         ->assertSee('Privacy notice')
         ->assertSee('Cookie notice')
         ->assertSee('Terms of use')
         ->assertSee('Accessibility statement')
         ->assertInertia(fn (Assert $page) => $page
-            ->where('navigation.footer.footer_legal.0.href', route('legal.privacy', ['locale' => 'en']))
-            ->where('navigation.footer.footer_legal.1.href', route('legal.cookies', ['locale' => 'en']))
-            ->where('navigation.footer.footer_legal.3.href', route('legal.accessibility', ['locale' => 'en']))
+            ->where('navigation.footer.footer_legal.0.href', route('legal.privacy'))
+            ->where('navigation.footer.footer_legal.1.href', route('legal.cookies'))
+            ->where('navigation.footer.footer_legal.3.href', route('legal.accessibility'))
             ->where('ui.privacyChoices', 'Privacy choices'));
 });
 
 it('offers an accessibility barrier-reporting route', function (): void {
-    $this->get('/en/accessibility')
+    $this->get('/accessibility')
         ->assertOk()
         ->assertSee('Report an accessibility issue')
-        ->assertSee(route('contact.create', ['locale' => 'en']), false);
+        ->assertSee(route('contact.create'), false);
 });
 
 it('presents equivalent accept, reject and manage consent choices before optional storage', function (): void {
-    $this->get('/en/about')
+    $this->get('/about')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('ui.acceptOptional', 'Accept optional')
@@ -130,7 +127,7 @@ it('records a consent decision only for the current policy version', function ()
 });
 
 it('offers search, services and insights recovery routes from the not-found page', function (): void {
-    $this->get('/en/a-page-that-does-not-exist')
+    $this->get('/a-page-that-does-not-exist')
         ->assertNotFound()
         ->assertSee('Where to go next')
         ->assertSee('Search the site')

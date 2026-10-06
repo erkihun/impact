@@ -26,10 +26,10 @@ it('registers once for an open event and records consent and audit evidence', fu
         'marketing_consent' => '1',
     ];
 
-    $this->post("/en/events/{$event->slug}/registrations", $payload)
+    $this->post("/events/{$event->slug}/registrations", $payload)
         ->assertRedirect()
         ->assertSessionHas('status');
-    $this->post("/en/events/{$event->slug}/registrations", $payload)->assertRedirect();
+    $this->post("/events/{$event->slug}/registrations", $payload)->assertRedirect();
 
     expect(EventRegistration::query()->count())->toBe(1)
         ->and(EventRegistration::query()->sole()->normalized_email)->toBe('aster@example.com');
@@ -58,12 +58,12 @@ it('rejects a registration when capacity is exhausted', function (): void {
         'status' => 'confirmed',
     ]);
 
-    $this->from("/en/events/{$event->slug}")
-        ->post("/en/events/{$event->slug}/registrations", [
+    $this->from("/events/{$event->slug}")
+        ->post("/events/{$event->slug}/registrations", [
             'name' => 'New Person',
             'email' => 'new@example.com',
             'privacy_acknowledged' => '1',
         ])
-        ->assertRedirect("/en/events/{$event->slug}")
+        ->assertRedirect("/events/{$event->slug}")
         ->assertSessionHasErrors('event');
 });

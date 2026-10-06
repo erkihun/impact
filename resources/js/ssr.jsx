@@ -6,6 +6,7 @@ import { renderToString } from 'react-dom/server';
 const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true });
 
 createServer(page => createInertiaApp({
+    serverHead: (current) => current.props.seo?.head ?? [],
     page,
     render: renderToString,
     resolve: name => {

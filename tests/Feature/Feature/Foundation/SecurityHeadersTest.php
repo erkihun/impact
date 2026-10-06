@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 it('adds baseline browser security headers to public responses', function (): void {
-    $this->get('/en')
+    $this->get('/')
         ->assertOk()
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Frame-Options', 'DENY')

@@ -2,42 +2,25 @@
     $publicExperience = app(\App\Support\Settings\PublicUiSettings::class)->viewData();
     $identity = $publicExperience['identity'];
     $isPublic = str_starts_with($page['component'], 'Public/');
-    $currentLocale = $publicExperience['localization']['current'];
-    $meta = $page['props']['meta'] ?? [];
     $status = $page['props']['status'] ?? null;
-    $title = filled($meta['title'] ?? null)
-        ? $meta['title'].' - '.$publicExperience['seo']['title_suffix']
-        : $publicExperience['seo']['default_title'];
-    $description = $meta['description'] ?? $publicExperience['seo']['default_description'];
+    // Head elements are resolved and escaped by App\Services\Seo\SeoHeadRenderer.
+    // With SSR they arrive through @inertiaHead instead.
+    $seoHead = $page['props']['seo']['head'] ?? [];
     $ssr = app(\Inertia\Ssr\SsrState::class)->setPage($page)->dispatch();
 @endphp
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if (! $ssr)
-    <meta name="description" content="{{ $description }}" data-inertia="description">
-    <meta name="robots" content="{{ $meta['robots'] ?? $publicExperience['seo']['robots'] }}" data-inertia="robots">
-    <meta property="og:title" content="{{ $title }}" data-inertia="og:title">
-    <meta property="og:description" content="{{ $description }}" data-inertia="og:description">
-
-    <meta property="og:url" content="{{ url()->current() }}" data-inertia="og:url">
-    @endif
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="{{ $publicExperience['seo']['twitter_card_type'] }}">
-    @if ($identity['social_image'])
-        <meta property="og:image" content="{{ url($identity['social_image']) }}">
+        @foreach ($seoHead as $element)
+    {!! $element !!}
+        @endforeach
     @endif
     @if ($identity['favicon'])
         <link rel="icon" href="{{ url($identity['favicon']) }}">
-    @endif
-    @if (! $ssr)
-    <link rel="canonical" href="{{ url()->current() }}" data-inertia="canonical">
-    <link rel="alternate" hreflang="{{ $currentLocale }}" href="{{ url()->current() }}" data-inertia="alternate-current">
-    <link rel="alternate" hreflang="x-default" href="{{ route('localized-home', ['locale' => $publicExperience['localization']['default']]) }}" data-inertia="alternate-default">
-    <title data-inertia="">{{ $title }}</title>
     @endif
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/css/public-glass.css', 'resources/js/inertia.jsx'])
@@ -63,15 +46,15 @@
             <section style="padding:2rem;text-align:center">
                 <h1>{{ __('Where to go next') }}</h1>
                 <p>
-                    <a href="{{ route('search', ['locale' => $currentLocale]) }}">{{ __('Search the site') }}</a> &middot;
-                    <a href="{{ route('services.index', ['locale' => $currentLocale]) }}">{{ __('Browse services') }}</a> &middot;
-                    <a href="{{ route('insights.index', ['locale' => $currentLocale]) }}">{{ __('Read insights') }}</a> &middot;
-                    <a href="{{ route('contact.create', ['locale' => $currentLocale]) }}">{{ __('Contact us') }}</a>
+                    <a href="{{ route('search') }}">{{ __('Search the site') }}</a> &middot;
+                    <a href="{{ route('services.index') }}">{{ __('Browse services') }}</a> &middot;
+                    <a href="{{ route('insights.index') }}">{{ __('Read insights') }}</a> &middot;
+                    <a href="{{ route('contact.create') }}">{{ __('Contact us') }}</a>
                 </p>
             </section>
         @endif
         <p style="padding:2rem;text-align:center">{{ __('This page needs JavaScript. You can still reach our services, insights and contact routes from the links below.') }}</p>
-        <p style="text-align:center"><a href="{{ route('services.index', ['locale' => $currentLocale]) }}">{{ __('Services') }}</a> &middot; <a href="{{ route('insights.index', ['locale' => $currentLocale]) }}">{{ __('Insights') }}</a> &middot; <a href="{{ route('contact.create', ['locale' => $currentLocale]) }}">{{ __('Contact') }}</a></p>
+        <p style="text-align:center"><a href="{{ route('services.index') }}">{{ __('Services') }}</a> &middot; <a href="{{ route('insights.index') }}">{{ __('Insights') }}</a> &middot; <a href="{{ route('contact.create') }}">{{ __('Contact') }}</a></p>
     </noscript>
     @endif
 </body>

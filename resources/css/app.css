@@ -792,6 +792,11 @@
         content: '';
     }
 
+    /* The responsive <picture> wrapper must not change the image box. */
+    .home-signature-image picture {
+        display: contents;
+    }
+
     .home-signature-image img {
         @apply h-full w-full object-cover;
     }

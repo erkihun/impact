@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\VacancyStatus;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property CarbonImmutable|null $opens_at
+ * @property CarbonImmutable|null $closes_at
+ */
 final class Vacancy extends BaseModel
 {
     protected function casts(): array

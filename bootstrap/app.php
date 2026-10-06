@@ -6,6 +6,7 @@ use App\Exceptions\ContentVersionConflictException;
 use App\Exceptions\InvalidStateTransitionException;
 use App\Exceptions\SettingsVersionConflictException;
 use App\Foundation\Application;
+use App\Http\Middleware\AddRobotsHeader;
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\EnforceHttps;
@@ -15,6 +16,7 @@ use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureRecentMfa;
 use App\Http\Middleware\EnsureSessionIsCurrent;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\NormalizeTrailingSlash;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -43,7 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         $middleware->web(prepend: [
             EnforceHttps::class,
+            NormalizeTrailingSlash::class,
             AddSecurityHeaders::class,
+            AddRobotsHeader::class,
             AssignCorrelationId::class,
         ]);
 
@@ -63,7 +67,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request): Response {
             $status = $response->getStatusCode();
-            if (! in_array($status, [403, 404, 419, 429, 500, 503], true)
+            if (! in_array($status, [403, 404, 410, 419, 429, 500, 503], true)
                 || ($request->expectsJson() && ! $request->header('X-Inertia'))
                 || ($status === 500 && config('app.debug'))) {
                 return $response;

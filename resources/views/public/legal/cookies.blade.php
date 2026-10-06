@@ -4,7 +4,7 @@
 @section('meta_description', __('The cookies and similar storage this website uses, what each purpose does and how to change your choices.'))
 
 @section('breadcrumbs')
-    <x-ui.breadcrumbs :items="[__('Home') => route('localized-home', ['locale' => app()->getLocale()]), __('Cookie notice') => null]" />
+    <x-ui.breadcrumbs :items="[__('Home') => route('home'), __('Cookie notice') => null]" />
 @endsection
 
 @section('content')

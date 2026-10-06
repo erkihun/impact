@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Services\Seo\SeoSettings;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('impact:content:publish-due')
@@ -34,3 +35,23 @@ if (config('impact.retention.execution_enabled') && config('impact.retention.app
         ->withoutOverlapping()
         ->onOneServer();
 }
+
+// SEO maintenance. Publication changes already rebuild the sitemap; these
+// are safety nets. The cadence comes from Settings > SEO, with a safe default
+// when settings cannot be read (for example before migrations run).
+$sitemapSchedule = Schedule::command('seo:sitemap-generate')->withoutOverlapping()->onOneServer();
+match (rescue(static fn (): string => app(SeoSettings::class)->sitemapFrequency(), 'daily', false)) {
+    'hourly' => $sitemapSchedule->hourly(),
+    'weekly' => $sitemapSchedule->weekly(),
+    default => $sitemapSchedule->dailyAt('01:30'),
+};
+
+Schedule::command('seo:links-check')
+    ->weeklyOn(1, '04:00')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+Schedule::command('seo:audit --persist')
+    ->dailyAt('04:30')
+    ->withoutOverlapping()
+    ->onOneServer();

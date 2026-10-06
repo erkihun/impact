@@ -22,12 +22,12 @@ function Section({ section }) {
     );
 }
 
-export default function Legal({ meta, breadcrumbs, composition, header, sections, extra, copy }) {
+export default function Legal({ breadcrumbs, composition, header, sections, extra, copy }) {
     const openConsent = () => window.dispatchEvent(new CustomEvent('open-consent-preferences'));
     const contents = extra ? [...sections, extra] : sections;
 
     return (
-        <PublicLayout title={meta.title} description={meta.description} breadcrumbs={breadcrumbs}>
+        <PublicLayout breadcrumbs={breadcrumbs}>
             <PageIntro composition={composition} header={header} />
 
             <div className="public-section impact-editorial-surface">
