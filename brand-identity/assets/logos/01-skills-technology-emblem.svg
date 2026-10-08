@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="svg-title">
+  <title id="svg-title">Integrated Skills &amp; Technology — Addis Ababa City Administration Technical and Vocational Education and Training Bureau</title>
+  <desc>Full colour emblem logo, concept 1: Integrated Skills &amp; Technology.</desc>
+  <g id="emblem" transform="translate(0 0)">
+    <path id="gear" fill="#123B75" fill-rule="evenodd" clip-rule="evenodd" d="M103.05 28.56L106.74 8.79A112 112 0 0 1 133.26 8.79L136.95 28.56A93 93 0 0 1 160.04 36.06L174.64 22.23A112 112 0 0 1 196.1 37.82L187.46 55.98A93 93 0 0 1 201.73 75.62L221.67 73.02A112 112 0 0 1 229.87 98.25L212.2 107.86A93 93 0 0 1 212.2 132.14L229.87 141.75A112 112 0 0 1 221.67 166.98L201.73 164.38A93 93 0 0 1 187.46 184.02L196.1 202.18A112 112 0 0 1 174.64 217.77L160.04 203.94A93 93 0 0 1 136.95 211.44L133.26 231.21A112 112 0 0 1 106.74 231.21L103.05 211.44A93 93 0 0 1 79.96 203.94L65.36 217.77A112 112 0 0 1 43.9 202.18L52.54 184.02A93 93 0 0 1 38.27 164.38L18.33 166.98A112 112 0 0 1 10.13 141.75L27.8 132.14A93 93 0 0 1 27.8 107.86L10.13 98.25A112 112 0 0 1 18.33 73.02L38.27 75.62A93 93 0 0 1 52.54 55.98L43.9 37.82A112 112 0 0 1 65.36 22.23L79.96 36.06A93 93 0 0 1 103.05 28.56ZM52 120A68 68 0 1 0 188 120A68 68 0 1 0 52 120Z"/>
+    <path id="page-left" fill="#16A067" d="M116 170L116 124Q94 108 68 112L68 158Q94 154 116 170Z"/>
+    <path id="page-right" fill="#16A067" d="M124 170L124 124Q146 108 172 112L172 158Q146 154 124 170Z"/>
+    <path id="spark" fill="#E89B24" d="M106 84A14 14 0 1 0 134 84A14 14 0 1 0 106 84Z"/>
+  </g>
+</svg>
