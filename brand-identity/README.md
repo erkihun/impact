@@ -6,7 +6,7 @@ Four original logo concepts, colour system, typography, applications and usage g
 
 ## Preview (no build needed)
 
-All generated files are committed, so you can simply open `index.html` in a browser (works from `file://`), or run a local server:
+**Run every npm command from inside `brand-identity/`** (the repository root has the Laravel `package.json`). All generated files are committed, so you can simply open `index.html` in a browser (works from `file://`), or run a local server:
 
 ```bash
 cd brand-identity
@@ -62,7 +62,7 @@ npm run export:png  # PNGs (needs Chromium; set CHROMIUM_PATH if it is not auto-
 npm run verify      # full verification
 ```
 
-`export:png` and `verify` use `playwright-core` with a system Chromium (`/opt/pw-browsers/chromium`, `/usr/bin/chromium`, `/usr/bin/google-chrome` or `$CHROMIUM_PATH`); no browser is downloaded.
+`export:png` and `verify` use `playwright-core` with an installed Chrome, Edge or Chromium (auto-detected on Linux, macOS and Windows, or set `CHROMIUM_PATH`); no browser is downloaded.
 
 To change a logo, edit its function in `src/logos.mjs`, then `npm run build && npm run export:png && npm run verify`. Each shape has a `role` (`primary`, `secondary`, `accent`, `neutral`) and every variant is produced by re-mapping roles to colours, so new concepts get all variants automatically.
 
