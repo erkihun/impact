@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="svg-title">
+  <title id="svg-title">Green TVET &amp; Innovation — Addis Ababa City Administration Technical and Vocational Education and Training Bureau</title>
+  <desc>Reversed · White emblem logo, concept 3: Green TVET &amp; Innovation.</desc>
+  <g id="emblem" transform="translate(0 0)">
+    <path id="hexagon" fill="#FFFFFF" fill-rule="evenodd" clip-rule="evenodd" d="M120 10L215.26 65L215.26 175L120 230L24.74 175L24.74 65ZM120 32L196.21 76L196.21 164L120 208L43.79 164L43.79 76Z"/>
+    <path id="leaf-left" fill="#FFFFFF" d="M116 178A90 90 0 0 1 69.72 99.25L98.76 152.05A2.6 2.6 0 0 0 103.32 149.55L74.28 96.75A90 90 0 0 1 116 178Z"/>
+    <path id="leaf-right" fill="#FFFFFF" d="M124 178A90 90 0 0 1 165.72 96.75L136.68 149.55A2.6 2.6 0 0 0 141.24 152.05L170.28 99.25A90 90 0 0 1 124 178Z"/>
+    <path id="stem" fill="#FFFFFF" d="M123.8 200L123.8 184A3.8 3.8 0 0 0 116.2 184L116.2 200A3.8 3.8 0 0 0 123.8 200Z"/>
+    <path id="node" fill="#FFFFFF" d="M109 84A11 11 0 1 0 131 84A11 11 0 1 0 109 84Z"/>
+  </g>
+</svg>
