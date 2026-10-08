@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="svg-title">
+  <title id="svg-title">Institutional Excellence — Addis Ababa City Administration Technical and Vocational Education and Training Bureau</title>
+  <desc>Full colour emblem logo, concept 4: Institutional Excellence.</desc>
+  <g id="emblem" transform="translate(0 0)">
+    <path id="shield" fill="#123B75" fill-rule="evenodd" clip-rule="evenodd" d="M30 16H210V118C210 170 174 188 120 226C66 188 30 170 30 118ZM43 29H197V114.1C197 157 166.2 167.85 120 205.85C73.8 167.85 43 157 43 114.1Z"/>
+    <path id="star" fill="#E89B24" d="M120 40L124.38 57.62L142 62L124.38 66.38L120 84L115.62 66.38L98 62L115.62 57.62Z"/>
+    <path id="level-3" fill="#123B75" d="M80 112L120 92L160 112L160 125L120 105L80 125Z"/>
+    <path id="level-2" fill="#16A067" d="M80 137L120 117L160 137L160 150L120 130L80 150Z"/>
+    <path id="level-1" fill="#123B75" d="M80 162L120 142L160 162L160 175L120 155L80 175Z"/>
+  </g>
+</svg>
