@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\SubmissionStatus;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class EngagementSubmissionHistory extends BaseModel
 {
     public const UPDATED_AT = null;
+
+    /** @return BelongsTo<User, $this> */
+    public function actor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'actor_id');
+    }
 
     protected function casts(): array
     {

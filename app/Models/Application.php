@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ApplicationStatus;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property CarbonImmutable $submitted_at
+ */
 final class Application extends BaseModel
 {
     protected function casts(): array

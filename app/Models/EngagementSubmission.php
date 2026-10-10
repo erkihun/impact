@@ -6,9 +6,13 @@ namespace App\Models;
 
 use App\Enums\SubmissionStatus;
 use App\Enums\SubmissionType;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property CarbonImmutable $submitted_at
+ */
 final class EngagementSubmission extends BaseModel
 {
     protected function casts(): array

@@ -11,25 +11,59 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ChangeApplicationStatusRequest;
 use App\Models\Application;
 use App\Models\User;
+use App\Models\Vacancy;
 use App\Support\CorrelationContext;
-use Inertia\Response as View;
 use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Response as View;
 
 final class ApplicationController extends Controller
 {
-    public function index(Request $request): View
-    {
-        $applications = Application::query()
-            ->with('vacancy:id,slug,title,locale')
-            ->when($request->filled('status'), fn ($query) => $query
-                ->where('status', $request->string('status')->toString()))
-            ->latest('submitted_at')
-            ->paginate(30)
-            ->withQueryString();
+    /** Board columns, in hiring order. */
+    private const OPEN = ['received', 'screening', 'shortlisted', 'interview', 'offered', 'hired'];
 
-        return WorkspacePage::render('admin.applications.index', compact('applications'));
+    private const CLOSED = ['rejected', 'withdrawn', 'anonymized'];
+
+    /** The hiring board: one column per stage, for one vacancy or all of them. */
+    public function index(Request $request, ChangeApplicationStatusAction $action): View
+    {
+        $vacancies = Vacancy::query()->latest()->get(['id', 'title', 'location', 'closes_at', 'status']);
+        $vacancyId = $vacancies->contains('id', $request->query('vacancy')) ? (string) $request->query('vacancy') : '';
+        $showClosed = $request->boolean('closed');
+        $scope = fn () => Application::query()->when($vacancyId !== '', fn ($query) => $query->where('vacancy_id', $vacancyId));
+
+        $applications = $scope()
+            ->with('vacancy:id,title')
+            ->withCount('files')
+            ->whereIn('status', $showClosed ? [...self::OPEN, ...self::CLOSED] : self::OPEN)
+            ->latest('submitted_at')
+            ->limit(300)
+            ->get(['id', 'vacancy_id', 'applicant_name', 'status', 'submitted_at'])
+            ->map(fn (Application $application): array => [
+                'id' => (string) $application->id,
+                'name' => (string) $application->applicant_name,
+                'status' => (string) $application->getRawOriginal('status'),
+                'submitted_at' => $application->submitted_at->toAtomString(),
+                'vacancy' => $application->vacancy?->title,
+                'files' => (int) $application->files_count,
+                'moves' => array_map(
+                    static fn (ApplicationStatus $status): string => $status->value,
+                    $action->allowedDestinations(ApplicationStatus::from((string) $application->getRawOriginal('status'))),
+                ),
+            ]);
+
+        return WorkspacePage::render('admin.applications.index', [
+            'columns' => collect($showClosed ? [...self::OPEN, ...self::CLOSED] : self::OPEN)
+                ->map(fn (string $status): array => ['status' => $status, 'items' => $applications->where('status', $status)->values()->all()])
+                ->all(),
+            'closedCount' => $scope()->whereIn('status', self::CLOSED)->count(),
+            'vacancies' => $vacancies->map(fn (Vacancy $vacancy): array => [
+                'id' => (string) $vacancy->id,
+                'label' => trim($vacancy->title.' · '.($vacancy->location ?? '').($vacancy->closes_at ? ' · closes '.$vacancy->closes_at->format('j M') : ''), ' ·'),
+            ])->all(),
+            'filters' => ['vacancy' => $vacancyId, 'closed' => $showClosed],
+        ]);
     }
 
     public function show(
@@ -41,7 +75,7 @@ final class ApplicationController extends Controller
         $from = ApplicationStatus::from((string) $application->getRawOriginal('status'));
 
         return WorkspacePage::render('admin.applications.show', [
-            'application' => $application->load(['vacancy', 'history', 'files.mediaAsset']),
+            'application' => $application->load(['vacancy', 'history.actor:id,name', 'files.mediaAsset']),
             'destinations' => $action->allowedDestinations($from),
         ]);
     }

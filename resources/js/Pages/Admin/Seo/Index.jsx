@@ -1,12 +1,13 @@
 import { Link } from '@inertiajs/react';
 import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
-import { Action, Editor, Filters, Pagination, Panel, Status, Table, date, field, useWorkspace } from '../../../Components/Workspace/UI';
+import { Action, Editor, Filters, Pagination, Panel, Status, Table, Tabs, date, field, useWorkspace } from '../../../Components/Workspace/UI';
+import Icon from '../../../Components/Icon';
 
 const severityOrder = { blocking: 0, warning: 1, information: 2 };
 
 function Severity({ value }) {
-    const tone = value === 'blocking' ? 'status-badge-danger' : value === 'warning' ? 'status-badge-warning' : 'status-badge-neutral';
-    return <span className={`status-badge ${tone}`}>{value}</span>;
+    const tone = { blocking: 'rejected', warning: 'new', information: 'in_review' }[value] ?? 'draft';
+    return <Status value={tone} text={{ blocking: 'Blocks publishing', warning: 'To improve', information: 'For information' }[value] ?? value} />;
 }
 
 function Issues({ issues = [], empty = 'No findings in the latest audit.' }) {
@@ -20,8 +21,20 @@ function Issues({ issues = [], empty = 'No findings in the latest audit.' }) {
 }
 
 function Metric({ label, value, href }) {
-    const body = <><span className="block text-2xl font-semibold">{value ?? '—'}</span><span className="text-sm text-muted">{label}</span></>;
-    return href ? <Link className="admin-panel block" href={href}>{body}</Link> : <div className="admin-panel">{body}</div>;
+    const body = <><span className="ws-stat-number">{value ?? '—'}</span><small>{label}</small></>;
+    return href ? <Link className="ws-stat" href={href}>{body}</Link> : <div className="ws-stat">{body}</div>;
+}
+
+/** Plain-language list of what to fix first: blocking problems, then warnings. */
+function ToFix({ issues = [] }) {
+    const { t } = useWorkspace();
+    const list = [...issues].filter(issue => issue.severity !== 'information').sort((a, b) => (severityOrder[a.severity] ?? 3) - (severityOrder[b.severity] ?? 3)).slice(0, 12);
+    if (!list.length) return <div className="ws-card ws-empty"><h3>{t('Nothing to fix')}</h3><p>{t('The latest check found no problems or suggestions.')}</p></div>;
+    return <ol className="ws-card ws-rows" aria-label={t('Things to fix')}>{list.map((issue, index) => <li key={`${issue.code}-${index}`} className="ws-row">
+        <span className={`ws-icon-tile ${issue.severity === 'blocking' ? 'tone-danger' : 'tone-attention'}`} aria-hidden="true"><Icon name={issue.severity === 'blocking' ? 'alert' : 'info'} /></span>
+        <span className="ws-row-main"><strong>{issue.message}</strong><small className="ws-sub">{issue.url ?? issue.subject ?? t('Whole site')}</small></span>
+        <Severity value={issue.severity} />
+    </li>)}</ol>;
 }
 
 function NoAudit() {
@@ -34,7 +47,15 @@ function Overview({ data, latestAudit }) {
     if (!m) return <NoAudit />;
     const s = section => `/admin/seo?section=${section}`;
     return <>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="ws-stats">
+            <Metric label="Problems that block publishing" value={m.blocking} href={s('audit')} />
+            <Metric label="Suggested improvements" value={m.warnings} href={s('audit')} />
+            <Metric label="Pages search engines can find" value={m.indexable_pages} href={s('pages')} />
+            <Metric label="Broken links to fix" value={data.openBrokenLinks} href={s('links')} />
+        </div>
+        <section className="grid gap-3" aria-labelledby="seo-to-fix"><h2 id="seo-to-fix" className="ws-section-title">To fix first</h2><ToFix issues={data.blocking ?? []} /></section>
+        <details className="ws-card ws-card-body"><summary className="font-semibold cursor-pointer">All measurements</summary>
+        <div className="ws-stats mt-4">
             <Metric label="Indexable pages" value={m.indexable_pages} href={s('pages')} />
             <Metric label="Blocking issues" value={m.blocking} href={s('audit')} />
             <Metric label="SEO warnings" value={m.warnings} href={s('audit')} />
@@ -48,6 +69,7 @@ function Overview({ data, latestAudit }) {
             <Metric label="Oversized images" value={m.oversized_images} href={s('quality')} />
             <Metric label="Active redirects" value={data.redirects} href={s('redirects')} />
         </div>
+        </details>
         <Panel title="Sitemap and indexing">
             <dl className="grid gap-3 sm:grid-cols-3">
                 <div><dt className="text-sm text-muted">Sitemap generated</dt><dd>{date(m.sitemap?.generated_at)}</dd></div>
@@ -206,10 +228,11 @@ export default function Index({ section, sections, latestAudit, data }) {
         audit: <Audit data={data} />,
     }[section];
 
-    return <WorkspaceLayout title="SEO centre" description={latestAudit ? `${latestAudit.status} · ${latestAudit.blocking} blocking · ${latestAudit.warnings} warnings · audited ${date(latestAudit.created_at)}` : 'English-only search visibility, indexing and URL governance.'}>
-        <nav aria-label={t('SEO sections')} className="flex flex-wrap gap-2">
-            {Object.entries(sections).map(([key, label]) => <Link key={key} href={`/admin/seo?section=${key}`} className={key === section ? 'button-primary' : 'button-secondary'} aria-current={key === section ? 'page' : undefined}>{t(label)}</Link>)}
-        </nav>
+    return <WorkspaceLayout title="SEO" description={latestAudit ? `Last checked ${date(latestAudit.created_at)}: ${latestAudit.blocking} blocking, ${latestAudit.warnings} to improve.` : 'Fix what stops people finding the website. Run a check to begin.'} actions={<>
+        <Action href="/admin/seo/sitemap" className="button-secondary">{t('Refresh sitemap')}</Action>
+        <Action href="/admin/seo/audit" className="button-primary">{t('Run a full check')}</Action>
+    </>}>
+        <Tabs label="SEO sections" items={Object.entries(sections).map(([key, label]) => ({ href: `/admin/seo?section=${key}`, label, current: key === section }))} />
         {body}
     </WorkspaceLayout>;
 }

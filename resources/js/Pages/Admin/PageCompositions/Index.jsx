@@ -21,7 +21,7 @@ export default function Index({ compositions, summary, filters = {}, states = []
     const { can } = useWorkspace();
     const form = useForm({ q: filters.q ?? '', state: filters.state ?? '' });
     const filtered = !!(filters.q || filters.state);
-    return <WorkspaceLayout title="Website pages" description="Find a page, open its sections, and manage publication." actions={<Link className="button-secondary" href="/en">View website</Link>}>
+    return <WorkspaceLayout title="Pages" description="Find a page, open its sections, and manage publication." actions={<a className="button-secondary" href="/" target="_blank" rel="noreferrer">View website</a>}>
         <div className="pages-overview" aria-label="Latest page versions">
             {[['Total pages', summary.total], ['Published', summary.published], ['Work in progress', summary.in_progress]].map(([title, count]) => <div key={title}><span>{title}</span><strong>{count}</strong></div>)}
         </div>

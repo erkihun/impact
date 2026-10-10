@@ -1,4 +1,14 @@
-import { Link } from '@inertiajs/react';
 import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
-import { Action, Editor, Field, Filters, Panel, Pagination, Status, Table, date, field, label, options, rows, useWorkspace } from '../../../Components/Workspace/UI';
-export default function Index({submissions}){const {t}=useWorkspace();return <WorkspaceLayout title="Engagement"><Filters fields={[field('type','Type','select',{options:['','consultation','rfp','partnership','media','contact']}),field('status','Status','select',{options:['','received','scanning','triaged','assigned','in_progress','awaiting_client','contacted','qualified','resolved','not_proceeding','closed','rejected','quarantined']})]}/><Table data={submissions} columns={[{label:'Reference',render:s=><Link className="text-link" href={`/admin/engagement/${s.id}`}>{s.reference_no}</Link>},{label:'Contact',render:s=><>{s.contact_name}<p>{s.organization_name}</p></>},{label:'Type',render:s=>t(label(s.type))},{label:'Status',render:s=><Status value={s.status}/>},{label:'Assigned to',render:s=>s.assignee?.name},{label:'Submitted',render:s=>date(s.submitted_at)}]}/><Pagination data={submissions}/></WorkspaceLayout>;}
+import { useWorkspace } from '../../../Components/Workspace/UI';
+import { RequestFilters, RequestList } from '../../../Components/Workspace/RequestInbox';
+
+export default function Index({ submissions, counts, filters, types }) {
+    const { t } = useWorkspace();
+    return <WorkspaceLayout title="Requests" description="Consultation, proposal, partnership and contact requests from the website.">
+        <RequestFilters counts={counts} filters={filters} types={types} />
+        <div className="ws-split">
+            <RequestList submissions={submissions} filters={filters} />
+            <div className="ws-wide ws-card ws-empty"><h3>{t('Choose a request')}</h3><p>{t('Open a request to read it, assign it to a colleague or move it forward.')}</p></div>
+        </div>
+    </WorkspaceLayout>;
+}

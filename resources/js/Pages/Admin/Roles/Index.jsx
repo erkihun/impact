@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import WorkspaceLayout from '../../../Layouts/WorkspaceLayout';
-import { useWorkspace } from '../../../Components/Workspace/UI';
+import { Tabs, useWorkspace } from '../../../Components/Workspace/UI';
 import { groupPermissions, matchesPermission, moduleLabel, permissionLabel } from '../../../Components/Workspace/RolePermissions';
 import Icon from '../../../Components/Icon';
 
@@ -10,7 +10,8 @@ export default function Index({ roles }) {
  const [query,setQuery]=useState('');
  const normalized=query.trim().toLocaleLowerCase();
  const visible=roles.filter(role=>`${role.name} ${role.code??''}`.toLocaleLowerCase().includes(normalized)||role.permissions.some(permission=>matchesPermission(permission,normalized,t)));
- return <WorkspaceLayout title="Roles and permissions" description="See who each role applies to, then review what it allows.">
+ return <WorkspaceLayout title="Team and access" description="See who each role applies to, then review what it allows.">
+  <Tabs label="Team sections" items={[{ href: '/admin/users', label: 'People' }, { href: '/admin/roles', label: 'Roles', count: roles.length, current: true }]} />
   <section className="admin-panel role-search-panel"><div><label className="form-label" htmlFor="role-search">{t('Find a role or permission')}</label><input id="role-search" className="form-input mt-2" type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder={t('Search by name or permission')} /></div><p className="text-sm text-muted" role="status">{visible.length} / {roles.length} {t('Roles')}</p></section>
   <div className="role-card-grid">{visible.map(role=>{
    const groups=groupPermissions(role.permissions), modules=Object.keys(groups);

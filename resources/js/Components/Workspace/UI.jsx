@@ -3,13 +3,34 @@ import { useId, useEffect, useRef } from 'react';
 
 export const label = (value) => String(value ?? '').replace(/[_-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 export const date = value => value ? String(value).replace('T', ' ').slice(0, 16) : '—';
+// "Today, 10:42", "Yesterday, 09:15", "8 Oct" or "8 Oct 2025".
+export const when = value => {
+    if (!value) return '—';
+    const moment = new Date(value);
+    if (Number.isNaN(moment.getTime())) return String(value);
+    const now = new Date(), startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const time = moment.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    if (moment.getTime() >= startOfToday) return `Today, ${time}`;
+    if (moment.getTime() >= startOfToday - 86400000) return `Yesterday, ${time}`;
+    return moment.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', ...(moment.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' }) });
+};
 export const rows = value => Array.isArray(value) ? value : (value?.data ?? Object.values(value ?? {}));
 export function useWorkspace() {
     const { workspace = {}, flash = {}, errors = {} } = usePage().props;
-    const t = (key, values = {}) => Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`:${name}`, String(value)), workspace.text?.[key] ?? key);
+    // Longest placeholder first, so :to never eats the start of :total.
+    const t = (key, values = {}) => Object.entries(values).sort(([a], [b]) => b.length - a.length).reduce((text, [name, value]) => text.replaceAll(`:${name}`, String(value)), workspace.text?.[key] ?? key);
     return { ...workspace, flash, errors, t, can: permission => workspace.permissions?.includes(permission) ?? false };
 }
-export function Status({ value }) { const { t } = useWorkspace(); return <span className="status-badge status-badge-neutral">{t(label(value))}</span>; }
+// Status colour follows meaning: live, waiting on someone, needs a person, broken, scheduled or neutral.
+const tones = {
+    success: ['published', 'registration_open', 'registration_closed', 'completed', 'active', 'hired', 'offered', 'clean', 'ready', 'resolved', 'qualified', 'approved', 'live'],
+    info: ['in_review', 'screening', 'shortlisted', 'interview', 'triaged', 'assigned', 'in_progress', 'contacted', 'awaiting_client', 'scanning', 'processing', 'pending', 'invited'],
+    attention: ['received', 'new', 'changes_requested'],
+    danger: ['rejected', 'quarantined', 'infected', 'failed', 'suspended', 'locked', 'blocked'],
+    scheduled: ['scheduled'],
+};
+export const statusTone = value => Object.entries(tones).find(([, values]) => values.includes(String(value ?? '')))?.[0] ?? 'neutral';
+export function Status({ value, text }) { const { t } = useWorkspace(); return <span className={`status-badge status-tone-${statusTone(value)}`}>{t(text ?? label(value))}</span>; }
 export function Panel({ title, children, className = '' }) { return <section className={`admin-panel min-w-0 ${className}`}>{title && <h2 className="heading-3 mb-5">{title}</h2>}{children}</section>; }
 export function Errors({ errors }) {
     const ref = useRef(null); const { t } = useWorkspace();
@@ -51,7 +72,7 @@ export function Table({ columns, data, empty = 'No records found.' }) {
     return rows(data).length ? <div className="overflow-x-auto rounded-lg border border-edge"><table className="w-full text-left text-sm"><thead className="bg-quiet"><tr>{columns.map((c,i) => <th className="p-4" scope="col" key={i}>{t(c.label)}</th>)}</tr></thead><tbody className="divide-y divide-edge bg-white">{rows(data).map((row,i) => <tr key={row.id ?? i}>{columns.map((c,j) => <td className="p-4 align-top" key={j}>{c.render ? c.render(row) : String(row[c.key] ?? '—')}</td>)}</tr>)}</tbody></table></div> : <div className="empty-state"><p>{t(empty)}</p></div>;
 }
 export function Pagination({ data }) {
-    const { t } = useWorkspace(); if (!data?.total) return null;
+    const { t } = useWorkspace(); if (!data?.total || (data.last_page ?? 1) <= 1) return null;
     return <div className="mt-5 flex flex-wrap items-center gap-2"><p className="me-auto text-sm text-muted">{data.from}–{data.to} / {data.total}</p><nav aria-label={t('Pagination')} className="flex flex-wrap gap-2">{(data.links ?? []).map((link,i) => {const text=link.label.replace(/&laquo;/g,'«').replace(/&raquo;/g,'»');return link.url ? <Link key={i} className={link.active ? 'button-primary' : 'button-secondary'} href={link.url} aria-current={link.active ? 'page' : undefined}>{text}</Link> : <span key={i} className="button-secondary opacity-50">{text}</span>;})}</nav></div>;
 }
 export function Filters({ fields }) {
@@ -59,5 +80,17 @@ export function Filters({ fields }) {
     const active = fields.some(f => filters[f.name] !== undefined && filters[f.name] !== null && String(filters[f.name]) !== '');
     return <details className="admin-panel workspace-filters" open={active}><summary className="font-semibold">{t('Filter results')}{active && <span className="ms-2 text-sm text-muted">{t('Filters applied')}</span>}</summary><Editor key={url} action={action} method="get" initial={Object.fromEntries(fields.map(f => [f.name, filters[f.name] ?? '']))} fields={fields} submit="Apply filters" className="md:grid-cols-3 mt-5"><Link className="text-link" href={action}>{t('Clear filters')}</Link></Editor></details>;
 }
+/** Underlined section tabs; each item is { href, label, count?, current? }. */
+export function Tabs({ items, label: name }) {
+    const { t } = useWorkspace();
+    return <nav className="ws-tabs" aria-label={t(name)}>{items.map(item => <Link key={item.href} href={item.href} aria-current={item.current ? 'page' : undefined}>{t(item.label)}{item.count !== undefined && item.count !== null && <span className="ws-count">{item.count}</span>}</Link>)}</nav>;
+}
+/** Shown while a form has changes that are not saved yet. */
+export function UnsavedBar({ form, message = 'You have unsaved changes.', submit = 'Save changes' }) {
+    const { t } = useWorkspace();
+    if (!form.isDirty) return null;
+    return <div className="ws-unsaved" role="status"><span>{t(message)}</span><button type="button" className="button-secondary" onClick={() => form.reset()} disabled={form.processing}>{t('Discard changes')}</button><button type="submit" className="button-primary" disabled={form.processing}>{form.processing ? t('Saving…') : t(submit)}</button></div>;
+}
+export const initials = name => String(name ?? '?').split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || '?';
 export const field = (name, title, type = 'text', extra = {}) => ({ name, label: title, type, ...extra });
 export const options = (items, name = 'name') => rows(items).map(item => ({value: String(item.id), label: item[name] ?? item.original_name ?? item.id}));

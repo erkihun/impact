@@ -20,10 +20,14 @@ use App\Http\Controllers\Admin\SettingHistoryController;
 use App\Http\Controllers\Admin\SettingsDiagnosticsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserInvitationController;
+use App\Http\Controllers\Admin\WebsiteContentController;
+use App\Http\Controllers\Admin\WorkspaceSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'session.current', 'mfa'])->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
+    // Command palette lookups; each source checks its own permission.
+    Route::get('/search', WorkspaceSearchController::class)->middleware('throttle:120,1')->name('search');
     Route::get('/audit-events', [AuditEventController::class, 'index'])
         ->middleware('permission:audit.view')
         ->name('audit.index');
@@ -33,6 +37,9 @@ Route::middleware(['auth', 'verified', 'session.current', 'mfa'])->group(functio
     Route::post('/media', [MediaController::class, 'store'])
         ->middleware('permission:media.create')
         ->name('media.store');
+    Route::patch('/media/{media}', [MediaController::class, 'update'])
+        ->middleware('permission:media.create')
+        ->name('media.update');
     Route::post('/media/{media}/approve', [MediaController::class, 'approve'])
         ->middleware('permission:media.approve')
         ->name('media.approve');
@@ -40,6 +47,17 @@ Route::middleware(['auth', 'verified', 'session.current', 'mfa'])->group(functio
     Route::resource('experts', ExpertController::class)
         ->except(['show'])
         ->middleware('permission:experts.manage');
+
+    // Services, industries, case studies, insights, events and vacancies;
+    // each collection is authorized by its own *.manage permission.
+    Route::get('/website', [WebsiteContentController::class, 'overview'])->name('website.index');
+    Route::prefix('website/{collection}')->where(['collection' => '[a-z-]+'])->name('website.')->group(function (): void {
+        Route::get('/', [WebsiteContentController::class, 'index'])->name('collection');
+        Route::get('/create', [WebsiteContentController::class, 'create'])->name('create');
+        Route::post('/', [WebsiteContentController::class, 'store'])->name('store');
+        Route::get('/{record}/edit', [WebsiteContentController::class, 'edit'])->whereUuid('record')->name('edit');
+        Route::put('/{record}', [WebsiteContentController::class, 'update'])->whereUuid('record')->name('update');
+    });
 
     Route::get('/content', [ContentController::class, 'index'])
         ->middleware('permission:content.view')

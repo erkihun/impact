@@ -1,3 +1,24 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useWorkspace } from './UI';
-export default function SettingsNav({groups={},category}){const {t}=useWorkspace();return <details className="admin-panel"><summary className="font-semibold">{t('Browse all settings')}</summary><nav aria-label={t('Settings categories')} className="grid gap-3 mt-4"><Link className="text-link" href="/admin/settings">{t('Settings overview')}</Link>{Object.values(groups).map(group=><div key={group.label}><p className="eyebrow my-3">{t(group.label)}</p><div className="flex flex-wrap gap-3">{Object.entries(group.categories).map(([key,item])=><Link key={key} href={`/admin/settings/${key}`} className="text-link" aria-current={category===key?'page':undefined}>{t(item.label)}</Link>)}</div></div>)}<div className="flex flex-wrap gap-3"><Link className="text-link" href="/admin/settings/history">{t('Configuration history')}</Link><Link className="text-link" href="/admin/settings/diagnostics">{t('Settings diagnostics')}</Link></div></nav></details>;}
+
+/** Settings pages: categories on the left, the page on the right. */
+export default function SettingsNav({ groups = {}, category, children }) {
+    const { t } = useWorkspace();
+    const path = usePage().url.split('?')[0];
+    const link = (href, text, current) => <Link key={href} href={href} aria-current={current ? 'page' : undefined}>{t(text)}</Link>;
+    return <div className="ws-split">
+        <nav className="ws-settings-nav ws-list-pane" aria-label={t('Settings categories')}>
+            <div>{link('/admin/settings', 'Overview', path === '/admin/settings')}</div>
+            {Object.values(groups).map(group => <div key={group.label}>
+                <p>{t(group.label)}</p>
+                {Object.entries(group.categories).map(([key, item]) => link(`/admin/settings/${key}`, item.label, category === key))}
+            </div>)}
+            <div>
+                <p>{t('Records')}</p>
+                {link('/admin/settings/history', 'Change history', path === '/admin/settings/history')}
+                {link('/admin/settings/diagnostics', 'Check that settings work', path === '/admin/settings/diagnostics')}
+            </div>
+        </nav>
+        <div className="ws-wide grid gap-6 content-start">{children}</div>
+    </div>;
+}

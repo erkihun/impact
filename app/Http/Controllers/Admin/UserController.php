@@ -12,10 +12,10 @@ use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\CorrelationContext;
-use Inertia\Response as View;
 use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Response as View;
 
 final class UserController extends Controller
 {
@@ -32,10 +32,26 @@ final class UserController extends Controller
                 }))
             ->orderBy('name')
             ->paginate(30)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(fn (User $user): array => [
+                'id' => (string) $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'status' => (string) $user->getRawOriginal('status'),
+                'last_login_at' => $user->last_login_at?->toAtomString(),
+                'expires_at' => $user->expires_at?->toAtomString(),
+                'roles' => $user->roles->map(fn ($role): array => ['id' => (string) $role->id, 'name' => $role->name])->all(),
+                // Whether two-step verification protects the account; never the secret itself.
+                'two_step' => match (true) {
+                    $user->getRawOriginal('mfa_confirmed_at') !== null => 'on',
+                    (bool) $user->getRawOriginal('mfa_exempt') => 'exempt',
+                    default => 'off',
+                },
+            ]);
 
         return WorkspacePage::render('admin.users.index', [
             'users' => $users,
+            'filters' => ['q' => $request->string('q')->toString(), 'status' => $request->string('status')->toString()],
             'roles' => Role::query()->orderBy('name')->get(),
             'locales' => config('impact.locales.supported', ['en']),
         ]);

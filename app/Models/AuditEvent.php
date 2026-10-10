@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property array<string, mixed>|null $metadata
+ */
 final class AuditEvent extends BaseModel
 {
     public const UPDATED_AT = null;
