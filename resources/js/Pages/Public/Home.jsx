@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 import HeroSlider from '../../Components/Public/HeroSlider';
 import { ResponsiveImage } from '../../Components/Public/Common';
 import AppLink from '../../Components/AppLink';
@@ -6,6 +7,7 @@ import Icon from '../../Components/Icon';
 import Reveal from '../../Components/Reveal';
 import PublicLayout from '../../Layouts/PublicLayout';
 import { pad } from '../../lib/format';
+import { glide } from '../../lib/glide';
 
 const MotionLink = motion.create(AppLink);
 
@@ -49,22 +51,36 @@ function Ledger({ items, copy }) {
     );
 }
 
+// Starts the right-to-left glide once the row is on screen. See lib/glide.js.
+function useGlide(viewport, copies, enabled) {
+    useEffect(() => {
+        const element = viewport.current;
+        // The site setting for reduced motion is a class on the document.
+        if (! element || ! enabled || element.closest('.setting-reduced-motion')) {
+            return undefined;
+        }
+
+        return glide(element, copies);
+    }, [viewport, copies, enabled]);
+}
+
 // Profiles glide right to left without end. The set is repeated enough times
-// to fill wide screens; the copies are hidden from assistive tech and the
-// keyboard so each person is announced once. Hover or focus pauses the
-// movement, and reduced-motion visitors get a plain scrollable row instead.
+// to cover very wide screens plus one spare set to wrap over; the copies are
+// hidden from assistive tech and the keyboard so each person is announced
+// once. Reduced-motion visitors get a plain scrollable row instead.
 function ExpertPerspective({ experts, copy }) {
+    const viewport = useRef(null);
+    const reduceMotion = useReducedMotion();
+    const loop = experts.length > 1;
+    const copies = loop ? Math.ceil((experts.length + 8) / experts.length) : 1;
+    useGlide(viewport, copies, loop && ! reduceMotion);
+
     if (experts.length === 0) {
         return null;
     }
 
-    const loop = experts.length > 1;
-    const copies = loop ? Math.max(2, Math.ceil(10 / experts.length)) : 1;
     const track = (
-        <div
-            className="m-expert-track"
-            style={loop ? { '--m-expert-shift': `${-100 / copies}%`, '--m-expert-duration': `${experts.length * 6}s` } : undefined}
-        >
+        <div className="m-expert-track">
             {Array.from({ length: copies }, (_, repeat) => repeat).flatMap((repeat) => experts.map((expert) => (
                 <AppLink
                     key={`${repeat}-${expert.href}`}
@@ -85,7 +101,11 @@ function ExpertPerspective({ experts, copy }) {
                 <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
                 {! loop && <div className="m-expert-marquee m-expert-marquee-static">{track}</div>}
             </div>
-            {loop && <div className="m-expert-marquee">{track}</div>}
+            {loop && (
+                <div className="m-expert-marquee-frame">
+                    <div className="m-expert-marquee" ref={viewport}>{track}</div>
+                </div>
+            )}
         </section>
     );
 }
