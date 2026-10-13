@@ -9,19 +9,35 @@ use App\Exceptions\InvalidStateTransitionException;
 
 final readonly class ContentWorkflow
 {
-    /** @return list<ContentWorkflowState> */
+    /**
+     * Review is optional: anything not yet live can be published or scheduled
+     * directly, while teams that want a second pair of eyes can still route
+     * work through review and approval.
+     *
+     * @return list<ContentWorkflowState>
+     */
     public function allowedDestinations(ContentWorkflowState $from): array
     {
         return match ($from) {
-            ContentWorkflowState::Draft => [ContentWorkflowState::InReview],
-            ContentWorkflowState::InReview => [
-                ContentWorkflowState::ChangesRequested,
-                ContentWorkflowState::Approved,
-            ],
-            ContentWorkflowState::ChangesRequested => [ContentWorkflowState::InReview],
-            ContentWorkflowState::Approved => [
-                ContentWorkflowState::Scheduled,
+            ContentWorkflowState::Draft => [
                 ContentWorkflowState::Published,
+                ContentWorkflowState::Scheduled,
+                ContentWorkflowState::InReview,
+            ],
+            ContentWorkflowState::InReview => [
+                ContentWorkflowState::Published,
+                ContentWorkflowState::Scheduled,
+                ContentWorkflowState::Approved,
+                ContentWorkflowState::ChangesRequested,
+            ],
+            ContentWorkflowState::ChangesRequested => [
+                ContentWorkflowState::Published,
+                ContentWorkflowState::Scheduled,
+                ContentWorkflowState::InReview,
+            ],
+            ContentWorkflowState::Approved => [
+                ContentWorkflowState::Published,
+                ContentWorkflowState::Scheduled,
             ],
             ContentWorkflowState::Scheduled => [
                 ContentWorkflowState::Published,
@@ -32,8 +48,8 @@ final readonly class ContentWorkflow
                 ContentWorkflowState::Archived,
             ],
             ContentWorkflowState::Unpublished => [
-                ContentWorkflowState::Draft,
                 ContentWorkflowState::Published,
+                ContentWorkflowState::Draft,
                 ContentWorkflowState::Archived,
             ],
             ContentWorkflowState::Archived => [],

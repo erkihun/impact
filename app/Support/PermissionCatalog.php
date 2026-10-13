@@ -9,7 +9,7 @@ final class PermissionCatalog
     /** @var array<string, string> */
     public const ALL = [
         'content.view' => 'View drafts and versions',
-        'content.create' => 'Create content records',
+        'content.create' => 'Create content records and publish them directly',
         'content.update' => 'Edit permitted drafts',
         'content.submit' => 'Submit content for review',
         'content.approve' => 'Approve or request changes',

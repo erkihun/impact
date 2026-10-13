@@ -78,3 +78,97 @@ it('prevents the active revision author from approving their own work', function
     expect($content->refresh()->status->value)->toBe('in_review');
     $this->assertDatabaseCount('workflow_events', 0);
 });
+
+it('lets a contributor publish content directly when creating it', function (): void {
+    $contributor = User::factory()->create();
+    $contributor->roles()->attach(Role::query()->where('code', 'contributor')->sole());
+
+    $response = $this->actingAs($contributor)->withSession(privilegedSession($contributor))->post('/admin/content', [
+        'type' => 'page',
+        'locale' => 'en',
+        'slug' => 'published-on-create',
+        'title' => 'Published on create',
+        'summary' => 'Goes live straight away.',
+        'body' => 'No review step is needed for this post.',
+        'publish' => true,
+    ]);
+
+    $content = ContentItem::query()->with('currentVersion')->sole();
+    $response->assertRedirect(route('admin.content.show', $content));
+    expect($content->status->value)->toBe('published')
+        ->and($content->published_at)->not->toBeNull()
+        ->and($content->currentVersion->workflow_state->value)->toBe('published');
+    $this->assertDatabaseCount('workflow_events', 2);
+    $this->assertDatabaseHas('workflow_events', ['to_state' => 'published', 'note' => 'published_on_create']);
+    $this->assertDatabaseHas('audit_events', ['action' => 'content.transition.published']);
+});
+
+it('lets a contributor publish an existing draft without review', function (): void {
+    $contributor = User::factory()->create();
+    $contributor->roles()->attach(Role::query()->where('code', 'contributor')->sole());
+
+    $this->actingAs($contributor)->withSession(privilegedSession($contributor))->post('/admin/content', [
+        'type' => 'page', 'locale' => 'en', 'slug' => 'draft-first', 'title' => 'Draft first', 'body' => 'Saved as a draft.',
+    ])->assertRedirect();
+    $content = ContentItem::query()->sole();
+    expect($content->status->value)->toBe('draft');
+
+    $this->actingAs($contributor)->withSession(privilegedSession($contributor))
+        ->get("/admin/content/{$content->id}")
+        ->assertInertia(fn (\Inertia\Testing\AssertableInertia $page) => $page
+            ->where('allowedTransitions.0', 'published'));
+
+    $this->actingAs($contributor)->withSession(privilegedSession($contributor))
+        ->post("/admin/content/{$content->id}/transitions", [
+            'content_version_id' => $content->current_version_id,
+            'to' => 'published',
+            'note' => 'Publishing straight from the draft.',
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+    expect($content->refresh()->status->value)->toBe('published');
+});
+
+it('publishes a new revision directly from the edit form', function (): void {
+    $contributor = User::factory()->create();
+    $contributor->roles()->attach(Role::query()->where('code', 'contributor')->sole());
+
+    $this->actingAs($contributor)->withSession(privilegedSession($contributor))->post('/admin/content', [
+        'type' => 'page', 'locale' => 'en', 'slug' => 'revise-and-publish', 'title' => 'First title', 'body' => 'First body.',
+    ])->assertRedirect();
+    $content = ContentItem::query()->sole();
+
+    $this->actingAs($contributor)->withSession(privilegedSession($contributor))
+        ->patch("/admin/content/{$content->id}", [
+            'expected_current_version_id' => $content->current_version_id,
+            'title' => 'Second title',
+            'body' => 'Second body.',
+            'publish' => true,
+        ])->assertRedirect(route('admin.content.show', $content))->assertSessionHasNoErrors();
+
+    $content->refresh()->load('currentVersion');
+    expect($content->status->value)->toBe('published')
+        ->and($content->currentVersion->version_no)->toBe(2)
+        ->and($content->currentVersion->title)->toBe('Second title')
+        ->and($content->currentVersion->workflow_state->value)->toBe('published');
+    $this->assertDatabaseHas('workflow_events', ['to_state' => 'published', 'note' => 'published_on_save']);
+});
+
+it('keeps publication closed to users who can neither create nor publish content', function (): void {
+    $owner = User::factory()->create();
+    $reviewer = User::factory()->create();
+    $reviewer->roles()->attach(Role::query()->where('code', 'reviewer')->sole());
+    $content = ContentItem::query()->create(['type' => 'page', 'owner_id' => $owner->id, 'status' => 'draft']);
+    $version = $content->versions()->create([
+        'locale' => 'en', 'version_no' => 1, 'slug' => 'reviewer-cannot-publish', 'title' => 'Reviewer cannot publish',
+        'body' => ['content' => 'Only creators and publishers may publish.'], 'workflow_state' => 'draft',
+        'created_by' => $owner->id, 'content_hash' => str_repeat('a', 64),
+    ]);
+    $content->update(['current_version_id' => $version->id]);
+
+    $this->actingAs($reviewer)->withSession(privilegedSession($reviewer))
+        ->post("/admin/content/{$content->id}/transitions", [
+            'content_version_id' => $version->id, 'to' => 'published', 'note' => 'Trying to publish.',
+        ])->assertForbidden();
+
+    expect($content->refresh()->status->value)->toBe('draft');
+});

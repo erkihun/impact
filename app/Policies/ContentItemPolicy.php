@@ -20,6 +20,13 @@ final readonly class ContentItemPolicy
         return $user->hasPermission('content.create');
     }
 
+    /** Anyone who can create content may publish it without a review step. */
+    public function publish(User $user): bool
+    {
+        return $user->hasPermission('content.publish')
+            || $user->hasPermission('content.create');
+    }
+
     public function view(User $user, ContentItem $content): bool
     {
         return $user->hasPermission('content.view');
@@ -40,18 +47,18 @@ final readonly class ContentItemPolicy
         ContentItem $content,
         ContentWorkflowState $to,
     ): bool {
-        $permission = match ($to) {
-            ContentWorkflowState::InReview => 'content.submit',
+        $allowed = match ($to) {
+            ContentWorkflowState::InReview => $user->hasPermission('content.submit'),
             ContentWorkflowState::ChangesRequested,
-            ContentWorkflowState::Approved => 'content.approve',
+            ContentWorkflowState::Approved => $user->hasPermission('content.approve'),
             ContentWorkflowState::Scheduled,
             ContentWorkflowState::Published,
             ContentWorkflowState::Unpublished,
-            ContentWorkflowState::Archived => 'content.publish',
-            ContentWorkflowState::Draft => 'content.rollback',
+            ContentWorkflowState::Archived => $this->publish($user),
+            ContentWorkflowState::Draft => $user->hasPermission('content.rollback'),
         };
 
-        if (! $user->hasPermission($permission)) {
+        if (! $allowed) {
             return false;
         }
 

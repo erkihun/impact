@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin;
 
 use App\Enums\ContentWorkflowState;
+use App\Models\ContentItem;
 use App\Support\Settings\EffectiveSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,8 +19,8 @@ final class TransitionContentRequest extends FormRequest
         return $user !== null && (
             $user->hasPermission('content.submit')
             || $user->hasPermission('content.approve')
-            || $user->hasPermission('content.publish')
             || $user->hasPermission('content.rollback')
+            || $user->can('publish', ContentItem::class)
         );
     }
 

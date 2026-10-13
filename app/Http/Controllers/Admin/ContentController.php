@@ -21,6 +21,7 @@ use App\Http\Requests\Admin\TransitionContentRequest;
 use App\Http\Requests\Admin\UpdateContentRequest;
 use App\Models\ContentItem;
 use App\Models\ContentVersion;
+use App\Models\User;
 use App\Services\Workflow\ContentWorkflow;
 use App\Support\CorrelationContext;
 use App\Support\Settings\EffectiveSettings;
@@ -29,8 +30,11 @@ use App\Support\Inertia\WorkspacePage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\ValidationException;
 
 final class ContentController extends Controller
 {
@@ -59,28 +63,40 @@ final class ContentController extends Controller
         return WorkspacePage::render('admin.content.create', [
             'types' => ContentType::cases(),
             'locales' => $settings->array('localization.enabled_locales'),
+            'canPublish' => Gate::allows('publish', ContentItem::class),
         ]);
     }
 
     public function store(
         StoreContentRequest $request,
         CreateContentAction $action,
+        TransitionContentWorkflowAction $transition,
         CorrelationContext $correlation,
     ): RedirectResponse {
         $validated = $request->validated();
-        $content = $action->execute(new CreateContentData(
-            type: ContentType::from($validated['type']),
-            ownerId: (string) $request->user()->getKey(),
-            locale: $validated['locale'],
-            slug: $validated['slug'],
-            title: $validated['title'],
-            body: ['content' => $validated['body']],
-            correlationId: $correlation->id(),
-            summary: $validated['summary'] ?? null,
-        ));
+        $publish = (bool) ($validated['publish'] ?? false);
+
+        // Creating and publishing happen together, so a blocked publication
+        // leaves no orphaned draft behind.
+        $content = DB::transaction(function () use ($request, $action, $transition, $correlation, $validated, $publish): ContentItem {
+            $content = $action->execute(new CreateContentData(
+                type: ContentType::from($validated['type']),
+                ownerId: (string) $request->user()->getKey(),
+                locale: $validated['locale'],
+                slug: $validated['slug'],
+                title: $validated['title'],
+                body: ['content' => $validated['body']],
+                correlationId: $correlation->id(),
+                summary: $validated['summary'] ?? null,
+            ));
+
+            return $publish
+                ? $this->publishNow($request->user(), $content, $transition, $correlation, 'published_on_create')
+                : $content;
+        });
 
         return redirect()->route('admin.content.show', $content)
-            ->with('status', __('Draft content created.'));
+            ->with('status', $publish ? __('Content published.') : __('Draft content created.'));
     }
 
     public function show(
@@ -125,28 +141,40 @@ final class ContentController extends Controller
         Gate::authorize('update', $content);
         $content->load('currentVersion');
 
-        return WorkspacePage::render('admin.content.edit', compact('content'));
+        return WorkspacePage::render('admin.content.edit', [
+            'content' => $content,
+            'canPublish' => Gate::allows('publish', ContentItem::class),
+        ]);
     }
 
     public function update(
         UpdateContentRequest $request,
         ContentItem $content,
         UpdateContentAction $action,
+        TransitionContentWorkflowAction $transition,
         CorrelationContext $correlation,
     ): RedirectResponse {
         $validated = $request->validated();
-        $action->execute($request->user(), new UpdateContentData(
-            contentItemId: (string) $content->getKey(),
-            expectedCurrentVersionId: $validated['expected_current_version_id'],
-            actorId: (string) $request->user()->getKey(),
-            title: $validated['title'],
-            summary: $validated['summary'] ?? null,
-            body: $validated['body'],
-            correlationId: $correlation->id(),
-        ));
+        $publish = (bool) ($validated['publish'] ?? false);
+
+        DB::transaction(function () use ($request, $content, $action, $transition, $correlation, $validated, $publish): void {
+            $revised = $action->execute($request->user(), new UpdateContentData(
+                contentItemId: (string) $content->getKey(),
+                expectedCurrentVersionId: $validated['expected_current_version_id'],
+                actorId: (string) $request->user()->getKey(),
+                title: $validated['title'],
+                summary: $validated['summary'] ?? null,
+                body: $validated['body'],
+                correlationId: $correlation->id(),
+            ));
+
+            if ($publish) {
+                $this->publishNow($request->user(), $revised, $transition, $correlation, 'published_on_save');
+            }
+        });
 
         return redirect()->route('admin.content.show', $content)
-            ->with('status', __('A new draft revision was created.'));
+            ->with('status', $publish ? __('The new revision was published.') : __('A new draft revision was created.'));
     }
 
     public function preview(
@@ -200,5 +228,30 @@ final class ContentController extends Controller
         ));
 
         return back()->with('status', __('Workflow state updated.'));
+    }
+
+    /**
+     * Publishes the current version straight away. Publication checks that
+     * fail are reported against the "publish" field of the form that asked.
+     */
+    private function publishNow(
+        User $actor,
+        ContentItem $content,
+        TransitionContentWorkflowAction $transition,
+        CorrelationContext $correlation,
+        string $note,
+    ): ContentItem {
+        try {
+            return $transition->execute($actor, $content, new TransitionContentData(
+                contentVersionId: (string) $content->current_version_id,
+                to: ContentWorkflowState::Published,
+                correlationId: $correlation->id(),
+                note: $note,
+            ));
+        } catch (ValidationException $exception) {
+            throw ValidationException::withMessages([
+                'publish' => Arr::flatten($exception->errors()),
+            ]);
+        }
     }
 }

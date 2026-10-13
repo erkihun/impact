@@ -36,6 +36,7 @@ final class StoreContentRequest extends FormRequest
             'title' => ['required', 'string', 'max:220'],
             'summary' => ['nullable', 'string', 'max:2000'],
             'body' => ['required', 'string', 'max:100000'],
+            'publish' => ['sometimes', 'boolean'],
         ];
     }
 
