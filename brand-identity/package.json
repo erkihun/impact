@@ -1,0 +1,22 @@
+{
+  "name": "tvet-brand-identity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Brand identity proposal for the Addis Ababa City Administration TVET Bureau",
+  "type": "module",
+  "scripts": {
+    "build:assets": "node src/build-assets.mjs",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i src/tailwind.input.css -o assets/css/site.css --minify",
+    "export:png": "node src/export-png.mjs",
+    "verify": "node src/verify.mjs",
+    "build": "npm run build:assets && npm run build:css",
+    "serve": "node src/serve.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.2.0",
+    "@fontsource/noto-sans-ethiopic": "^5.2.0",
+    "opentype.js": "^1.3.4",
+    "playwright-core": "^1.56.1",
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-hosted fonts: Inter (English) and Noto Sans Ethiopic (Amharic). */
+@font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 700; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 800; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Noto Sans Ethiopic'; font-weight: 500; font-style: normal; font-display: swap; src: url('../fonts/noto-sans-ethiopic-ethiopic-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Noto Sans Ethiopic'; font-weight: 600; font-style: normal; font-display: swap; src: url('../fonts/noto-sans-ethiopic-ethiopic-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Noto Sans Ethiopic'; font-weight: 700; font-style: normal; font-display: swap; src: url('../fonts/noto-sans-ethiopic-ethiopic-700-normal.woff2') format('woff2'); }
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+  body { @apply bg-brand-mist text-brand-ink font-sans antialiased; }
+  :lang(am) { @apply font-ethiopic; }
+  :focus-visible { outline: 3px solid #E89B24; outline-offset: 2px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+}
+
+@layer components {
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand-green; }
+  .section-no { @apply font-semibold text-brand-orange; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-brand-line bg-white px-3.5 py-2 text-sm font-semibold text-brand-blue shadow-sm transition hover:border-brand-blue hover:bg-brand-mist disabled:opacity-50; }
+  .btn-primary { @apply border-brand-blue bg-brand-blue text-white hover:bg-brand-ink hover:border-brand-ink; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .seg { @apply inline-flex rounded-lg border border-brand-line bg-white p-0.5; }
+  .seg > button { @apply rounded-md px-3 py-1.5 text-sm font-medium text-brand-gray transition hover:text-brand-blue; }
+  .seg > button[aria-pressed='true'] { @apply bg-brand-blue text-white shadow-sm; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-brand-line bg-white px-2.5 py-1 text-xs font-medium text-brand-gray; }
+  .card { @apply rounded-2xl border border-brand-line bg-white shadow-card; }
+  .checker { background-color: #fff; background-image: linear-gradient(45deg,#e6ebf1 25%,transparent 25%,transparent 75%,#e6ebf1 75%),linear-gradient(45deg,#e6ebf1 25%,transparent 25%,transparent 75%,#e6ebf1 75%); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
+  .stage-svg > svg, .fit-svg > svg { display: block; width: 100%; height: 100%; }
+  .num { font-variant-numeric: tabular-nums; }
+}
