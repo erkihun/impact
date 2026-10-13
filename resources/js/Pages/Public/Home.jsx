@@ -49,25 +49,43 @@ function Ledger({ items, copy }) {
     );
 }
 
+// Profiles glide right to left without end. The set is repeated enough times
+// to fill wide screens; the copies are hidden from assistive tech and the
+// keyboard so each person is announced once. Hover or focus pauses the
+// movement, and reduced-motion visitors get a plain scrollable row instead.
 function ExpertPerspective({ experts, copy }) {
     if (experts.length === 0) {
         return null;
     }
 
+    const loop = experts.length > 1;
+    const copies = loop ? Math.max(2, Math.ceil(10 / experts.length)) : 1;
+    const track = (
+        <div
+            className="m-expert-track"
+            style={loop ? { '--m-expert-shift': `${-100 / copies}%`, '--m-expert-duration': `${experts.length * 6}s` } : undefined}
+        >
+            {Array.from({ length: copies }, (_, repeat) => repeat).flatMap((repeat) => experts.map((expert) => (
+                <AppLink
+                    key={`${repeat}-${expert.href}`}
+                    className="m-expert-card"
+                    href={expert.href}
+                    aria-hidden={repeat > 0 ? 'true' : undefined}
+                    tabIndex={repeat > 0 ? -1 : undefined}
+                >
+                    <ExpertCard item={expert} copy={copy} />
+                </AppLink>
+            )))}
+        </div>
+    );
+
     return (
         <section className="m-section m-experts-section" aria-labelledby="home-perspectives-title">
             <div className="content-container">
                 <SectionLead id="home-perspectives-title" eyebrow={copy.perspectivesEyebrow} title={copy.perspectivesTitle} />
-                <div className={`m-grid ${experts.length > 2 ? 'm-grid-3' : 'm-grid-2'} m-expert-grid`}>
-                    {experts.map((expert, index) => (
-                        <Reveal key={expert.href} index={index} className="flex">
-                            <AppLink className="m-expert-card" href={expert.href}>
-                                <ExpertCard item={expert} copy={copy} />
-                            </AppLink>
-                        </Reveal>
-                    ))}
-                </div>
+                {! loop && <div className="m-expert-marquee m-expert-marquee-static">{track}</div>}
             </div>
+            {loop && <div className="m-expert-marquee">{track}</div>}
         </section>
     );
 }

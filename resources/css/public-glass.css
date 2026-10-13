@@ -1677,10 +1677,56 @@ a.m-stat:hover strong {
     max-width: none;
     margin-inline: 0;
 }
-.m-expert-grid {
+/* Continuous right-to-left profile slider. The track holds the profile set
+   several times; shifting it by exactly one set and restarting is seamless.
+   The shift and duration are set inline by the page from the set size. */
+.m-expert-marquee {
     width: 100%;
     margin: 3.5rem 0 0;
-    align-items: stretch;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.m-expert-track {
+    display: flex;
+    width: max-content;
+    padding-block: 0.25rem;
+    animation: m-expert-slide var(--m-expert-duration, 24s) linear infinite;
+    will-change: transform;
+}
+
+.m-expert-track > .m-expert-card {
+    flex: 0 0 auto;
+    width: min(24rem, 82vw);
+    margin-inline-end: 1.25rem;
+}
+
+.m-expert-marquee:hover .m-expert-track,
+.m-expert-marquee:focus-within .m-expert-track {
+    animation-play-state: paused;
+}
+
+.m-expert-marquee-static {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+.m-expert-marquee-static .m-expert-track {
+    width: auto;
+    justify-content: center;
+    animation: none;
+}
+
+@keyframes m-expert-slide {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(var(--m-expert-shift, -50%));
+    }
 }
 
 .m-expert-card {
@@ -1808,6 +1854,38 @@ a.m-stat:hover strong {
     .m-expert-card:hover .m-expert-cover img {
         transform: none;
     }
+
+    /* No movement: the row becomes a plain horizontal scroller and the
+       repeated copies disappear so each person appears once. */
+    .m-expert-marquee {
+        overflow-x: auto;
+        -webkit-mask-image: none;
+        mask-image: none;
+        scrollbar-width: thin;
+    }
+
+    .m-expert-track {
+        animation: none;
+    }
+
+    .m-expert-track > [aria-hidden='true'] {
+        display: none;
+    }
+}
+
+.setting-reduced-motion .m-expert-marquee {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-width: thin;
+}
+
+.setting-reduced-motion .m-expert-track {
+    animation: none;
+}
+
+.setting-reduced-motion .m-expert-track > [aria-hidden='true'] {
+    display: none;
 }
 
 .m-insight-feature {
